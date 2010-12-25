@@ -1,0 +1,27 @@
+#####	ROBOTS	#####
+
+##### ROBOT 1	#####
+
+
+#####	OBJECTS	#####
+
+##### OBJECT 1	#####
+
+>	OBJECT	board1 obstacles/boxingBoard.3ds
+>	POSITION	0.0 0.0	0.0
+>	ORIENTATION	0.0 0 0
+>	PRIMITIVE BOX		1.0 1.0 1.0 1.0
+
+##### OBJECT 2	#####
+
+>	OBJECT	board2 obstacles/boxingBoard.3ds
+>	POSITION	0.0 0.0	1.0
+>	ORIENTATION	0.0 0 0.0
+>	PRIMITIVE BOX		0.2 0.2 0.2 1.5
+
+##### OBJECT 3	#####
+
+>	OBJECT	board3 obstacles/boxingBoard.3ds
+>	POSITION	0.0 0.0	1.5
+>	ORIENTATION	0.0 0 0.0
+>	PRIMITIVE SPHERE		0.5 1.0

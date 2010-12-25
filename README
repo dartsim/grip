@@ -1,0 +1,10 @@
+RST is written using wxWidgets, a cross-platform GUI framework that wraps up native graphics API's.  
+Most modern OS's come with wx installed by default, though in our experience it often takes some 
+poking around or upgrading to work properly.  
+
+Because wx is cross platform, RST can be compiled in windows, linux, or OSX.  The preferred method
+of building is now CMake.  See the "doc" directory for details on using CMake to build RST.
+
+We have also included a solution file for MSVS2008, an Xcodeproj file for OSX, a configure script 
+for g++ (linux), and a .cproject file for Eclipse (linux).  Documentation for building in each of 
+these environments can be found in their respective directories.

@@ -1,0 +1,123 @@
+# LINKS
+> LINK Hips 			hips.3DS
+
+> LINK TorsoYaw 		torso_insert.3DS
+> LINK TorsoPitch 		torso.3DS
+
+> LINK HeadYaw 			head.3DS
+
+> LINK RHipRoll 		right_hip_motor.3DS
+> LINK RHipYaw 			right_hip_joint.3DS
+> LINK RHipPitch 		thigh.3DS
+> LINK RKneePitch 		shin.3DS
+> LINK RAnklePitch 		ankle.3DS
+> LINK RAnkleRoll 		right_foot.3DS
+
+> LINK LHipRoll		 	left_hip_motor.3DS
+> LINK LHipYaw 			left_hip_joint.3DS
+> LINK LHipPitch 		thigh.3DS
+> LINK LKneePitch		shin.3DS
+> LINK LAnklePitch 		ankle.3DS
+> LINK LAnkleRoll 		left_foot.3DS
+
+> LINK RShoulderPitch 	shoulder.3DS
+> LINK RShoulderRoll 	upper_arm.3DS
+> LINK RElbowYaw 		right_upper_arm.3DS
+> LINK RElbowPitch 		forearm.3DS
+> LINK RHand			hand.3DS
+> LINK RClawPitch 		claw.3DS
+> LINK REndEffector		NOMODEL
+
+> LINK LShoulderPitch 	shoulder.3DS
+> LINK LShoulderRoll 	upper_arm.3DS
+> LINK LElbowYaw 		left_upper_arm.3DS
+> LINK LElbowPitch 		forearm.3DS
+> LINK LHand			hand.3DS
+> LINK LClawPitch 		claw.3DS
+> LINK LEndEffector		NOMODEL
+
+
+
+
+# CONNECTIVITY
+# CON FROM  TO          			X		Y		Z		Roll		Pitch		Yaw	AXIS	TYPE	RANGE
+#---------------------------------------------------------------------------------------------------------
+#> CON WORLD BASE					0.0		0.0		0.0		0.0		0.0		0.0				PX		FREE	-5 		5
+#> CON BASE TRANSX					0.0		0.0		0.0		0.0		0.0		0.0				PX		PRISM	-5 		5
+#> CON TRANSX TRANSY					0.0		0.0		0.0		0.0		0.0		0.0				PY		PRISM	-5 		5
+#> CON TRANSY TRANSZ					0.0		0.0		0.0		0.0		0.0		0.0			PZ		PRISM	-.3 	.3
+#> CON TRANSZ ROTZ					0.0		0.0		0.0		0.0		0.0		0.0			PZ		REVOL	-3.14 	3.14
+#> CON ROTZ Hips						0.0		0.0		0.440	0.0		0.0		0.0	 		PX		FIXED	-2.62 	2.62
+> CON WORLD Hips						0.0		0.0		0.0	0.0		0.0		0.0	 			PX		FREE	-5 	5
+
+> CON Hips	TorsoYaw				-0.025	0.0		0.05	0.0		0.0		0.0 			PZ		REVOL	-2.62 	2.62
+> CON TorsoYaw TorsoPitch			0.01	0.0		0.026	0.0		0.0		0.0	 			PY		REVOL	0.0		1.57
+> CON TorsoPitch HeadYaw			-0.003	0.0		0.114	0.0		0.0		0.0 			PZ		REVOL	-2.62 	2.62
+
+> CON Hips	RHipRoll				-0.001	-0.023	-0.029	0.0		0.0		0.0 		PX		REVOL	-1.571 	0.087
+> CON RHipRoll	RHipYaw				-0.026	0.0		-0.018	0.0		0.0		0.0 			PZ		REVOL	-1.57 	0.087
+> CON RHipYaw	RHipPitch 			0.015 	-0.034	-0.034	0.0		0.0		0.0 		PY		REVOL	-1.74 	1.57
+> CON RHipPitch RKneePitch 			0.0		-0.005	-0.17	0.0		0.0		0.0 			PY		REVOL	0.0 	2.62
+> CON RKneePitch RAnklePitch		 0.002	0.03	-0.1450	0.0		0.0		0.0	 			PY		REVOL	-1.57 	0.261
+> CON RAnklePitch RAnkleRoll		 0.025	0.0		0.0		0.0		0.0		0.0 			PX		REVOL	-.523 	0.785
+
+> CON Hips	LHipRoll				-0.001	0.023	-0.029	0.0		0.0		0.0 		PX		REVOL	-0.087 	1.571
+> CON LHipRoll	LHipYaw				-0.026	0.0		-0.018	0.0		0.0		0.0 			PZ		REVOL	-0.087 	1.57
+> CON LHipYaw	LHipPitch 			0.014	-0.012	-0.034	0.0		0.0		0.0 			PY		REVOL	-1.74 	1.57
+> CON LHipPitch LKneePitch 			0.0		-0.005	-0.17	0.0		0.0		0.0			PY		REVOL	0.0 	2.62
+> CON LKneePitch LAnklePitch 		0.002	0.03	-0.1450	0.0		0.0		0.0 			PY		REVOL	-1.57 	0.261
+> CON LAnklePitch LAnkleRoll 		0.025	0.0		0.0		0.0		0.0		0.0	 			PX		REVOL	-0.785 	0.523
+
+> CON TorsoPitch	RShoulderPitch	-0.018	-0.060 0.092	0.0		0.0		0.0			NY		REVOL	-2.62 	2.62
+> CON RShoulderPitch RShoulderRoll 	-0.018	-0.03	-0.02	0.0		0.0		0.0 			PX		REVOL	-2.62 	.087
+> CON RShoulderRoll RElbowYaw   	0.02	-0.003	-0.076 	0.0		0.0		0.0 			PZ		REVOL	-2.62 	2.62
+> CON RElbowYaw RElbowPitch			0.014	0.01	-0.028	0.0		0.0		0.0 			PY		REVOL	-2.96 	.087
+#> CON RElbowPitch REndEffector		0.0		-0.02		-0.082	0.0		0.0		0.0				PX		FIXED	0.0 0.0	
+> CON RElbowPitch	RHand 			0.005	-0.017	-0.1	0.0		0.0		0.0 		PX		FIXED	-2.62 	2.62
+> CON RElbowPitch RClawPitch 		-0.01	0.005	-0.11	0.0		0.0		0.0 			PY		REVOL	-.262 	.698
+> CON RClawPitch REndEffector		0.0		-0.02		-0.082	0.0		0.0		0.0				PX		FIXED	0.0 0.0				
+
+> CON TorsoPitch LShoulderPitch		-0.018	0.062 	0.092	0.0		0.0		180		  	PY		REVOL	-2.62 	2.62
+> CON LShoulderPitch LShoulderRoll 	-0.018	-0.03	-0.02	0.0		0.0		0.0			PX		REVOL	-2.62 	0.087
+> CON LShoulderRoll LElbowYaw 		0.02	-0.003	-0.076	0.0		0.0		180		 	PZ		REVOL	-2.62 	2.62
+> CON LElbowYaw LElbowPitch			0.014	0.025	-0.028	0.0		0.0		0.0		 	PY		REVOL	-2.96 	0.087
+> CON LElbowPitch	LHand 			0.005	-0.017	-0.1	0.0		0.0		0.0		 	PX		FIXED	-2.62 	2.62
+> CON LElbowPitch LClawPitch 		-0.01	0.005	-0.11	0.0		0.0		0.0		 	PY		REVOL	-0.262 	0.698
+> CON LClawPitch LEndEffector		0.0		-0.02		-0.082		0.0		0.0		0.0				PX		FIXED	0.0 0.0
+
+# COM NAME 			Wgt 	X		Y		Z in Kg relative to link origin
+> COM Hips 			0.652	-0.054 	0.0		0.002
+> COM TorsoYaw 		0.038 	-0.009 	0.0 	0.013 
+> COM TorsoPitch 	0.871 	-0.024 	0.0 	0.062
+> COM HeadYaw 		0.087 	0.0 	0.0 	0.024
+
+> COM RHipRoll 		0.091 	-0.02 	-0.017 	0.006
+> COM RHipYaw 		0.022 	0.005 	-0.011 	-0.016
+> COM RHipPitch 	0.442 	0.01 	0.023 	-0.085
+> COM RKneePitch 	0.071 	-0.003 	0.029 	-0.07
+> COM RAnklePitch 	0.403 	-0.045 	0.001 	0.018
+> COM RAnkleRoll 	0.231 	-0.017 	0.002 	-0.03
+
+> COM LHipRoll 		0.091 	-0.02 	0.017 	0.006
+> COM LHipYaw 		0.022 	0.005 	0.011 	-0.016
+> COM LHipPitch 	0.442 	0.01 	0.023 	-0.085
+> COM LKneePitch 	0.071 	-0.003 	0.029 	-0.07
+> COM LAnklePitch 	0.403 	-0.045 	0.001 	0.018
+> COM LAnkleRoll 	0.231 	-0.017 	0.002	-0.03
+
+> COM RShoulderPitch 0.017 	0.0 	-0.013 	-0.007
+> COM RShoulderRoll 0.166 	0.017 	-0.013 	-0.031
+> COM RElbowYaw 	0.016 	0.005 	-0.009  -0.012
+> COM RElbowPitch 	0.197 	-0.018 	-0.017 	-0.049
+> COM RHand 		0.012  	0.0 	0.001 	-0.035
+> COM RClawPitch 	0.033 	-0.011 	-0.022 	-0.041
+
+> COM LShoulderPitch 0.017 	0.0 	-0.013 	-0.007
+> COM LShoulderRoll 0.166 	0.017 	-0.013 	-0.031
+> COM LElbowYaw 	0.016 	0.005 	0.009 	-0.012
+> COM LElbowPitch 	0.197 	-0.018 	-0.017 	-0.049
+> COM LHand 		0.012  	0.0 	0.0 	-0.035
+> COM LClawPitch 	0.033 	-0.011 	-0.022 	-0.041
+
+> COM LEndEffector 	0.0		0.0		0.0		0.0
+> COM REndEffector 	0.0		0.0		0.0		0.0

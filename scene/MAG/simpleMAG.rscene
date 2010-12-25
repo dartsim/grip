@@ -1,0 +1,20 @@
+##### ROBOTS #####
+
+##### ROBOT 1 #####
+
+> 	ROBOT MAGARM MAG.rsdh
+> 	POSITION 0 0 0
+> 	ORIENTATION 0 -0 0
+
+##### INITIAL ANGLES #####
+
+> 	INIT L0 0
+> 	INIT L1 0.3
+> 	INIT L2 0.4
+> 	INIT L3 0.785398
+> 	INIT L4 0.698132
+> 	INIT L5 0.610865
+> 	INIT L6 -1.5708
+> 	INIT L7 1.5708
+> 	INIT EEF 0
+

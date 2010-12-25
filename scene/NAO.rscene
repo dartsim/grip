@@ -1,0 +1,59 @@
+#####	ROBOTS	#####
+
+##### ROBOT 1	#####
+
+>	ROBOT	NAO	nao/nao.rsdh
+>	POSITION	-0.114	1.316	1.042
+>	ORIENTATION	0	0	-1	2.728
+
+#####	INITIAL ANGLES	#####
+
+>	INIT	HeadYaw	0
+>	INIT	HeadPitch	0
+>	INIT	RightShPitch	0
+>	INIT	RightShRoll	0
+>	INIT	RightElYaw	0
+>	INIT	RightElRoll	0
+>	INIT	LeftShPitch	0
+>	INIT	LeftShRoll	0
+>	INIT	LeftElYaw	0
+>	INIT	LeftElRoll	0
+>	INIT	RightHipYaw	0
+>	INIT	RightHipPitch	0
+>	INIT	RightHipRoll	0
+>	INIT	RightKnee	0
+>	INIT	RightAnkPitch	0
+>	INIT	RightAnkRoll	0
+>	INIT	LeftHipYaw	0
+>	INIT	LeftHipPitch	0
+>	INIT	LeftHipRoll	0
+>	INIT	LeftKnee	0
+>	INIT	LeftAnkPitch	0
+>	INIT	LeftAnkRoll	0
+
+#####	OBJECTS	#####
+
+##### OBJECT 1	#####
+
+>	OBJECT	table2	obstacles/table2b.3ds
+>	POSITION	-1.14	0.789	0
+>	ORIENTATION	90 0 0
+
+##### OBJECT 2	#####
+
+>	OBJECT	book	obstacles/book.3ds
+>	POSITION	0.789	1.102	0.73
+>	ORIENTATION	90 0 0
+
+##### OBJECT 3	#####
+
+>	OBJECT	BEAR2	polarbear/minibear.3ds
+>	POSITION	-0.921	1.053	0.97
+>	ORIENTATION	90 0 0
+
+##### OBJECT 4	#####
+
+>	OBJECT	BEAR3	polarbear/minibear.3ds
+>	POSITION	1.053	1.933	1.384
+>	ORIENTATION	90 0 0
+

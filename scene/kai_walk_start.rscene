@@ -1,0 +1,46 @@
+#####	ROBOTS	#####
+
+##### ROBOT 1	#####
+
+>	ROBOT	KAI	kai/kai.rsdh
+>	POSITION	0	0	0.44
+>	ORIENTATION	0	0	0
+
+#####	INITIAL ANGLES	#####
+
+>	INIT	Hips	0
+>	INIT	TorsoYaw	0
+>	INIT	TorsoPitch	0
+>	INIT	HeadYaw	0
+>	INIT	RHipRoll	0
+>	INIT	RHipYaw	0
+>	INIT	RHipPitch	-0.651
+>	INIT	RKneePitch	0.896
+>	INIT	RAnklePitch	-0.221
+>	INIT	RAnkleRoll	0
+>	INIT	LHipRoll	0
+>	INIT	LHipYaw	0
+>	INIT	LHipPitch	-0.651
+>	INIT	LKneePitch	0.896
+>	INIT	LAnklePitch	-0.221
+>	INIT	LAnkleRoll	0
+>	INIT	RShoulderPitch	0
+>	INIT	RShoulderRoll	0
+>	INIT	RElbowYaw	0
+>	INIT	RElbowPitch	0
+>	INIT	RHand	0
+>	INIT	RClawPitch	0
+>	INIT	LShoulderPitch	0.24
+>	INIT	LShoulderRoll	0
+>	INIT	LElbowYaw	0
+>	INIT	LElbowPitch	-0.73
+>	INIT	LHand	0
+>	INIT	LClawPitch	0
+
+#####	OBJECTS	#####
+
+##### OBJECT 1	#####
+
+>	OBJECT	luggage	obstacles/boxingBoard.3ds
+>	POSITION	0.0 0.0	0.0
+>	ORIENTATION	0 0 90

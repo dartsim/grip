@@ -1,0 +1,55 @@
+CMake
+-----------------
+
+Dependencies:
+> cmake2.6
+> cmake-gui (optional)
+> FindOpenCV.cmake 
+  Download from http://opencv.willowgarage.com/wiki/Getting_started
+  Put it in /usr/share/cmake-2.6/Modules/
+
+1. In Linux:
+
+1.1 For GCC:
+	
+    mkdir Release
+    cd Release
+    cmake ../
+    ccmake ../ (or cmake-gui to configure)
+    Press c to configure, g to generate Makefiles and q to quit
+    make
+    
+1.2 For Eclipse:
+
+    Eclipse plugin for editing CMake files: http://www.cthing.com/CMakeEd.asp
+    Eclipse does not recover the source files in its project if cmake is used out-of-source. To configure Makefiles for Eclipse,
+    
+    mkdir Release
+    cd Release
+    cmake -G"Eclipse CDT4 - Unix Makefiles" -D CMAKE_BUILD_TYPE=Debug . OR
+    cmake -G"Eclipse CDT4 - Unix Makefiles" -D ECLIPSE_CDT4_GENERATE_SOURCE_PROJECT=TRUE . (optional, for version control)
+    Open Eclipse
+    File > Import > General > Existing Projects into Workspace
+    Uncheck 'Copy projects into workspace'
+    Next > Done
+    
+2. In Windows:
+
+   (Optional) Follow http://www.opentissue.org/wikitissue/index.php/Using_CMake
+   Install CMake Win32 Installer from http://www.cmake.org/cmake/resources/software.html (> Ver. 2.6.4)
+   Open cmake-gui and open the source directory in the gui
+   Show a suitable build path in the cmake-gui
+   (Example source path: RST/trunk
+    Example build path: RST/trunk/build)
+   Click Configure and then Generate
+   Find the Visual Studio Project File created in RST/trunk/build
+   
+3. In MacOS X:
+
+3.1 For XCode:
+   
+   Go in source folder
+   cmake -G Xcode . 
+   This will generate the Xcode project files. Open the Xcode project.
+   Known Bugs: Project compiles, but cannot interact with RST.  
+    
