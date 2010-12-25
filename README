@@ -5,6 +5,6 @@ poking around or upgrading to work properly.
 Because wx is cross platform, RST can be compiled in windows, linux, or OSX.  The preferred method
 of building is now CMake.  See the "doc" directory for details on using CMake to build RST.
 
-We have also included a solution file for MSVS2008, an Xcodeproj file for OSX, a configure script 
+We have also included solution file for MSVS2008, an Xcodeproj file for OSX, a configure script 
 for g++ (linux), and a .cproject file for Eclipse (linux).  Documentation for building in each of 
 these environments can be found in their respective directories.
