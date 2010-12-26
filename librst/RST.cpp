@@ -1,6 +1,6 @@
-#include "GUI/RSTFrame.h"
-#include "AllTabs.h"
-#include "GUI/GUI.h"
+#include <GUI/RSTFrame.h>
+#include <Tabs/AllTabs.h>
+#include <GUI/GUI.h>
 #include <wx/icon.h>
 
 #include "GUI/icons/robot.xpm"
@@ -14,7 +14,7 @@ bool RSTApp::OnInit()
 	// --- Console ---
 	FILE* pFile;
     AllocConsole();
-    SetConsoleTitle("RST Console");
+    SetConsoleTitle(L"RST Console");
     freopen_s(&pFile,"conin$", "r", stdin);
     freopen_s(&pFile,"conout$", "w", stdout);
     freopen_s(&pFile,"conout$", "w", stderr);

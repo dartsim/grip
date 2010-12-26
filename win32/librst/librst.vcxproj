@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{629F4350-00C7-4D21-B8E9-87744A8C82E3}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>librst</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\mswd;C:\wxWidgets-2.8.10\include;..\..\librst;..\..\</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="..\..\Eigen\Array" />
+    <None Include="..\..\Eigen\Cholesky" />
+    <None Include="..\..\Eigen\Core" />
+    <None Include="..\..\Eigen\Dense" />
+    <None Include="..\..\Eigen\Eigen" />
+    <None Include="..\..\Eigen\Eigen2Support" />
+    <None Include="..\..\Eigen\Eigenvalues" />
+    <None Include="..\..\Eigen\Geometry" />
+    <None Include="..\..\Eigen\Householder" />
+    <None Include="..\..\Eigen\Jacobi" />
+    <None Include="..\..\Eigen\LU" />
+    <None Include="..\..\Eigen\QR" />
+    <None Include="..\..\Eigen\QtAlignedMalloc" />
+    <None Include="..\..\Eigen\Sparse" />
+    <None Include="..\..\Eigen\StdDeque" />
+    <None Include="..\..\Eigen\StdList" />
+    <None Include="..\..\Eigen\StdVector" />
+    <None Include="..\..\Eigen\SVD" />
+    <None Include="..\..\README" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\librst\GUI\GUI.cpp" />
+    <ClCompile Include="..\..\librst\GUI\RSTFrame.cpp" />
+    <ClCompile Include="..\..\librst\GUI\RSTimeSlice.cpp" />
+    <ClCompile Include="..\..\librst\GUI\RSTSlider.cpp" />
+    <ClCompile Include="..\..\librst\GUI\TreeView.cpp" />
+    <ClCompile Include="..\..\librst\GUI\Viewer.cpp" />
+    <ClCompile Include="..\..\librst\RST.cpp" />
+    <ClCompile Include="..\..\librst\Tabs\AllTabs.cpp" />
+    <ClCompile Include="..\..\librst\Tabs\InspectorTab.cpp" />
+    <ClCompile Include="..\..\librst\Tabs\TemplateTab.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\ANN.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\bd_fix_rad_search.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\bd_pr_search.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\bd_search.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\bd_tree.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\brute.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_dump.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_fix_rad_search.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_pr_search.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_search.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_split.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_tree.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_util.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\perf.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Collision\build.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Collision\collide.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Collision\NBody.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Collision\overlap.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Collision\PairData.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Collision\RAPID.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Collision\sample_client.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Collision\VCollide.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Collision\VInternal.cpp" />
+    <ClCompile Include="..\..\librst\Tools\GLTools.cpp" />
+    <ClCompile Include="..\..\librst\Tools\GL\GLTexture.cpp" />
+    <ClCompile Include="..\..\librst\Tools\InertiaTensor.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Link.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Model3DS.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Object.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Robot.cpp" />
+    <ClCompile Include="..\..\librst\Tools\World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\librst\GUI\GUI.h" />
+    <ClInclude Include="..\..\librst\GUI\RSTFrame.h" />
+    <ClInclude Include="..\..\librst\GUI\RSTimeSlice.h" />
+    <ClInclude Include="..\..\librst\GUI\RSTSlider.h" />
+    <ClInclude Include="..\..\librst\GUI\TreeView.h" />
+    <ClInclude Include="..\..\librst\GUI\Viewer.h" />
+    <ClInclude Include="..\..\librst\RSTApp.h" />
+    <ClInclude Include="..\..\librst\Tabs\AllTabs.h" />
+    <ClInclude Include="..\..\librst\Tabs\InspectorTab.h" />
+    <ClInclude Include="..\..\librst\Tabs\RSTTab.h" />
+    <ClInclude Include="..\..\librst\Tabs\RSTThread.h" />
+    <ClInclude Include="..\..\librst\Tabs\TemplateTab.h" />
+    <ClInclude Include="..\..\librst\Tools\ANN\ANN.h" />
+    <ClInclude Include="..\..\librst\Tools\ANN\ANNperf.h" />
+    <ClInclude Include="..\..\librst\Tools\ANN\ANNx.h" />
+    <ClInclude Include="..\..\librst\Tools\ANN\bd_tree.h" />
+    <ClInclude Include="..\..\librst\Tools\ANN\kd_fix_rad_search.h" />
+    <ClInclude Include="..\..\librst\Tools\ANN\kd_pr_search.h" />
+    <ClInclude Include="..\..\librst\Tools\ANN\kd_search.h" />
+    <ClInclude Include="..\..\librst\Tools\ANN\kd_split.h" />
+    <ClInclude Include="..\..\librst\Tools\ANN\kd_tree.h" />
+    <ClInclude Include="..\..\librst\Tools\ANN\kd_util.h" />
+    <ClInclude Include="..\..\librst\Tools\ANN\pr_queue.h" />
+    <ClInclude Include="..\..\librst\Tools\ANN\pr_queue_k.h" />
+    <ClInclude Include="..\..\librst\Tools\Collision\AABB.H" />
+    <ClInclude Include="..\..\librst\Tools\Collision\EndPoint.H" />
+    <ClInclude Include="..\..\librst\Tools\Collision\matvec.H" />
+    <ClInclude Include="..\..\librst\Tools\Collision\moments.H" />
+    <ClInclude Include="..\..\librst\Tools\Collision\NBody.H" />
+    <ClInclude Include="..\..\librst\Tools\Collision\obb.H" />
+    <ClInclude Include="..\..\librst\Tools\Collision\overlap.H" />
+    <ClInclude Include="..\..\librst\Tools\Collision\PairData.H" />
+    <ClInclude Include="..\..\librst\Tools\Collision\RAPID.H" />
+    <ClInclude Include="..\..\librst\Tools\Collision\RAPID_private.H" />
+    <ClInclude Include="..\..\librst\Tools\Collision\RAPID_version.H" />
+    <ClInclude Include="..\..\librst\Tools\Collision\VCollide.h" />
+    <ClInclude Include="..\..\librst\Tools\Collision\VInternal.H" />
+    <ClInclude Include="..\..\librst\Tools\Constants.h" />
+    <ClInclude Include="..\..\librst\Tools\GLTools.h" />
+    <ClInclude Include="..\..\librst\Tools\GL\glcommon.h" />
+    <ClInclude Include="..\..\librst\Tools\GL\GLTexture.h" />
+    <ClInclude Include="..\..\librst\Tools\InertiaTensor.h" />
+    <ClInclude Include="..\..\librst\Tools\Link.h" />
+    <ClInclude Include="..\..\librst\Tools\Model3DS.h" />
+    <ClInclude Include="..\..\librst\Tools\Object.h" />
+    <ClInclude Include="..\..\librst\Tools\Robot.h" />
+    <ClInclude Include="..\..\librst\Tools\World.h" />
+    <ClInclude Include="..\mswd\wx\msw\rcdefs.h" />
+    <ClInclude Include="..\mswd\wx\setup.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

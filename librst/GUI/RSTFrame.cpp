@@ -313,10 +313,6 @@ void RSTFrame::OnToolMovie(wxCommandEvent& event){
 
 	double step = 1.0;//.03333/tIncrement;
 	int count = 0;
-
-#ifdef WIN32
-	::CreateDirectory(path.c_str(),NULL);
-#endif
 	
 	wxClientDC dc2(viewer);
 	dc2.GetSize(&w, &h);
