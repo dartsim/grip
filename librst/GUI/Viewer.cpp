@@ -37,13 +37,6 @@ void Viewer::UpdateCamera(void){
 	SetCurrent();
 	camT = camRotT;
 	camT.translate(Vector3d(camRadius, 0, 0));
-//	for(int i = 0; i < 4; i++) {
-//		for(int j = 0; j < 4; j++) {
-//			printf("%lf\t", camT(i, j));
-//		}
-//		printf("\n");
-//	}
-//	printf("CamRadius  %lf\n", camRadius);
 	DrawGLScene();
 }
 
@@ -75,11 +68,7 @@ int Viewer::DrawGLScene()
 			  targT(0,3),targT(1,3),targT(2,3),
 			  upV[0],upV[1],upV[2]);
 
-//	printf("%lf %lf %lf -> %lf %lf %lf\n", camT(0,3),camT(1,3),camT(2,3),
-//			  targT(0,3),targT(1,3),targT(2,3));
-
 	float position[]= {camT(0,3),camT(1,3),camT(2,3), 1.0};
-//	float position2[]= {camT.pos.x+10, camT.pos.y, camT.pos.z+10, 1.0};
 	glEnable(GL_TEXTURE_2D);
 	glColor4f(1.0f,1.0f,1.0f,0.0f);
 
@@ -125,7 +114,6 @@ int Viewer::DrawGLScene()
 	glPopMatrix();
 
 	//USUALLY BAD
-	//glDisable(GL_LIGHTING);
 	glDisable(GL_FOG);
 
 	glPushMatrix();
@@ -214,13 +202,14 @@ void Viewer::OnMouse(wxMouseEvent& evt){
 //		drot.rot = prevCamT.rot;
 //		drot.rot = drot.rot*tm;
 //		drot.rot = drot.rot*pm;
-		camRotT.rotate(AngleAxisd(phi, Vector3d::UnitY())); //.rotate(AngleAxisd(phi, Vector3d::UnitY()));
-		//camRotT = camRotT*prevCamT;
+//		camRotT = camRotT*prevCamT;
+		// TODO: Fix this
+		camRotT.rotate(AngleAxisd(phi, Vector3d::UnitY())).rotate(AngleAxisd(phi, Vector3d::UnitZ()));
 		existsUpdate = true;
 		UpdateCamera();
 	}else if(evt.MiddleIsDown() || evt.RightIsDown()){
-//		Vector3d dispV = camRotT*Vector3d(0,(double)dx * CAMERASPEED , -(double)dy * CAMERASPEED);
-//		worldT.translate(dispV);
+		Vector3d dispV = camRotT*Vector3d(0,(double)dx * CAMERASPEED , -(double)dy * CAMERASPEED);
+		worldT.translate(dispV);
 		existsUpdate = false;
 		UpdateCamera();
 	}
@@ -263,16 +252,13 @@ void Viewer::InitGL(){
     }
 
 	glShadeModel(GL_SMOOTH);
-	//glShadeModel(GL_FLAT);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClearDepth(100.0f);
 	glEnable(GL_DEPTH_TEST);
-	//glDisable(GL_LIGHTING);
 	glEnable(GL_COLOR_MATERIAL);
 	glDepthFunc(GL_LEQUAL);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	//glEnable(GL_FOG);
 	float FogCol[3]={0.0f,0.0f,0.0f};
 	glFogfv(GL_FOG_COLOR,FogCol);
 	glFogf(GL_FOG_START, 10.f);
