@@ -80,9 +80,9 @@ int Viewer::DrawGLScene()
 	glEnable(GL_LIGHT2);
 	glPushMatrix();
 	//float direction[] = {0.0, 0.5, -10.0, 0.0};
-	float no_mat[] = {0.0, 0.0, 0.0, 1.0};
-	float diffuse[] = {.7, .7, .7, .7};
-	float specular[] = {0.5, 0.5, 0.5, 1.0f};
+	float no_mat[] = {0.0f, 0.0f, 0.0f, 1.0f};
+	float diffuse[] = {.7f, .7f, .7f, .7f};
+	float specular[] = {0.5f, 0.5f, 0.5f, 1.0f};
 	//float yellowAmbientDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 	glLightfv(GL_LIGHT1, GL_POSITION, position);
 	glLightfv(GL_LIGHT1, GL_AMBIENT, no_mat);
@@ -195,21 +195,26 @@ void Viewer::OnMouse(wxMouseEvent& evt){
 		double theta,phi;
 		theta = -(dx/90.f);
 		phi = -(dy/90.f);
-//		Transform<double, 3, Affine> drot,dtrans,dT;
-//		Mat33 tm,pm;
-//		tm.zRot(theta);
-//		pm.yRot(phi);
-//		drot.rot = prevCamT.rot;
-//		drot.rot = drot.rot*tm;
-//		drot.rot = drot.rot*pm;
-//		camRotT = camRotT*prevCamT;
-		// TODO: Fix this
-		camRotT.rotate(AngleAxisd(phi, Vector3d::UnitY())).rotate(AngleAxisd(phi, Vector3d::UnitZ()));
+
+		Matrix3d tm,pm;
+		tm = AngleAxisd(theta, Vector3d::UnitZ());
+		pm = AngleAxisd(phi, Vector3d::UnitY());
+
+		Matrix3d drot = prevCamT.rotation();
+		drot *= tm;
+		drot *= pm;
+		camRotT = drot;
+
+		//drot.rotate(prevCamT.extractRotation()
+		//camRotT.rotate(AngleAxisd(phi, Vector3d::UnitY())).rotate(AngleAxisd(phi, Vector3d::UnitZ()));
+
 		existsUpdate = true;
 		UpdateCamera();
+
 	}else if(evt.MiddleIsDown() || evt.RightIsDown()){
+
 		Vector3d dispV = camRotT*Vector3d(0,(double)dx * CAMERASPEED , -(double)dy * CAMERASPEED);
-		worldT.translate(dispV);
+		worldT.translation() = prevWorldT.translation()+dispV;
 		existsUpdate = false;
 		UpdateCamera();
 	}

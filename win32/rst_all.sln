@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "librst", "librst\librst.vcxproj", "{629F4350-00C7-4D21-B8E9-87744A8C82E3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "simulation", "projects\simulation\simulation.vcxproj", "{FA2F9462-5157-4215-85FB-E9C081083007}"
+	ProjectSection(ProjectDependencies) = postProject
+		{629F4350-00C7-4D21-B8E9-87744A8C82E3} = {629F4350-00C7-4D21-B8E9-87744A8C82E3}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
