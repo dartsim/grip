@@ -166,12 +166,11 @@ void Object::drawPrimitive()
 
 Vector3d Object::toTheseBodyCoordinates(Vector3d point)
 {
-	//TODO
-   Vector3d result;// = point - this->absPose.pos;
-//	Vec3 trans;
-//	mult(trans,   this->absPose.rot, result);
-//	return trans;
-	return result;
+   //Vector3d result = point - this->absPose.linear();
+   Vector3d trans;
+   //TODO
+   //trans = this->absPose.extractRotation() * result;
+   return trans;
 }
 
 bool Object::ballFaceCollide(Object* face)

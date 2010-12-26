@@ -238,15 +238,14 @@ int Robot::Load(string fullname, World* w){
 				rstream >> pos(2);
 				//link->jTrans.pos = pos;
 
-				// TODO
-				/*
-				Mat33 rot;
 				double roll,pitch,yaw;
 				rstream >> roll;
 				rstream >> pitch;
 				rstream >> yaw;
-				rot.setrpy(DEG2RAD(roll),DEG2RAD(pitch),DEG2RAD(yaw));
-				*/
+				Matrix3d rot;
+				rot = AngleAxisd(roll, Vector3d::UnitX())
+				  * AngleAxisd(pitch, Vector3d::UnitY())
+				  * AngleAxisd(yaw, Vector3d::UnitZ());
 				//rot.set_uniaxis_rot(ang,axis);
 				//link->jTrans.rot = rot;
 

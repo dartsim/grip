@@ -1,6 +1,8 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <vector>
 #include <queue>
 #include <list>

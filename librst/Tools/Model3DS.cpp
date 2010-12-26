@@ -312,6 +312,7 @@ void Model3DS::ReportTriangles(vector<Triangle> *trigs)
 
 
 	for (int i = 0; i < numObjects; i++){ //numObjects
+		// TODO Model3DS to Transforms
 //		Transform obTrans;
 //		obTrans.pos.x = Objects[i].pos.x;
 //		obTrans.pos.y = Objects[i].pos.y;
