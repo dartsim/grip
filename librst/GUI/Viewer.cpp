@@ -217,7 +217,6 @@ void Viewer::OnMouse(wxMouseEvent& evt){
 		camRotT.rotate(AngleAxisd(phi, Vector3d::UnitY())); //.rotate(AngleAxisd(phi, Vector3d::UnitY()));
 		//camRotT = camRotT*prevCamT;
 		existsUpdate = true;
-		printf("Rotate Camera\n");
 		UpdateCamera();
 	}else if(evt.MiddleIsDown() || evt.RightIsDown()){
 //		Vector3d dispV = camRotT*Vector3d(0,(double)dx * CAMERASPEED , -(double)dy * CAMERASPEED);

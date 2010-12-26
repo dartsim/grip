@@ -1,6 +1,8 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
+#define EIGEN_DONT_ALIGN
+// TODO Fix Eigen Alignment issues: http://eigen.tuxfamily.org/dox/UnalignedArrayAssert.html
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <wx/wx.h>
@@ -9,8 +11,13 @@
 #include <Tools/Model3DS.h>
 
 class Viewer: public wxGLCanvas {
-
 public:
+	Eigen::Transform<double, 3, Eigen::Affine> camT, prevCamT, camRotT;
+	Eigen::Transform<double, 3, Eigen::Affine> targT, prevTargT;
+	Eigen::Transform<double, 3, Eigen::Affine> worldT, prevWorldT;
+	Eigen::Vector3d upV;
+	Model3DS* model;
+
 	Viewer(wxWindow * parent, wxWindowID id, const wxPoint & pos,
 			const wxSize& size, long style = 0, const wxString & name =
 					_("GLCanvas"), int * attribList = 0,
@@ -59,12 +66,6 @@ public:
 	int redrawCount;
 
 	bool mouseCaptured;
-
-	Eigen::Transform<double, 3, Eigen::Affine> camT, prevCamT, camRotT;
-	Eigen::Transform<double, 3, Eigen::Affine> targT, prevTargT;
-	Eigen::Transform<double, 3, Eigen::Affine> worldT, prevWorldT;
-	Eigen::Vector3d upV;
-	Model3DS* model;
 
 	void resized(wxSizeEvent& evt);
 	void shown(wxShowEvent& evt);
