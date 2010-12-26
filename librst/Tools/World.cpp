@@ -215,6 +215,7 @@ int World::Load(string fullname) {
 				CreateEntity(object, fullpath.c_str(), false);
 			}
 
+			object->absPose.Identity();
 			objects.push_back(object);
 			state = OSTATE;
 		}
@@ -227,16 +228,19 @@ int World::Load(string fullname) {
 				wstream >> pos(0);
 				wstream >> pos(1);
 				wstream >> pos(2);
-//				robot->baseLink->absPose.pos = pos + robot->baseLink->absPose.pos;
+				robot->baseLink->absPose.translation() = pos;
 			} else if (str == "ORIENTATION") {
 				double roll, pitch, yaw;
 				wstream >> roll;
 				wstream >> pitch;
 				wstream >> yaw;
 				Matrix3d rot;
-				rot = AngleAxisd(roll, Vector3d::UnitX())
-				  * AngleAxisd(pitch, Vector3d::UnitY())
-				  * AngleAxisd(yaw, Vector3d::UnitZ());
+				rot = AngleAxisd(DEG2RAD(roll), Vector3d::UnitX())
+				  * AngleAxisd(DEG2RAD(pitch), Vector3d::UnitY())
+				  * AngleAxisd(DEG2RAD(yaw), Vector3d::UnitZ());
+				Vector3d temp = robot->baseLink->absPose.translation();
+				robot->baseLink->absPose = rot;
+				robot->baseLink->absPose.translation() = temp;
 //				robot->baseLink->absPose.rot = rot * robot->baseLink->absPose.rot;
 			} else if (str == "INIT") {
 				string buf;
@@ -260,6 +264,7 @@ int World::Load(string fullname) {
 				wstream >> pos(0);
 				wstream >> pos(1);
 				wstream >> pos(2);
+				object->absPose.translation() = pos;
 //				object->absPose.pos = pos;
 			} else if (str == "ORIENTATION") {
 				double roll, pitch, yaw;
@@ -267,9 +272,12 @@ int World::Load(string fullname) {
 				wstream >> pitch;
 				wstream >> yaw;
 				Matrix3d rot;
-				rot = AngleAxisd(roll, Vector3d::UnitX())
-				  * AngleAxisd(pitch, Vector3d::UnitY())
-				  * AngleAxisd(yaw, Vector3d::UnitZ());
+				rot = AngleAxisd(DEG2RAD(roll), Vector3d::UnitX())
+				  * AngleAxisd(DEG2RAD(pitch), Vector3d::UnitY())
+				  * AngleAxisd(DEG2RAD(yaw), Vector3d::UnitZ());
+				Vector3d temp = object->absPose.translation();
+				object->absPose = rot;
+				object->absPose.translation() = temp;
 //				object->absPose.rot = rot;
 			} else if (str == "TYPE") {
 				string buf;

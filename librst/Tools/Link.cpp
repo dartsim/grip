@@ -65,8 +65,12 @@ void Link::updateRelPose(){
 	Transform<double, 3, Eigen::Affine> jT;
 	jT.setIdentity();
 	//TODO
-	//if(jType == PRISM) jT.translate(jT.linear() + jAxis*jVal);
-	//if(jType == REVOL){ jT.rot.set_uniaxis_rot(jVal,jAxis); }
+	if(jType == PRISM) jT.translate(jAxis*jVal);
+	if(jType == REVOL){
+		//Vector3d tempT = jT.translation();
+		jT = AngleAxisd(jVal,jAxis);
+		//jT.translation() = tempT;
+		}
 	pose = jTrans*jT;
 }
 

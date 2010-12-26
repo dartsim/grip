@@ -13,8 +13,8 @@ Object::Object()
 	world=NULL;
 	collisionFlag = false;
 	model = NULL;
-	pathname[0] = '\0';
-	name[0] = '\0';
+	pathname.erase();
+	name.erase();
 	movable = false;
 	primitiveType = NONE;
 	//quadratic=gluNewQuadric();				// Create A Pointer To The Quadric Object ( NEW )
@@ -67,7 +67,18 @@ void Object::Draw()
 //					  absPose.rot.e(0,1), absPose.rot.e(1,1), absPose.rot.e(2,1), 0,
 //					  absPose.rot.e(0,2), absPose.rot.e(1,2), absPose.rot.e(2,2), 0,
 //					  absPose.pos.x, absPose.pos.y, absPose.pos.z, 1 };
+ /*   GLdouble m[16] = {absPose(0,0), absPose(1,0), absPose(2,0), 0,
+					  absPose(0,1), absPose(1,1), absPose(2,1), 0,
+					  absPose(0,2), absPose(1,2), absPose(2,2), 0,
+					  absPose(0,3), absPose(1,3), absPose(2,3), 1 };*/
+    /*GLdouble m[16] = {1,0,0, 0,
+					  0,1,0, 0,
+					  0,0,1, 0,
+					  absPose(0,3), absPose(1,3), absPose(2,3), 1 };*/
+	//glMultMatrixd(m);
+
 	glMultMatrixd(absPose.data());
+	//glLoadMatrixd(absPose.data());
 
 	if(individualCOM||treeCOMS||robotFloorCOM||showPrimitive)
 	{

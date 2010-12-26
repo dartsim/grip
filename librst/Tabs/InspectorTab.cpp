@@ -13,7 +13,7 @@
 #include <iostream>
 #include <wx/wx.h>
 
-//#include <GUI/Viewer.h>
+#include <GUI/Viewer.h>
 #include <GUI/GUI.h>
 #include <GUI/RSTSlider.h>
 #include <GUI/RSTFrame.h>
@@ -27,6 +27,7 @@
 #include <Tabs/InspectorTab.h>
 
 using namespace std;
+using namespace Eigen;
 
 //Give each slider a number so we recognize them
 enum sliderNames{
@@ -97,6 +98,8 @@ void InspectorTab::OnSlider(wxCommandEvent &evt){
 	Robot *r;
 	Object* o;
 	Link* l;
+	Matrix3d rot;
+	Vector3d tempTrans;
 	int slnum = evt.GetId();
 	double pos = *(double*)evt.GetClientData();
 	char numBuf[1000];
@@ -127,35 +130,37 @@ void InspectorTab::OnSlider(wxCommandEvent &evt){
 			l->updateRelPose();
 			l->updateAbsPose();
 			l->updateRecursive(true, check_for_collisions);
-			world->updateRobot(l->robot); // was commented in 2.1 for some reason
+			//world->updateRobot(l->robot); // was commented in 2.1 for some reason
 		}
 		sprintf(numBuf,"Joint Change: %7.4f", pos);
 	}else{
 		switch(slnum){
-//			case X_SLIDER:
-//				o->absPose.pos.x = pos;
-//				sprintf(numBuf,"X Change: %7.4f", pos);
-//				break;
-//			case Y_SLIDER:
-//				o->absPose.pos.y = pos;
-//				sprintf(numBuf,"Y Change: %7.4f", pos);
-//				break;
-//			case Z_SLIDER:
-//				o->absPose.pos.z = pos;
-//				sprintf(numBuf,"Z Change: %7.4f", pos);
-//				break;
-//			case ROLL_SLIDER:
-//				o->absPose.rot.setrpy(DEG2RAD(rollSlider->pos),DEG2RAD(pitchSlider->pos),DEG2RAD(yawSlider->pos));
-//				sprintf(numBuf,"Roll Change: %7.4f", pos);
-//				break;
-//			case PITCH_SLIDER:
-//				o->absPose.rot.setrpy(DEG2RAD(rollSlider->pos),DEG2RAD(pitchSlider->pos),DEG2RAD(yawSlider->pos));
-//				sprintf(numBuf,"Pitch Change: %7.4f", pos);
-//				break;
-//			case YAW_SLIDER:
-//				o->absPose.rot.setrpy(DEG2RAD(rollSlider->pos),DEG2RAD(pitchSlider->pos),DEG2RAD(yawSlider->pos));
-//				sprintf(numBuf,"Yaw Change: %7.4f", pos);
-//				break;
+			case X_SLIDER:
+				o->absPose(0,3) = pos;
+				sprintf(numBuf,"X Change: %7.4f", pos);
+				break;
+			case Y_SLIDER:
+				o->absPose(1,3) = pos;
+				sprintf(numBuf,"Y Change: %7.4f", pos);
+				break;
+			case Z_SLIDER:
+				o->absPose(2,3) = pos;
+				sprintf(numBuf,"Z Change: %7.4f", pos);
+				break;
+			case ROLL_SLIDER:
+			case PITCH_SLIDER:
+			case YAW_SLIDER:
+				rot = AngleAxisd(DEG2RAD(rollSlider->pos),Vector3d::UnitX()) * AngleAxisd(DEG2RAD(pitchSlider->pos), Vector3d::UnitY()) * AngleAxisd(DEG2RAD(yawSlider->pos), Vector3d::UnitZ());
+				tempTrans = o->absPose.translation();
+				o->absPose = rot;
+				o->absPose.translation() = tempTrans;
+				sprintf(numBuf,"Angle Change: %7.4f", pos);
+
+				//o->absPose.rot.setrpy(DEG2RAD(rollSlider->pos),DEG2RAD(pitchSlider->pos),DEG2RAD(yawSlider->pos));
+				//sprintf(numBuf,"Pitch Change: %7.4f", pos);
+				//o->absPose.rot.setrpy(DEG2RAD(rollSlider->pos),DEG2RAD(pitchSlider->pos),DEG2RAD(yawSlider->pos));
+				//sprintf(numBuf,"Yaw Change: %7.4f", pos);
+				break;
 			default:
 				return;
 		}
@@ -184,7 +189,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt){
 //	cdCount++;
 
 	if(frame!=NULL)	frame->SetStatusText(wxString(numBuf,wxConvUTF8));
-	//viewer->UpdateCamera();
+	viewer->UpdateCamera();
 }
 
 
@@ -202,7 +207,6 @@ void InspectorTab::RSTStateChange() {
 	Object* o;
 	Robot* r;
 	Link* l;
-	double roll,pitch,yaw;
 	string statusBuf;
 	string buf,buf2;
 	int selected = selectedTreeNode->dType;
@@ -217,10 +221,15 @@ void InspectorTab::RSTStateChange() {
 	}
 
 	// Everything can be treated as an object now
-//	xSlider->setValue(o->absPose.pos.x,false);
-//	ySlider->setValue(o->absPose.pos.y,false);
-//	zSlider->setValue(o->absPose.pos.z,false);
+	double roll=atan2(o->absPose(2,1), o->absPose(2,2));
+	double pitch=-asin(o->absPose(2,0));
+	double yaw=atan2(o->absPose(1,0), o->absPose(0,0));
+
+	xSlider->setValue(o->absPose(0,3),false);
+	ySlider->setValue(o->absPose(1,3),false);
+	zSlider->setValue(o->absPose(2,3),false);
 //	o->absPose.rot.torpy(roll,pitch,yaw);
+
 	rollSlider->setValue(RAD2DEG(roll),false);
 	pitchSlider->setValue(RAD2DEG(pitch),false);
 	yawSlider->setValue(RAD2DEG(yaw),false);

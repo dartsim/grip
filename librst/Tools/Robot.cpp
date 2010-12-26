@@ -154,7 +154,6 @@ int Robot::Load(string fullname, World* w){
 		}
 
 		rstream >> str;
-		//cout << str << endl;
 
 		Link* link;
 		if(str == "LINK"){
@@ -243,9 +242,12 @@ int Robot::Load(string fullname, World* w){
 				rstream >> pitch;
 				rstream >> yaw;
 				Matrix3d rot;
-				rot = AngleAxisd(roll, Vector3d::UnitX())
-				  * AngleAxisd(pitch, Vector3d::UnitY())
-				  * AngleAxisd(yaw, Vector3d::UnitZ());
+				rot = AngleAxisd(DEG2RAD(roll), Vector3d::UnitX())
+				  * AngleAxisd(DEG2RAD(pitch), Vector3d::UnitY())
+				  * AngleAxisd(DEG2RAD(yaw), Vector3d::UnitZ());
+				link->jTrans=rot;
+
+				link->jTrans.translation() = pos;
 				//rot.set_uniaxis_rot(ang,axis);
 				//link->jTrans.rot = rot;
 
