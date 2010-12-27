@@ -150,7 +150,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt){
 			case ROLL_SLIDER:
 			case PITCH_SLIDER:
 			case YAW_SLIDER:
-				rot = AngleAxisd(DEG2RAD(rollSlider->pos),Vector3d::UnitX()) * AngleAxisd(DEG2RAD(pitchSlider->pos), Vector3d::UnitY()) * AngleAxisd(DEG2RAD(yawSlider->pos), Vector3d::UnitZ());
+				rot = AngleAxisd(DEG2RAD(yawSlider->pos),Vector3d::UnitZ()) * AngleAxisd(DEG2RAD(pitchSlider->pos), Vector3d::UnitY()) * AngleAxisd(DEG2RAD(rollSlider->pos), Vector3d::UnitX());
 				tempTrans = o->absPose.translation();
 				o->absPose = rot;
 				o->absPose.translation() = tempTrans;

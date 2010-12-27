@@ -64,13 +64,8 @@ void Link::recursiveSetAncestry(Robot *rootRobot, Link *parentLink)
 void Link::updateRelPose(){
 	Transform<double, 3, Eigen::Affine> jT;
 	jT.setIdentity();
-	//TODO
 	if(jType == PRISM) jT.translate(jAxis*jVal);
-	if(jType == REVOL){
-		//Vector3d tempT = jT.translation();
-		jT = AngleAxisd(jVal,jAxis);
-		//jT.translation() = tempT;
-		}
+	if(jType == REVOL) jT = AngleAxisd(jVal,jAxis);
 	pose = jTrans*jT;
 }
 

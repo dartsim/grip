@@ -121,8 +121,12 @@ int World::Save(string filename) {
 			wstream << "##### ROBOT " << i+1 << " #####" << endl;
 			wstream << endl;
 			wstream << "> \t" << "ROBOT " << robots[i]->name << " " << robots[i]->pathname << endl;
-			wstream << "> \t" << "POSITION " << robots[i]->baseLink->absPose(3,0) << " " << robots[i]->baseLink->absPose(3,1) << " " << robots[i]->baseLink->absPose(3,2) << endl;
+			wstream << "> \t" << "POSITION " << robots[i]->baseLink->absPose(0,3) << " " << robots[i]->baseLink->absPose(1,3) << " " << robots[i]->baseLink->absPose(2,3) << endl;
 			//wstream << "> \t" << "ORIENTATION " << robots[i]->baseLink->absPose.rot.roll()*180/M_PI << " " << robots[i]->baseLink->absPose.rot.pitch()*180/M_PI << " " << robots[i]->baseLink->absPose.rot.yaw()*180/M_PI << endl;
+			double roll=atan2(robots[i]->baseLink->absPose(2,1), robots[i]->baseLink->absPose(2,2));
+			double pitch=-asin(robots[i]->baseLink->absPose(2,0));
+			double yaw=atan2(robots[i]->baseLink->absPose(1,0), robots[i]->baseLink->absPose(0,0));
+			wstream << "> \t" << "ORIENTATION " << RAD2DEG(roll) << " " << RAD2DEG(pitch) << " " << RAD2DEG(yaw) << endl;
 			wstream << endl;
 			wstream << "##### INITIAL ANGLES #####" << endl;
 			wstream << endl;
@@ -144,8 +148,11 @@ int World::Save(string filename) {
 			wstream << "##### OBJECT " << i+1 << " #####" << endl;
 			wstream << endl;
 			wstream << "> \t" << "OBJECT " << objects[i]->name << " " << objects[i]->pathname << endl;
-			wstream << "> \t" << "POSITION " << objects[i]->absPose(3,0) << " " << objects[i]->absPose(3,1) << " " << objects[i]->absPose(3,2) << endl;
-			//wstream << "> \t" << "ORIENTATION " << objects[i]->absPose.rot.roll()*180/M_PI << " " << objects[i]->absPose.rot.pitch()*180/M_PI << " " << objects[i]->absPose.rot.yaw()*180/M_PI << endl;
+			wstream << "> \t" << "POSITION " << objects[i]->absPose(0,3) << " " << objects[i]->absPose(1,3) << " " << objects[i]->absPose(2,3) << endl;
+			double roll=atan2(objects[i]->absPose(2,1), objects[i]->absPose(2,2));
+			double pitch=-asin(objects[i]->absPose(2,0));
+			double yaw=atan2(objects[i]->absPose(1,0), objects[i]->absPose(0,0));
+			wstream << "> \t" << "ORIENTATION " << RAD2DEG(roll) << " " << RAD2DEG(pitch) << " " << RAD2DEG(yaw) << endl;
 			wstream << endl;
 			i++;
 		}
@@ -235,9 +242,9 @@ int World::Load(string fullname) {
 				wstream >> pitch;
 				wstream >> yaw;
 				Matrix3d rot;
-				rot = AngleAxisd(DEG2RAD(roll), Vector3d::UnitX())
+				rot = AngleAxisd(DEG2RAD(yaw), Vector3d::UnitZ())
 				  * AngleAxisd(DEG2RAD(pitch), Vector3d::UnitY())
-				  * AngleAxisd(DEG2RAD(yaw), Vector3d::UnitZ());
+				  * AngleAxisd(DEG2RAD(roll), Vector3d::UnitX());
 				Vector3d temp = robot->baseLink->absPose.translation();
 				robot->baseLink->absPose = rot;
 				robot->baseLink->absPose.translation() = temp;
@@ -265,20 +272,18 @@ int World::Load(string fullname) {
 				wstream >> pos(1);
 				wstream >> pos(2);
 				object->absPose.translation() = pos;
-//				object->absPose.pos = pos;
 			} else if (str == "ORIENTATION") {
 				double roll, pitch, yaw;
 				wstream >> roll;
 				wstream >> pitch;
 				wstream >> yaw;
 				Matrix3d rot;
-				rot = AngleAxisd(DEG2RAD(roll), Vector3d::UnitX())
+				rot = AngleAxisd(DEG2RAD(yaw), Vector3d::UnitZ())
 				  * AngleAxisd(DEG2RAD(pitch), Vector3d::UnitY())
-				  * AngleAxisd(DEG2RAD(yaw), Vector3d::UnitZ());
+				  * AngleAxisd(DEG2RAD(roll), Vector3d::UnitX());
 				Vector3d temp = object->absPose.translation();
 				object->absPose = rot;
 				object->absPose.translation() = temp;
-//				object->absPose.rot = rot;
 			} else if (str == "TYPE") {
 				string buf;
 				wstream >> buf;
@@ -360,18 +365,21 @@ void World::updateAllCollisions(){
 }
 
 void World::updateCollision(Object* ob){
-//	if(ob->model == NULL) return;
-//	int eid = ob->eid;
-////	Mat33 r = ob->absPose.rot;
-////	Vec3  t = ob->absPose.pos;
-//
-//	double newTrans[4][4] =
-//	{{r.e(0,0), r.e(0,1), r.e(0,2), t[0]},
-//	{r.e(1,0), r.e(1,1), r.e(1,2), t[1]},
-//	{r.e(2,0), r.e(2,1), r.e(2,2), t[2]},
-//	{0, 0, 0, 1}};
-//
-//	vcollide.UpdateTrans(eid,newTrans);
+	if(ob->model == NULL) return;
+	int eid = ob->eid;
+	//Mat33 r = ob->absPose.rot;
+	//Vec3  t = ob->absPose.pos;
+
+	double newTrans[4][4] =
+	{{ob->absPose(0,0), ob->absPose(0,1), ob->absPose(0,2), ob->absPose(0,3)},
+	{ob->absPose(1,0), ob->absPose(1,1), ob->absPose(1,2), ob->absPose(1,3)},
+	{ob->absPose(2,0), ob->absPose(2,1), ob->absPose(2,2), ob->absPose(2,3)},
+	{0, 0, 0, 1}};
+	//double newTrans[4][4] = ob->absPose.data();
+	//double newTrans[4][4];
+	//memcpy(&newTrans,ob->absPose.data(),16*sizeof(double));
+
+	vcollide.UpdateTrans(eid,newTrans);
 }
 
 void World::updateRobot(Robot* robot)

@@ -327,25 +327,56 @@ void Viewer::addGrid(){
 	double sizeX=100.0f;
 	double sizeY=100.0f;
 	double inc=.5f;
+	double d = .005;
 
 	double startX=-sizeX/2.f;
 	double endX  =sizeX/2.f;
 	double startY=-sizeY/2.f;
 	double endY  =sizeY/2.f;
 
+	GLfloat grid2x2[2][2][3] = {
+		{{startX, startY, 0.0}, {endX, startY, 0.0}},
+		{{startX, endY, 0.0}, {endX, endY, 0.0}}
+	};
+
+	GLfloat *grid = &grid2x2[0][0][0];
+
+    glEnable(GL_MAP2_VERTEX_3);
+    glMap2f(GL_MAP2_VERTEX_3,
+    0.0, 1.0,  /* U ranges 0..1 */
+    3,         /* U stride, 3 floats per coord */
+    2,         /* U is 2nd order, ie. linear */
+    0.0, 1.0,  /* V ranges 0..1 */
+    2 * 3,     /* V stride, row is 2 coords, 3 floats per coord */
+    2,         /* V is 2nd order, ie linear */
+    grid);  /* control points */
+
+	glMapGrid2f(
+    100, 0.0, 1.0,
+    100, 0.0, 1.0);
+
+
 	glLineWidth(0.9f);
 	glEnable(GL_COLOR_MATERIAL);
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_LIGHTING);
-	glBegin(GL_LINES);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_POINT_SMOOTH);
+
 	glColor3f(.2f,.2f,0.0f);
-	for(double i=startX; i<=endX; i+=inc){ glVertex3d( i, startY, 0.0f); glVertex3d( i, endY, 0.0f);	}
-	for(double i=startY; i<=endY; i+=inc){ glVertex3d( startX, i, 0.0f); glVertex3d( endX, i, 0.0f);	}
-	glEnd();
+
+    glEvalMesh2(GL_LINE,
+    0, 100,   /* Starting at 0 mesh 100 steps (rows). */
+    0, 100);  /* Starting at 0 mesh 100 steps (columns). */
+
 	glColor3f(1.0f,1.0f,1.0f);
 	glEnable(GL_LIGHTING);
 	glDisable(GL_FOG);
 }
+
 
 BEGIN_EVENT_TABLE(Viewer, wxGLCanvas)
 	EVT_SHOW(Viewer::shown)

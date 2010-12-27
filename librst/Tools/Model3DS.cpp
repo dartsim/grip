@@ -83,6 +83,7 @@ bool showPrimitive = false;
 #define SAFE_DELETE_ARRAY(p) { if(p) { delete[] (p); (p)=NULL; } }
 
 using namespace std;
+using namespace Eigen;
 
 // This is used to generate a warning from the compiler
 #define _QUOTE(x) # x
@@ -306,67 +307,58 @@ void Model3DS::Load(string fullpath)
 
 void Model3DS::ReportTriangles(vector<Triangle> *trigs)
 {
-	//colDL = glGenLists(1);
-	//glNewList(colDL,GL_COMPILE);
-	//glPushMatrix();
-
+	/* // For testing Collision Model
+	colDL = glGenLists(1);
+	glNewList(colDL,GL_COMPILE);
+	glPushMatrix();*/
 
 	for (int i = 0; i < numObjects; i++){ //numObjects
-		// TODO Model3DS to Transforms
-//		Transform obTrans;
-//		obTrans.pos.x = Objects[i].pos.x;
-//		obTrans.pos.y = Objects[i].pos.y;
-//		obTrans.pos.z = Objects[i].pos.z;
-//
-//		obTrans.rot.identity();
-//		Mat33 zR,yR,xR;
-//		zR.zRot(Objects[i].rot.z);
-//		yR.yRot(Objects[i].rot.y);
-//		xR.xRot(Objects[i].rot.x);
-//
-//		obTrans.rot = obTrans.rot*zR;
-//		obTrans.rot = obTrans.rot*yR;
-//		obTrans.rot = obTrans.rot*xR;
+		Eigen::Transform<double, 3, Eigen::Affine> obTrans;
 
+		Matrix3d rotMat;
+		rotMat = AngleAxisd(Objects[i].rot.z, Vector3d::UnitZ())
+				  * AngleAxisd(Objects[i].rot.y, Vector3d::UnitY())
+				  * AngleAxisd(Objects[i].rot.x, Vector3d::UnitX());
+		Vector3d transVec = Vector3d(Objects[i].pos.x,Objects[i].pos.y,Objects[i].pos.z);
+
+		obTrans = rotMat;
+		obTrans.translation() = transVec;
 
 		for (int k = 0; k < Objects[i].numMatFaces; k++){
 			for(int j=0; j<Objects[i].MatFaces[k].numSubFaces; j+=3){
 
-			//Objects[i].MatFaces[j].numSubFaces
-			unsigned short f1 = Objects[i].MatFaces[k].subFaces[j]*3;
-			unsigned short f2 = Objects[i].MatFaces[k].subFaces[j+1]*3;
-			unsigned short f3 = Objects[i].MatFaces[k].subFaces[j+2]*3;
+				unsigned short f1 = Objects[i].MatFaces[k].subFaces[j]*3;
+				unsigned short f2 = Objects[i].MatFaces[k].subFaces[j+1]*3;
+				unsigned short f3 = Objects[i].MatFaces[k].subFaces[j+2]*3;
 
-			//Objects[i].numVerts;
+				Triangle tr;
 
-			Triangle tr;
+				//For Transform
+				Vector3d p1 = Vector3d(Objects[i].Vertexes[f1],Objects[i].Vertexes[f1+1],Objects[i].Vertexes[f1+2]);
+				Vector3d p2 = Vector3d(Objects[i].Vertexes[f2],Objects[i].Vertexes[f2+1],Objects[i].Vertexes[f2+2]);
+				Vector3d p3 = Vector3d(Objects[i].Vertexes[f3],Objects[i].Vertexes[f3+1],Objects[i].Vertexes[f3+2]);
 
-			/* For Transform
-			Vec3 p1 = Vec3(Objects[i].Vertexes[f1],Objects[i].Vertexes[f1+1],Objects[i].Vertexes[f1+2]);
-			Vec3 p2 = Vec3(Objects[i].Vertexes[f2],Objects[i].Vertexes[f2+1],Objects[i].Vertexes[f2+2]);
-			Vec3 p3 = Vec3(Objects[i].Vertexes[f3],Objects[i].Vertexes[f3+1],Objects[i].Vertexes[f3+2]);
+				p1 = obTrans*p1;
+				p2 = obTrans*p2;
+				p3 = obTrans*p3;
 
-//			p1 = obTrans*p1;
-//			p2 = obTrans*p2;
-//			p3 = obTrans*p3;
+				tr.v1[0] = p1[0]; tr.v1[1] = p1[1]; tr.v1[2] = p1[2];
+				tr.v2[0] = p2[0]; tr.v2[1] = p2[1]; tr.v2[2] = p2[2];
+				tr.v3[0] = p3[0]; tr.v3[1] = p3[1]; tr.v3[2] = p3[2];
 
-			tr.v1[0] = p1[0]; tr.v1[1] = p1[1]; tr.v1[2] = p1[2];
-			tr.v2[0] = p2[0]; tr.v2[1] = p2[1]; tr.v2[2] = p2[2];
-			tr.v3[0] = p3[0]; tr.v3[1] = p3[1]; tr.v3[2] = p3[2];
+				trigs->push_back(tr);
 
-
-			/*glBegin(GL_TRIANGLES);
-			glVertex3d(tr.v1[0], tr.v1[1], tr.v1[2]);
-			glVertex3d(tr.v2[0], tr.v2[1], tr.v2[2]);
-			glVertex3d(tr.v3[0], tr.v3[1], tr.v3[2]);
-			glEnd();
-			*/
-			trigs->push_back(tr);
+				/* //For testing collision models
+				glBegin(GL_TRIANGLES);
+				glVertex3d(tr.v1[0], tr.v1[1], tr.v1[2]);
+				glVertex3d(tr.v2[0], tr.v2[1], tr.v2[2]);
+				glVertex3d(tr.v3[0], tr.v3[1], tr.v3[2]);
+				glEnd();*/
+			
 			}
 		}
 	}
-
-
+	// For testing collision model
 	//glPopMatrix();
 	//glEndList();
 }

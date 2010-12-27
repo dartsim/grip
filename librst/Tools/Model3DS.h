@@ -71,6 +71,9 @@
 #ifndef Model3DS_H
 #define Model3DS_H
 
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
 extern bool individualCOM;
 extern bool treeCOMS;
 extern bool robotFloorCOM;
