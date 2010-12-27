@@ -16,8 +16,6 @@ Link::Link(Link &copyFrom): Object(copyFrom)
 {
 	this->absPose = copyFrom.absPose;
 	this->COM = copyFrom.COM;
-	this->treeCOM = copyFrom.treeCOM;
-	this->treeMass = copyFrom.treeMass;
 	this->idNum = copyFrom.idNum;
 	this->inertia = copyFrom.inertia;
 	this->jAxis = copyFrom.jAxis;
@@ -30,27 +28,12 @@ Link::Link(Link &copyFrom): Object(copyFrom)
 	this->pose = copyFrom.pose;
 	this->model = copyFrom.model;
 	this->movable = copyFrom.movable;
-	//for(int i = 0; i < 100; i++)
 	this->name = copyFrom.name;
-
 	this->index = copyFrom.index;
-	//this->parent = copyFrom.parent;
-	//this->robot = copyFrom.robot;
 	this->parent = NULL;
 	this->robot = NULL;
-
 	this->children.clear();
-
-
-	//for(unsigned int i = 0; i < copyFrom.children.size(); i++)
-	//{
-	//	this->children.push_back(new Link(*copyFrom.children[i]));
-	//	this->children[i]->parent = this;
-	//	this->children[i]->robot = this->robot;
-	//}
 }
-
-
 
 void Link::recursiveSetAncestry(Robot *rootRobot, Link *parentLink)
 {
@@ -61,6 +44,7 @@ void Link::recursiveSetAncestry(Robot *rootRobot, Link *parentLink)
 		this->children[i]->recursiveSetAncestry(rootRobot, this);
 }
 
+// Updates relative position based on updated joint value
 void Link::updateRelPose(){
 	Transform<double, 3, Eigen::Affine> jT;
 	jT.setIdentity();
@@ -69,12 +53,14 @@ void Link::updateRelPose(){
 	pose = jTrans*jT;
 }
 
+// Updates absolute pose from relative pose and parent absolute pose
 void Link::updateAbsPose(){
 	if(parent != NULL){
 		absPose = parent->absPose*pose;
 	}
 }
 
+// Given a new absolute position, propogates effects down the tree
 void Link::updateRecursive(bool fromJoints, bool collisions){
 	if(collisions)
 		this->robot->world->updateCollision(this);
@@ -87,7 +73,7 @@ void Link::updateRecursive(bool fromJoints, bool collisions){
 	}
 }
 
-//Gives pose of parent based on child position
+// Updates absolute parent position based on child absolute position
 void Link::updateParentPose(){
 	if(parent != NULL) {
 		updateRelPose();
@@ -106,40 +92,3 @@ void Link::updateParentPoseRecursive(bool fromJoints, bool collisions){
 		updateRecursive(fromJoints, collisions);
 	}
 }
-
-void Link::updateRecursiveCOM()
-{
-	if(children.size()!=0)
-	{
-		if(this->mass<=0.0)
-		{
-			this->mass=0.0;
-			this->COM(0) = 0.0f;
-			this->COM(1) = 0.0f;
-			this->COM(2) = 0.0f;
-		}
-
-		this->treeCOM=this->COM*this->mass;
-		this->treeMass=mass;
-
-		for(unsigned int i=0; i<children.size();i++)
-		{
-			children[i]->updateRecursiveCOM();
-			Transform<double, 3, Eigen::Affine> jT;
-			jT.setIdentity();
-			//this->treeCOM+=children[i]->treeMass*((jTrans.pos+(children[i]->jAxis*children[i]->jVal))*children[i]->treeCOM);
-			this->treeCOM+=children[i]->pose*children[i]->treeCOM*children[i]->treeMass;
-			this->treeMass+=children[i]->treeMass;
-		}
-		this->treeCOM=this->treeCOM/this->treeMass;
-		//cout<<endl<<" tree "<<this->name<<" Mass: "<<this->treeMass<<" X "<<this->treeCOM.x<<" Y "<< this->treeCOM.y<<" Z "<< this->treeCOM.z<<endl;
-	}
-	else
-	{
-		this->treeMass=this->mass;
-		this->treeCOM=this->COM; //If no children then the treeCOM starts with this link's COM
-		//cout<<endl<<" No kids tree "<<this->name<<" Mass: "<<this->treeMass<<" X "<<this->treeCOM.x<<" Y "<< this->treeCOM.y<<" Z "<< this->treeCOM.z<<endl;
-	}
-
-}
-

@@ -333,7 +333,7 @@ void SimulationTab::RSTStateChange() {
 }
 
 void RSTApp::AddTab() {
-	ADD_TAB(SimulationTab,wxT("Simulation"))
+	ADD_TAB(SimulationTab,wxT("Simulation"));
 }
 
 

@@ -12,8 +12,6 @@ using namespace std;
 
 class World;
 
-#define config vec<double>
-
 #include "Link.h"
 
 class Robot {
@@ -37,8 +35,8 @@ public:
 
 	int findLink(string name);
 	int Load(string, World*);
-	void setConf(const vector<double> &conf);
-	void getConf(vector<double> &conf);
+	void setConf(Eigen::VectorXd conf,bool collision=false);
+	void getConf(Eigen::VectorXd conf);
 
 	void updateCOM();
 	void drawCOM();

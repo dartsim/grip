@@ -74,11 +74,6 @@
 #include <math.h>
 #include <string>
 
-bool individualCOM = false;
-bool treeCOMS = false;
-bool robotFloorCOM = false;
-bool showPrimitive = false;
-
 #define SAFE_DELETE(p) { if(p) { delete (p); (p)=NULL; } }
 #define SAFE_DELETE_ARRAY(p) { if(p) { delete[] (p); (p)=NULL; } }
 

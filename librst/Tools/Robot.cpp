@@ -62,28 +62,12 @@ void Robot::drawCOM()
 {
 			glPushMatrix();
 			glColor3f(1.0f,0.0f,0.0f);
-			//glTranslated(treeCOM.x,treeCOM.y,0.0);
-/*			Transform comProjection=baseLink->absPose;
-			GLdouble m[16] = { comProjection.rot.e(0,0), comProjection.rot.e(1,0), comProjection.rot.e(2,0), 0,
-					  comProjection.rot.e(0,1), comProjection.rot.e(1,1), comProjection.rot.e(2,1), 0,
-					  comProjection.rot.e(0,2), comProjection.rot.e(1,2), comProjection.rot.e(2,2), 0,
-					  comProjection.pos.x, comProjection.pos.y, comProjection.pos.z, 1 };
-			glMultMatrixd(m);
-*/
 			glTranslated(this->COM(0, 3),this->COM(1, 3),0.0);
 			DrawSphere(0.02f,10,10);
 			glPopMatrix();
 }
 
 void Robot::Draw(){
-		if(treeCOMS||robotFloorCOM)
-		{
-			updateCOM();
-			if(robotFloorCOM)
-			{
-				drawCOM();	//will draw the COM of the robot on the ground plane where z == 0.0
-			}
-		}
 	for(unsigned int i=0; i<links.size(); i++)
 		links[i]->Draw();
 }
@@ -94,21 +78,14 @@ int Robot::findLink(string name){
 	return -1;
 }
 
-//template <class someVec> // Necessary to accommodate RST vec configs and RRT stl vectors
-//void Robot::setConf(const someVec &conf){
-void Robot::setConf(const vector<double> &conf){
+void Robot::setConf(VectorXd conf, bool collision){
 	for(unsigned int i=0; i<activeLinks.size(); i++){
 		activeLinks[i]->jVal = conf[i];
 	}
-	for(unsigned int i=0; i < links.size(); i++){
-		Link* link = links[i];
-		if(link->parent == NULL){
-			link->updateRecursive(true, true); // always check collisions?
-		}
-	}
+	baseLink->updateRecursive(true,collision);
 }
 
-void Robot::getConf(vector<double> &conf){
+void Robot::getConf(VectorXd conf){
 	for(unsigned int i=0; i<activeLinks.size(); i++){
 		conf[i] = activeLinks[i]->jVal;
 	}
@@ -121,9 +98,9 @@ void Robot::updateCOM()
 		Link* link = links[i];
 		if(link->parent==NULL)
 		{
-			link->updateRecursiveCOM();
-			this->mass=link->treeMass;
-			this->COM=link->treeCOM;
+//			link->updateRecursiveCOM();
+//			this->mass=link->treeMass;
+//			this->COM=link->treeCOM;
 		}
 	}
 }

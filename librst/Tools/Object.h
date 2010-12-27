@@ -19,7 +19,6 @@ public:
 	Eigen::Transform<double, 3, Eigen::Affine> absPose;
 	Eigen::Matrix<double, 3, 3>	inertia;
 	Eigen::Vector3d	COM;
-	Eigen::Vector3d	treeCOM;
 	Eigen::Vector3d vertices[8]; //for Box(8) and Rect_Face(4) in object coordinates
 	Eigen::Vector3d normal;
 
@@ -32,24 +31,21 @@ public:
 	int idNum;
 	int eid;
 	double mass;
-	double treeMass;
 	int primitiveType; // geometric primitive type
 	double radius; //for sphere
 	double d;
 	double vel_t;
 	bool collisionFlag;
-
-	void normalizeNorm();
-	void drawPrimitive(); //will draw the primitive object
-	Eigen::Vector3d toTheseBodyCoordinates(Eigen::Vector3d point);
-	bool ballFaceCollide(Object* face);
+	bool comFlag;
 
 	Object();
 	Object(Object&);
 	~Object();
 
 	Model3DS* LoadModel(string);
+
 	void Draw();
+	void DrawPrimitive(); //will draw the primitive object
 };
 
 
