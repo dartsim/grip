@@ -1,0 +1,24 @@
+#####	ROBOTS	#####
+
+##### ROBOT 1	#####
+
+>	ROBOT	SCHUNKARM	conanSchunkArm.rsdh
+>	POSITION	0	0	0
+>	ORIENTATION	90	0	90
+
+#####	INITIAL ANGLES	#####
+
+>	INIT	L0	0
+>	INIT	L1	0
+>	INIT	L2	0
+>	INIT	L3	0
+>	INIT	L4	0
+>	INIT	L5	0
+>	INIT	L6	0
+>	INIT	FT	0
+
+##### SWORD #####
+
+>	OBJECT	sword sword.3ds
+>	POSITION	3 0 0.8
+>	ORIENTATION	90 0 0

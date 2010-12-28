@@ -39,7 +39,7 @@ bool RSTApp::OnInit()
 	frame->SetIcon(ico);
     frame->Show(true);
 
-    // AddTab();
+    AddTab();
     return true;
 }
 

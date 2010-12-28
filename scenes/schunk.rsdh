@@ -1,0 +1,71 @@
+# LINKS
+> LINK L0	     schunk/l0.3ds
+> LINK L1        schunk/l1.3ds
+> LINK L2        schunk/l2.3ds
+> LINK L3        schunk/l3.3ds
+> LINK L4        schunk/l4.3ds
+> LINK L5        schunk/l5.3ds
+> LINK L6        schunk/l6.3ds
+
+> LINK FT	 schunk/ft.3ds
+
+> LINK HAND      schunk/handbase66.3ds
+> LINK F11       schunk/handjoint66.3ds
+> LINK F21       schunk/handjoint66.3ds
+> LINK F31       schunk/handjoint66.3ds
+> LINK F12       schunk/finger66.3ds
+> LINK F22       schunk/finger66.3ds
+> LINK F32       schunk/finger66.3ds
+> LINK F13       schunk/fingertip66.3ds
+> LINK F23       schunk/fingertip66.3ds
+> LINK F33       schunk/fingertip66.3ds
+
+
+
+# CONNECTIVITY
+ CON  FROM         TO         X     Y     Z     ROL   PIT   YAW  AXIS    TYPE         RANGE
+#---------------------------------------------------------------------------------------------------------------
+> CON WORLD         L0		0.0	0.0	0.0	90	0.0	0.0	PX	FIXED
+> CON	L0            L1		0.0	0.3	0.0	0.0	0.0	0.0	NY	REVOL		-180	180
+> CON	L1            L2		0.0   0.0	0.0	0.0	0.0	180	PX	REVOL		-120	120
+> CON	L2            L3	      0.0  -0.328	0.0	180	0.0	0.0	NY	REVOL       -180	180
+> CON	L3            L4	      0.0	0	0.0 	0.0	0.0	180	NX	REVOL		-120	120
+> CON	L4            L5	      0.0 -0.2765	0.0	0.0	0.0	180	NY	REVOL	      -180 180
+> CON	L5            L6	      0.0	0.0	0.0	0.0	0.0	180	NX	REVOL		-120	120
+> CON	L6    	  FT		0.0  -0.2	0.0   0.0	0.0	0.0	NY	REVOL		-180	180
+
+> CON	FT            HAND	0.0   -.018	0.0   90	0.0	0.0	NZ	FIXED		-180	180
+
+> CON	HAND		  F11	    0.021  0.033	0.024	90	0.0	0.0	PY	REVOL		-180	180
+> CON	HAND		  F21	    0.021 -0.033	0.024	90	0.0	0.0	PY	REVOL		-180	180
+> CON	HAND		  F31	  -0.0381  0.0	0.024	90	0.0	0.0	PY	REVOL		-180	180
+
+> CON	F11           F12		0.0	0.02	0.0	0.0	0.0	0.0	PX	REVOL		-180	180
+> CON	F21           F22		0.0	0.02	0.0	0.0	0.0	0.0	PX	REVOL		-180	180
+> CON	F31           F32	      0.0	0.02	0.0	0.0	0.0	0.0	PX	REVOL		-180	180
+
+> CON	F12           F13		0.0	.0865	0.0	0.0	0.0	0.0	PX	REVOL		-180	180
+> CON	F22           F23		0.0	.0865 0.0	0.0	0.0	0.0	PX	REVOL		-180	180
+> CON	F32           F33		0.0	.0865	0.0	0.0	0.0	0.0	PX	REVOL		-180	180
+
+
+
+# INITIAL_ANGLES
+> INIT L0    0
+> INIT L1   +0.6
+> INIT L2   -0.5
+> INIT L3   180
+> INIT L4   +0.3
+> INIT L5    0
+> INIT L6   +0.7
+> INIT FT    0.0
+> INIT HAND +0.5
+> INIT F11   180
+> INIT F21   0.4
+> INIT F31  -1.57
+> INIT F12   0.7
+> INIT F22   0.7
+> INIT F32   0.7
+> INIT F13  -0.7
+> INIT F23  -0.7
+> INIT F33  -0.7

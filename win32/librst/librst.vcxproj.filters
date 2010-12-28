@@ -1,0 +1,337 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\librst\RST.cpp" />
+    <ClCompile Include="..\..\librst\Tools\ANN\ANN.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tabs\AllTabs.cpp">
+      <Filter>Tabs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\ANN\bd_fix_rad_search.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\ANN\bd_pr_search.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\ANN\bd_search.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\ANN\bd_tree.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\ANN\brute.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_dump.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_fix_rad_search.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_pr_search.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_search.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_split.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_tree.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\ANN\kd_util.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Collision\build.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Collision\collide.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\GUI\GUI.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Collision\NBody.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Collision\PairData.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Collision\overlap.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Collision\RAPID.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Collision\VInternal.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Collision\VCollide.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\ANN\perf.cpp">
+      <Filter>ANN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\GLTools.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Model3DS.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Link.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Robot.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Object.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\GUI\RSTFrame.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\GUI\RSTimeSlice.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\GUI\RSTSlider.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\GUI\TreeView.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\GUI\Viewer.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\World.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tabs\InspectorTab.cpp">
+      <Filter>Tabs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\GL\GLTexture.cpp">
+      <Filter>GL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Collision\sample_client.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\librst\RSTApp.h" />
+    <ClInclude Include="..\mswd\wx\msw\rcdefs.h" />
+    <ClInclude Include="..\mswd\wx\setup.h" />
+    <ClInclude Include="..\..\librst\Tools\Collision\AABB.H">
+      <Filter>ANN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\ANN\ANNx.h">
+      <Filter>ANN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\ANN\ANN.h">
+      <Filter>ANN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\ANN\ANNperf.h">
+      <Filter>ANN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tabs\AllTabs.h">
+      <Filter>Tabs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\ANN\bd_tree.h">
+      <Filter>ANN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\ANN\kd_util.h">
+      <Filter>ANN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\ANN\kd_fix_rad_search.h">
+      <Filter>ANN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\ANN\kd_pr_search.h">
+      <Filter>ANN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\ANN\kd_search.h">
+      <Filter>ANN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\ANN\kd_split.h">
+      <Filter>ANN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\ANN\kd_tree.h">
+      <Filter>ANN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Collision\EndPoint.H">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\GUI\GUI.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Collision\NBody.H">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Collision\obb.H">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Collision\moments.H">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Collision\matvec.H">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Collision\PairData.H">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Collision\overlap.H">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Collision\RAPID_version.H">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Collision\RAPID.H">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Collision\RAPID_private.H">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Collision\VInternal.H">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Collision\VCollide.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\ANN\pr_queue_k.h">
+      <Filter>ANN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\ANN\pr_queue.h">
+      <Filter>ANN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Constants.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\GLTools.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Model3DS.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Link.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Robot.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Object.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\GUI\RSTFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\GUI\RSTimeSlice.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\GUI\RSTSlider.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\GUI\TreeView.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\GUI\Viewer.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\World.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tabs\InspectorTab.h">
+      <Filter>Tabs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tabs\RSTTab.h">
+      <Filter>Tabs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tabs\RSTThread.h">
+      <Filter>Tabs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\GL\glcommon.h">
+      <Filter>GL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\GL\GLTexture.h">
+      <Filter>GL</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\README" />
+    <None Include="..\..\Eigen\Array">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\Cholesky">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\Core">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\Eigenvalues">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\Eigen2Support">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\Eigen">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\Dense">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\Geometry">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\Householder">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\Jacobi">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\LU">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\QR">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\QtAlignedMalloc">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\Sparse">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\StdDeque">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\StdList">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\StdVector">
+      <Filter>Eigen</Filter>
+    </None>
+    <None Include="..\..\Eigen\SVD">
+      <Filter>Eigen</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ANN">
+      <UniqueIdentifier>{a2ea1820-1044-4b84-98df-589398528ff1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tabs">
+      <UniqueIdentifier>{fe14432f-685f-495b-b5b9-e544fbe52698}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Eigen">
+      <UniqueIdentifier>{e92f22b7-fe58-4117-8f1e-f59c299ae4f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{354254e7-3a4f-4ad9-ae09-0d9100724614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools">
+      <UniqueIdentifier>{7ff5f1e1-e2d0-4792-8fc0-b12667ec1dc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{7bcbf00b-1bdc-4466-a4b4-aa8e9eff848a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GL">
+      <UniqueIdentifier>{f933b217-a466-49c6-80d2-c621c4b89bd3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

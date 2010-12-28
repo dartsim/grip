@@ -47,7 +47,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\mswd;C:\wxWidgets-2.8.10\include;..\..\librst;..\..\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\mswd;C:\wxWidgets-2.8.10\include;C:\wxWidgets-2.8.11\lib\vc_lib\mswd;..\..\librst;..\..\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -102,7 +102,6 @@
     <ClCompile Include="..\..\librst\RST.cpp" />
     <ClCompile Include="..\..\librst\Tabs\AllTabs.cpp" />
     <ClCompile Include="..\..\librst\Tabs\InspectorTab.cpp" />
-    <ClCompile Include="..\..\librst\Tabs\TemplateTab.cpp" />
     <ClCompile Include="..\..\librst\Tools\ANN\ANN.cpp" />
     <ClCompile Include="..\..\librst\Tools\ANN\bd_fix_rad_search.cpp" />
     <ClCompile Include="..\..\librst\Tools\ANN\bd_pr_search.cpp" />
@@ -146,7 +145,6 @@
     <ClInclude Include="..\..\librst\Tabs\InspectorTab.h" />
     <ClInclude Include="..\..\librst\Tabs\RSTTab.h" />
     <ClInclude Include="..\..\librst\Tabs\RSTThread.h" />
-    <ClInclude Include="..\..\librst\Tabs\TemplateTab.h" />
     <ClInclude Include="..\..\librst\Tools\ANN\ANN.h" />
     <ClInclude Include="..\..\librst\Tools\ANN\ANNperf.h" />
     <ClInclude Include="..\..\librst\Tools\ANN\ANNx.h" />

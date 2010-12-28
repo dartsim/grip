@@ -1,0 +1,18 @@
+#####	ROBOTS	#####
+
+##### ROBOT 1	#####
+
+
+#####	OBJECTS	#####
+
+##### OBJECT 1	#####
+
+>	OBJECT	board1 obstacles/boxingBoard.3ds
+>	POSITION	0.0 0.0	0.0
+>	ORIENTATION	90.0 0 0
+
+##### OBJECT 2	#####
+
+>	OBJECT	board2 obstacles/boxingBoard.3ds
+>	POSITION	0.0 0.0	1.0
+>	ORIENTATION	0.0 0 0.0

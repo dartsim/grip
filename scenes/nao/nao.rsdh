@@ -1,0 +1,72 @@
+# LINKS
+> LINK BASE			NOMODEL
+> LINK TRANSX		NOMODEL
+> LINK TRANSY		NOMODEL
+> LINK TRANSZ		NOMODEL
+> LINK ROTZ			NOMODEL
+
+> LINK Torso		torso.3ds
+> LINK HeadYaw		neck.3ds
+> LINK HeadPitch		head.3ds
+
+> LINK RightShPitch	NOMODEL
+> LINK RightShRoll	rarm.3ds
+> LINK RightElYaw		NOMODEL
+> LINK RightElRoll	rforearm.3ds
+
+> LINK LeftShPitch	NOMODEL
+> LINK LeftShRoll		larm.3ds
+> LINK LeftElYaw		NOMODEL
+> LINK LeftElRoll		lforearm.3ds
+
+> LINK RightHipYaw	NOMODEL
+> LINK RightHipPitch	NOMODEL
+> LINK RightHipRoll	rleg.3ds
+> LINK RightKnee		rcalf2.3ds
+> LINK RightAnkPitch	NOMODEL
+> LINK RightAnkRoll	rfoot.3ds
+
+> LINK LeftHipYaw		NOMODEL
+> LINK LeftHipPitch	NOMODEL
+> LINK LeftHipRoll	lleg.3ds
+> LINK LeftKnee		lcalf2.3ds
+> LINK LeftAnkPitch	NOMODEL
+> LINK LeftAnkRoll	lfoot.3ds
+
+
+# CONNECTIVITY
+ CON  FROM         TO         X     Y     Z     ROL   PIT   YAW  AXIS    TYPE         RANGE
+---------------------------------------------------------------------------------------------------------
+> CON WORLD BASE			0.0	0.0	0.0	0.0	0.0	0.0	PX	FREE		-5 5
+> CON BASE TRANSX			0.0	0.0	0.0	0.0	0.0	0.0	PX	PRISM		-5 5
+> CON TRANSX TRANSY		0.0	0.0	0.0	0.0	0.0	0.0	PY	PRISM		-5 5
+> CON TRANSY TRANSZ		0.0	0.0	0.0	0.0	0.0	0.0	PZ	PRISM		-.3 .3
+> CON TRANSZ ROTZ			0.0	0.0	0.0	0.0	0.0	0.0	PZ	REVOL		-3.14 3.14
+> CON ROTZ Torso 			0.0	0.0	0.0	90	0.0	0.0	PY	FIXED		-3.14 3.14
+> CON	Torso	HeadYaw		0.0	0.16	-.02	0.0	0.0	0.0	PY	REVOL		-3.14	3.14
+> CON	HeadYaw HeadPitch		0.0	0.06	0.0	0.0	0.0	0.0	PX	REVOL		-3.14 3.14
+
+> CON	Torso	RightShPitch		-.085	.145	-.02	0.0	0.0	0.0	NX	REVOL		-3.14	3.14
+> CON	RightShPitch RightShRoll	0.0	0.0	0.0	0.0	0.0	0.0	NY	REVOL		-3.14 3.14
+> CON	RightShRoll RightElYaw		-.006	0.009	0.09	0.0	0.0	0.0	PX	REVOL		-3.14 3.14
+> CON	RightElYaw RightElRoll		0.0	0.0	0.0	0.0	0.0	0.0	PZ	REVOL		-3.14 3.14
+
+> CON	Torso	LeftShPitch			.085	.145	-.02	0.0	0.0	0.0	NX	REVOL		-3.14	3.14
+> CON	LeftShPitch LeftShRoll		0.0	0.0	0.0	0.0	0.0	0.0	PY	REVOL		-3.14 3.14
+> CON	LeftShRoll LeftElYaw		-.006	0.009	0.09	0.0	0.0	0.0	PX	REVOL		-3.14 3.14
+> CON	LeftElYaw LeftElRoll		0.0	0.0	0.0	0.0	0.0	0.0	NZ	REVOL		-3.14 3.14
+
+> CON Torso RightHipYaw			-.055	-.045	-.03	0.0	0.0	0.0	NY	REVOL		-3.14 3.14
+> CON RightHipYaw RightHipPitch	0.0	0.0	0.0	0.0	0.0	0.0	NX	REVOL		-3.14 3.14
+> CON RightHipPitch RightHipRoll	0.0	0.0	0.0	0.0	0.0	0.0	NZ	REVOL		-3.14 3.14
+> CON RightHipRoll RightKnee		0.0	-.12	.005	0.0	0.0	0.0	PX	REVOL		-3.14 3.14
+> CON RightKnee	RightAnkPitch	0.0	-.1	0.0	0.0	0.0	0.0	PX	REVOL		-3.14 3.14
+> CON RightAnkPitch RightAnkRoll	0.0	0.0	0.0	0.0	0.0	0.0	PZ	REVOL		-3.14 3.14
+
+> CON Torso LeftHipYaw		 	0.055	-.045	-.03	0.0	0.0	0.0	PY	REVOL		-3.14 3.14
+> CON LeftHipYaw LeftHipPitch		0.0	0.0	0.0	0.0	0.0	0.0	NX	REVOL		-3.14 3.14
+> CON LeftHipPitch LeftHipRoll	0.0	0.0	0.0	0.0	0.0	0.0	PZ	REVOL		-3.14 3.14
+> CON LeftHipRoll LeftKnee		0.0	-.12	.005	0.0	0.0	0.0	PX	REVOL		-3.14 3.14
+> CON LeftKnee	LeftAnkPitch	0.0	-.1	0.0	0.0	0.0	0.0	PX	REVOL		-3.14 3.14
+> CON LeftAnkPitch LeftAnkRoll	0.0	0.0	0.0	0.0	0.0	0.0	NZ	REVOL		-3.14 3.14
+

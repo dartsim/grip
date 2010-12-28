@@ -1,0 +1,15 @@
+#####	ROBOTS	#####
+
+##### OBJECT 1	#####
+
+>	OBJECT	luggage	obstacles/luggage3.3ds
+>	POSITION	-0.848	1.14	0.721
+>	ORIENTATION	90 0 90
+
+
+##### OBJECT 6	#####
+
+>	OBJECT	BEAR2	polarbear/polarbear.3ds
+>	POSITION	0.673	-1.082	0
+>	ORIENTATION	0 30 30
+
