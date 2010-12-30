@@ -1,0 +1,75 @@
+##### ROBOTS #####
+
+##### ROBOT 1 #####
+
+> 	ROBOT NAO nao/nao.rsdh
+> 	POSITION -0.114 1.316 1.045
+> 	ORIENTATION 0 0 -1
+
+##### INITIAL ANGLES #####
+
+> 	INIT BASE 0
+> 	INIT TRANSX 0
+> 	INIT TRANSY 0
+> 	INIT TRANSZ 0
+> 	INIT ROTZ 0
+> 	INIT Torso 0
+> 	INIT HeadYaw 0
+> 	INIT HeadPitch 0
+> 	INIT RightShPitch 0
+> 	INIT RightShRoll 0
+> 	INIT RightElYaw 0
+> 	INIT RightElRoll 0
+> 	INIT LeftShPitch 0
+> 	INIT LeftShRoll 0
+> 	INIT LeftElYaw 0
+> 	INIT LeftElRoll 0
+> 	INIT RightHipYaw 0
+> 	INIT RightHipPitch 0
+> 	INIT RightHipRoll 0
+> 	INIT RightKnee 0
+> 	INIT RightAnkPitch 0
+> 	INIT RightAnkRoll 0
+> 	INIT LeftHipYaw 0
+> 	INIT LeftHipPitch 0
+> 	INIT LeftHipRoll 0
+> 	INIT LeftKnee 0
+> 	INIT LeftAnkPitch 0
+> 	INIT LeftAnkRoll 0
+
+##### OBJECTS #####
+
+##### OBJECT 1 #####
+
+> 	OBJECT table2 objects/table2b.3ds
+> 	POSITION -1.14 0.789 0
+> 	ORIENTATION 90 -0 0
+
+##### OBJECT 2 #####
+
+> 	OBJECT book objects/book.3ds
+> 	POSITION 0.789 1.102 0.73
+> 	ORIENTATION 90 -0 0
+
+##### OBJECT 3 #####
+
+> 	OBJECT BEAR2 polarbear/minibear.3ds
+> 	POSITION -0.921 1.053 0.97
+> 	ORIENTATION 90 -0 0
+
+##### OBJECT 4 #####
+
+> 	OBJECT BEAR3 polarbear/minibear.3ds
+> 	POSITION 1.053 1.933 1.384
+> 	ORIENTATION 90 -0 0
+
+##### SCENE INFO
+
+> CAMERA
+ROT -0.0213158 -21.328 -122.611
+WRT 0.53686 -1.04403 -0.880873
+RAD 1.92
+
+> COLORS
+BACK 0 0 0
+GRID 0.5 0.5 0
