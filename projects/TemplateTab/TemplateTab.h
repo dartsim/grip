@@ -16,6 +16,11 @@
 
 #include <Tabs/RSTTab.h>
 #include <Tabs/RSTThread.h>
+#include <Tools/World.h>
+#include <Tools/Robot.h>
+#include <Tools/Link.h>
+#include <Tools/Object.h>
+#include <Tools/Constants.h>
 
 class TemplateTab : public RSTTab
 {

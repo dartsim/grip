@@ -21,10 +21,9 @@
 #include "Viewer.h"
 #include "TreeView.h"
 
-#include "../Tabs/AllTabs.h"
-#include "../Tabs/RSTTab.h"
+#include <Tabs/AllTabs.h>
+#include <Tabs/RSTTab.h>
 #include "RSTSlider.h"
-#include "../Tools/World.h"
 #include "RSTimeSlice.h"
 #include "RSTFrame.h"
 
@@ -199,6 +198,7 @@ RSTFrame::RSTFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
 	Show();
 	viewer->Freeze();
 	viewer->InitGL();
+	viewer->ResetGL();
 	viewer->Thaw();
 }
 
@@ -211,6 +211,13 @@ void RSTFrame::OnSaveScene(wxCommandEvent& WXUNUSED(event)) {
 			_("*.rscene"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
 
 	if (SaveDialog->ShowModal() == wxID_OK) {
+			world->camRadius = viewer->camRadius;
+			world->camRotT = viewer->camRotT;
+			world->worldV = viewer->worldV;
+			world->backColor = viewer->backColor;
+			world->gridColor = viewer->gridColor;
+
+
 			filepath = SaveDialog->GetPath();
 			filename = string(filepath.mb_str());
 			endpath = filename.find(".rscene");
@@ -218,7 +225,7 @@ void RSTFrame::OnSaveScene(wxCommandEvent& WXUNUSED(event)) {
 			world->Save(filename);
 			wxString filename_string(filename.c_str(), wxConvUTF8);
 			saveText(filename_string,".lastload");
-		}
+	}
 }
 
 
@@ -229,14 +236,16 @@ void RSTFrame::OnSaveRobot(wxCommandEvent& WXUNUSED(event)) {
 
 
 
-void RSTFrame::OnLoad(wxCommandEvent& WXUNUSED(event)){
+void RSTFrame::OnLoad(wxCommandEvent& event){
+	viewer->loading=true;
 	wxString filename = wxFileSelector(wxT("Choose a file to open"),wxT("../scene/"),wxT(""),wxT(""), // -- default extension
                                        wxT("*.rscene"), 0);
 	if ( !filename.empty() )
 		DoLoad(string(filename.mb_str()));
 }
 
-void RSTFrame::OnQuickLoad(wxCommandEvent& WXUNUSED(event)){
+void RSTFrame::OnQuickLoad(wxCommandEvent& event){
+	viewer->loading=true;
 	ifstream lastloadFile;
 	lastloadFile.open(".lastload", ios::in);
 	if(lastloadFile.fail()){
@@ -258,17 +267,19 @@ void RSTFrame::DoLoad(string filename){
 	cout << "Done Loading." << endl;
 	treeView->CreateFromWorld();
 	cout << "Done Updating TreeView." << endl;
-	viewer->ResetGL();
+	//viewer->ResetGL();
 	SetStatusText(wxT("Done Loading"));
 
 	//Extract path to executable & save "lastload" there
 	cout << "Saving " << filename << " to .lastload file" << endl;
     wxString filename_string(filename.c_str(), wxConvUTF8);
 	saveText(filename_string,".lastload");
-	viewer->ResetGL();
+
 	selectedTreeNode = 0;
 	treeView->ExpandAll();
 	updateAllTabs();
+
+	viewer->ResetGL();
 }
 
 void RSTFrame::DeleteWorld(){
@@ -442,15 +453,9 @@ void RSTFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 
 void RSTFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
-	wxMessageBox(wxString::Format(wxT("RST: Humanoids @ GT \
-                                      \n\n Mike Stilman\
-                                      \n Saul Reynolds-Haertl\
-                                      \n Jon Scholz\
-									  \n Pushkar Kolhe\
-                                      \n Venkat Subramanian\
-                                      \n Jiuguang Wang\
-                                      \n Misha Novitzky\
-                                      \n Neil Dantam"),
+	wxMessageBox(wxString::Format(wxT("RST: Humanoid Robotics Lab. Georgia Tech. \
+                                      \n\n Mike Stilman, Saul Reynolds-Haertl, Jon Scholz\
+									  \n Pushkar Kolhe, Jiuguang Wang, Tobias Kunz"),
                                   wxVERSION_STRING,
                                   wxGetOsDescription().c_str()
                                   ),wxT("Info"), wxOK | wxICON_INFORMATION,this);
@@ -529,17 +534,21 @@ void RSTFrame::OnTimeEnter(wxCommandEvent& WXUNUSED(event)){
 }
 
 void RSTFrame::OnWhite(wxCommandEvent& WXUNUSED(event)){
-	viewer->setClearColor(0,0,0,1);
+	viewer->backColor = Vector3d(1,1,1);
+	viewer->gridColor = Vector3d(.8,.8,1);
+	viewer->setClearColor();
 	viewer->UpdateCamera();
 }
 
 void RSTFrame::OnBlack(wxCommandEvent& WXUNUSED(event)){
-	viewer->setClearColor(1,1,1,1);
+	viewer->backColor = Vector3d(0,0,0);
+	viewer->gridColor = Vector3d(.5,.5,0);
+	viewer->setClearColor();
 	viewer->UpdateCamera();
 }
 
 void RSTFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)){
-	viewer->ResetCamera();
+	viewer->ResetGL();
 }
 
 BEGIN_EVENT_TABLE(RSTFrame, wxFrame)
@@ -555,8 +564,8 @@ EVT_MENU(MenuClose,  RSTFrame::OnClose)
 EVT_MENU(MenuQuit,  RSTFrame::OnQuit)
 EVT_MENU(MenuAbout, RSTFrame::OnAbout)
 
-EVT_MENU(MenuBgWhite,  RSTFrame::OnBlack)
-EVT_MENU(MenuBgBlack, RSTFrame::OnWhite)
+EVT_MENU(MenuBgWhite,  RSTFrame::OnWhite)
+EVT_MENU(MenuBgBlack, RSTFrame::OnBlack)
 EVT_MENU(MenuCameraReset, RSTFrame::OnCameraReset)
 
 EVT_MENU(wxID_OPEN, RSTFrame::OnLoad)

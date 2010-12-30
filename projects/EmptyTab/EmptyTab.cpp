@@ -10,6 +10,8 @@
 //	  Robotics and Intelligent Machines
 //    Georgia Tech
 //--------------------------------------------------------------------
+#include "EmptyTab.h"
+
 #include <wx/wx.h>
 #include <GUI/Viewer.h>
 #include <GUI/GUI.h>
@@ -17,17 +19,8 @@
 #include <GUI/RSTFrame.h>
 #include <iostream>
 using namespace std;
-#include <Tools/World.h>
-#include <Tools/Robot.h>
-#include <Tools/Link.h>
-#include <Tools/Object.h>
-#include <Tools/Constants.h>
-
-
-#include "EmptyTab.h"
 #include <Tabs/AllTabs.h>
 #include <RSTApp.h>
-
 
 // Control IDs (used for event handling - be sure to start with a non-conflicted id)
 enum EmptyTabEvents {

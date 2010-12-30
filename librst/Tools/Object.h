@@ -16,6 +16,7 @@ class World;
 
 class Object{
 public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	Eigen::Transform<double, 3, Eigen::Affine> absPose;
 	Eigen::Matrix<double, 3, 3>	inertia;
 	Eigen::Vector3d	COM;

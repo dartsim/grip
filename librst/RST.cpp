@@ -40,6 +40,7 @@ bool RSTApp::OnInit()
     frame->Show(true);
 
     AddTab();
+	tabView->SetSelection(0);
     return true;
 }
 

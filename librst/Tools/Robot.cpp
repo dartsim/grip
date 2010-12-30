@@ -271,6 +271,7 @@ int Robot::Load(string fullname, World* w){
 	return 0;
 }
 
+
 void Robot::Info() {
 	cout << "Robot: " << endl;
 	cout << "name: " << name << endl;
@@ -281,11 +282,14 @@ void Robot::Info() {
 	cout << "links.size() = " << links.size() << endl;
 	for(unsigned int i = 0; i < links.size(); i++) {
 		cout << i << " ------------------------------- " << endl;
-		cout << "  Link " << i << endl;
+		cout << "  Link " << i << " Ptr " << links[i]  << " Parent " << links[i]->parent << endl;
 		cout << "  Number of children = " << links[i]->children.size() << endl;
 		//cout << "  pose = " << links[i]->pose << endl;
 		//cout << "  jTrans = " << links[i]->jTrans << endl;
 		//cout << "  jAxis = " << links[i]->jAxis << endl;
 	}
 	cout << "activeLinks.size() = " << activeLinks.size() << endl;
+
+//	cout << "world " << world->robots[0]->links[4] << " " << world->robots[0]->links[4]->name << " " << world->robots[0]->links[4]->parent << endl;
+
 }

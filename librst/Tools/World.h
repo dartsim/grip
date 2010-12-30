@@ -11,7 +11,7 @@
 #include <Tools/Constants.h>
 
 using namespace std;
-
+using namespace Eigen;
 class Object;
 class Robot;
 
@@ -33,8 +33,17 @@ public:
 	vector<Object*> objects;
 	vector<Entity>	entities;
 
+	// Collision detection
 	VCollide vcollide;
 	VCReport report;
+
+	// Camera position
+	Matrix3d camRotT;
+	Vector3d worldV;
+	double camRadius;
+	// World colors
+	Vector3d gridColor;
+	Vector3d backColor;
 
 	void Draw();
 	void DeleteModels();

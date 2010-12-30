@@ -11,7 +11,6 @@
 using namespace std;
 
 class World;
-
 #include "Link.h"
 
 class Robot {

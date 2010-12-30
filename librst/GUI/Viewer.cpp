@@ -17,7 +17,9 @@
 #include "GUI.h"
 #include <wx/glcanvas.h>
 
-using namespace Eigen;
+#include <Tools/Robot.h>
+#include <Tools/Link.h>
+#include <iostream>
 
 void Viewer::shown(wxShowEvent& WXUNUSED(evt)){
     int w, h;
@@ -26,22 +28,17 @@ void Viewer::shown(wxShowEvent& WXUNUSED(evt)){
     if (GetContext())
 	#endif
     {
-        //SetCurrent();
+        SetCurrent();
         glViewport(0, 0, (GLint) w, (GLint) h);
     }
 	UpdateCamera();
 }
 
 void Viewer::UpdateCamera(void){
-
 	SetCurrent();
 	camT = camRotT;
 	camT.translate(Vector3d(camRadius, 0, 0));
 	DrawGLScene();
-}
-
-void Viewer::ResetCamera(void) {
-	ResetGL();
 }
 
 int Viewer::DrawGLScene()
@@ -58,32 +55,26 @@ int Viewer::DrawGLScene()
 	glDepthFunc(GL_LEQUAL);
 
 	glHint(GL_FOG_HINT,GL_NICEST);
-//	glHint(GL_BLEND_HINT,GL_NICEST);
 	glHint(GL_POLYGON_SMOOTH_HINT,GL_NICEST);
 
-	Vector3d zvec(0,0,1);
-	upV = camT*zvec;
+	gluLookAt(camT(0,3),camT(1,3),camT(2,3), // Camera position
+			  0,0,0, // Target Vector in scene
+			  camT(0,2),camT(1,2),camT(2,2));  // Up Vector from Camera pose
 
-	gluLookAt(camT(0,3),camT(1,3),camT(2,3),
-			  targT(0,3),targT(1,3),targT(2,3),
-			  upV[0],upV[1],upV[2]);
-
-	float position[]= {camT(0,3),camT(1,3),camT(2,3), 1.0};
+	float position[]= {camT(0,3),camT(1,3),camT(2,3), 1.0}; // Camera position
 	glEnable(GL_TEXTURE_2D);
 	glColor4f(1.0f,1.0f,1.0f,0.0f);
 
 	glPushMatrix();
 
-
 	glEnable(GL_LIGHTING);
 	glDisable(GL_LIGHT1);
 	glEnable(GL_LIGHT2);
 	glPushMatrix();
-	//float direction[] = {0.0, 0.5, -10.0, 0.0};
+
 	float no_mat[] = {0.0f, 0.0f, 0.0f, 1.0f};
 	float diffuse[] = {.7f, .7f, .7f, .7f};
 	float specular[] = {0.5f, 0.5f, 0.5f, 1.0f};
-	//float yellowAmbientDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 	glLightfv(GL_LIGHT1, GL_POSITION, position);
 	glLightfv(GL_LIGHT1, GL_AMBIENT, no_mat);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
@@ -100,7 +91,7 @@ int Viewer::DrawGLScene()
 
 	glPopMatrix();
 
-	glTranslated(worldT(0, 3),worldT(1, 3),worldT(2, 3));
+	glTranslated(worldV[0],worldV[1],worldV[2]);
 
 	float ambRefl[] = {0.2f, 0.2f, 0.2f, 1.0f}; // default
 	glMaterialfv(GL_FRONT, GL_AMBIENT, ambRefl);
@@ -173,7 +164,7 @@ void Viewer::OnMouse(wxMouseEvent& evt){
 
 	if(evt.ButtonDown() && !mouseCaptured){
 		prevCamT = camT;
-		prevWorldT = worldT;
+		prevWorldV = worldV;
 		xInit = x;
 		yInit = y;
 		SetFocus();
@@ -205,19 +196,18 @@ void Viewer::OnMouse(wxMouseEvent& evt){
 		drot *= pm;
 		camRotT = drot;
 
-		//drot.rotate(prevCamT.extractRotation()
-		//camRotT.rotate(AngleAxisd(phi, Vector3d::UnitY())).rotate(AngleAxisd(phi, Vector3d::UnitZ()));
-
 		existsUpdate = true;
 		UpdateCamera();
 
 	}else if(evt.MiddleIsDown() || evt.RightIsDown()){
 
 		Vector3d dispV = camRotT*Vector3d(0,(double)dx * CAMERASPEED , -(double)dy * CAMERASPEED);
-		worldT.translation() = prevWorldT.translation()+dispV;
+		worldV = prevWorldV+dispV;
 		existsUpdate = false;
 		UpdateCamera();
 	}
+
+	if(loading){ loading=false; ResetGL(); }
 }
 
 void Viewer::render(wxPaintEvent& WXUNUSED(evt)){
@@ -228,6 +218,7 @@ void Viewer::render(wxPaintEvent& WXUNUSED(evt)){
 }
 
 void Viewer::InitGL(){
+	loading=false;
 	existsUpdate=false;
 	doCollisions=false;
 	Move=false;
@@ -244,7 +235,6 @@ void Viewer::InitGL(){
 	xInit=0; yInit=0; x=0; y=0;
 
 	redrawCount=0;
-
 
     GetClientSize(&w, &h);
 	#ifndef __WXMOTIF__
@@ -270,15 +260,6 @@ void Viewer::InitGL(){
 	glFogf(GL_FOG_END, 15.f);
 	glFogi(GL_FOG_MODE, GL_LINEAR);
 
-
-	camT = AngleAxis<double> (0, Vector3d(0, 0, 0));
-	worldT = AngleAxis<double> (0, Vector3d(0, 0, 0));
-	targT = AngleAxis<double> (0, Vector3d(0, 0, 0));
-	camRotT = AngleAxis<double> (0, Vector3d(0, 0, 0));
-	prevCamT = AngleAxis<double> (0, Vector3d(0, 0, 0));
-	prevWorldT = AngleAxis<double> (0, Vector3d(0, 0, 0));
-	camRadius = defaultCamRadius;
-
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glPolygonMode (GL_FRONT, GL_FILL);
@@ -290,21 +271,11 @@ void Viewer::InitGL(){
 
 void Viewer::ResetGL(){
     GetClientSize(&w, &h);
-	#ifndef __WXMOTIF__
-    if (GetContext())
-	#endif
-    {
-		SetCurrent();
-        glViewport(0, 0, (GLint) w, (GLint) h);
-    }
+	SetCurrent();
+    glViewport(0, 0, (GLint) w, (GLint) h);
 
-	camT = AngleAxis<double> (0, Vector3d(0, 0, 0));
-	worldT = AngleAxis<double> (0, Vector3d(0, 0, 0));
-	targT = AngleAxis<double> (0, Vector3d(0, 0, 0));
-	camRotT = AngleAxis<double> (0, Vector3d(0, 0, 0));
-	prevCamT = AngleAxis<double> (0, Vector3d(0, 0, 0));
-	prevWorldT = AngleAxis<double> (0, Vector3d(0, 0, 0));
-	camRadius = defaultCamRadius;
+	glFlush();
+	glFinish();
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -313,12 +284,38 @@ void Viewer::ResetGL(){
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+	if(world != 0 && world->camRadius != 0){
+		camRadius = world->camRadius;
+		camRotT = world->camRotT;
+		camT = camRotT;
+		camT.translate(Vector3d(camRadius, 0, 0));
+		worldV = world->worldV;
+
+		prevCamT = camT;
+		prevWorldV = worldV;
+
+		gridColor = world->gridColor;
+		backColor = world->backColor;
+
+		cout << "Viewer: " << worldV[0] << " " << worldV[1] << " " << worldV[2] << endl;
+	}else{
+		camRotT = AngleAxis<double> (DEG2RAD(-30), Vector3d(0, 1, 0));
+		prevCamT = camRotT;
+		worldV = Vector3d(0, 0, 0);
+		prevWorldV = worldV;
+		camRadius = defaultCamRadius;
+
+		backColor = Vector3d(0,0,0);
+		gridColor = Vector3d(.5,.5,.0);
+	}
+
+	setClearColor();
 	UpdateCamera();
 }
 
-void Viewer::setClearColor(double r,double g, double b, double a){
-	glClearColor(r,g,b,a);
-	float FogCol[3]={r,g,b};
+void Viewer::setClearColor(){
+	glClearColor((float)backColor[0],(float)backColor[1],(float)backColor[2],1.0f);
+	float FogCol[3]={(float)backColor[0],(float)backColor[1],(float)backColor[2]};
 	glFogfv(GL_FOG_COLOR,FogCol);
 }
 
@@ -366,7 +363,8 @@ void Viewer::addGrid(){
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POINT_SMOOTH);
 
-	glColor3f(.2f,.2f,0.0f);
+	//glColor3f(.2f,.2f,0.0f);
+	glColor3d(gridColor[0],gridColor[1],gridColor[2]);
 
     glEvalMesh2(GL_LINE,
     0, 100,   /* Starting at 0 mesh 100 steps (rows). */

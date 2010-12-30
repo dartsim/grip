@@ -10,6 +10,8 @@
 //	  Robotics and Intelligent Machines
 //    Georgia Tech
 //--------------------------------------------------------------------
+#include "TemplateTab.h"
+
 #include <wx/wx.h>
 #include <GUI/Viewer.h>
 #include <GUI/GUI.h>
@@ -17,13 +19,7 @@
 #include <GUI/RSTFrame.h>
 #include <iostream>
 using namespace std;
-#include <Tools/World.h>
-#include <Tools/Robot.h>
-#include <Tools/Link.h>
-#include <Tools/Object.h>
-#include <Tools/Constants.h>
 
-#include "TemplateTab.h"
 #include <Tabs/AllTabs.h>
 #include <RSTApp.h>
 

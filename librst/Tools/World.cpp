@@ -16,7 +16,6 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-using namespace Eigen;
 
 World::World()
 {
@@ -158,6 +157,20 @@ int World::Save(string filename) {
 		}
 	}
 
+	// Output Camera and Colors
+	wstream << "##### SCENE INFO" << endl << endl;
+	wstream << "> CAMERA" << endl;
+	double roll=atan2(camRotT(2,1), camRotT(2,2));
+	double pitch=-asin(camRotT(2,0));
+	double yaw=atan2(camRotT(1,0), camRotT(0,0));
+	wstream << "ROT " << RAD2DEG(roll) << " " << RAD2DEG(pitch) << " " << RAD2DEG(yaw) << endl;
+	wstream << "WRT " << worldV[0] << " " << worldV[1] << " " << worldV[2] << endl;
+	wstream << "RAD " << camRadius << endl << endl;
+
+	wstream << "> COLORS" << endl;
+	wstream << "BACK " << backColor[0] << " " << backColor[1] << " " << backColor[2] << endl;
+	wstream << "GRID " << gridColor[0] << " " << gridColor[1] << " " << gridColor[2] << endl;
+
 	wstream.close();
 	return 0;
 }
@@ -225,6 +238,24 @@ int World::Load(string fullname) {
 			object->absPose.Identity();
 			objects.push_back(object);
 			state = OSTATE;
+		} else if (str == "CAMERA") {
+			double roll, pitch, yaw, tx, ty, tz, rad;
+			string space;
+			wstream >> space >> roll >> pitch >> yaw;
+			wstream >> space >> tx >> ty >> tz;
+			wstream >> space >> rad;
+			cout << "Loading Camera" << endl;
+
+			camRotT = AngleAxisd(DEG2RAD(yaw), Vector3d::UnitZ())
+				  * AngleAxisd(DEG2RAD(pitch), Vector3d::UnitY())
+				  * AngleAxisd(DEG2RAD(roll), Vector3d::UnitX());
+			worldV = Vector3d(tx,ty,tz);
+			camRadius = rad;
+		} else if (str == "COLORS") {
+			string space;
+			wstream >> space >> backColor[0] >> backColor[1] >> backColor[2];
+			wstream >> space >> gridColor[0] >> gridColor[1] >> gridColor[2];
+			cout << "Loading Colors" << endl;
 		}
 		///////////////////////////////////
 		// READ ROBOT SPEC
@@ -232,15 +263,11 @@ int World::Load(string fullname) {
 		else if (state == RSTATE) {
 			if (str == "POSITION") {
 				Vector3d pos;
-				wstream >> pos(0);
-				wstream >> pos(1);
-				wstream >> pos(2);
+				wstream >> pos(0) >> pos(1) >> pos(2);
 				robot->baseLink->absPose.translation() = pos;
 			} else if (str == "ORIENTATION") {
 				double roll, pitch, yaw;
-				wstream >> roll;
-				wstream >> pitch;
-				wstream >> yaw;
+				wstream >> roll >> pitch >> yaw;
 				Matrix3d rot;
 				rot = AngleAxisd(DEG2RAD(yaw), Vector3d::UnitZ())
 				  * AngleAxisd(DEG2RAD(pitch), Vector3d::UnitY())
@@ -248,7 +275,6 @@ int World::Load(string fullname) {
 				Vector3d temp = robot->baseLink->absPose.translation();
 				robot->baseLink->absPose = rot;
 				robot->baseLink->absPose.translation() = temp;
-//				robot->baseLink->absPose.rot = rot * robot->baseLink->absPose.rot;
 			} else if (str == "INIT") {
 				string buf;
 				wstream >> buf;
@@ -367,17 +393,12 @@ void World::updateAllCollisions(){
 void World::updateCollision(Object* ob){
 	if(ob->model == NULL) return;
 	int eid = ob->eid;
-	//Mat33 r = ob->absPose.rot;
-	//Vec3  t = ob->absPose.pos;
 
 	double newTrans[4][4] =
 	{{ob->absPose(0,0), ob->absPose(0,1), ob->absPose(0,2), ob->absPose(0,3)},
 	{ob->absPose(1,0), ob->absPose(1,1), ob->absPose(1,2), ob->absPose(1,3)},
 	{ob->absPose(2,0), ob->absPose(2,1), ob->absPose(2,2), ob->absPose(2,3)},
 	{0, 0, 0, 1}};
-	//double newTrans[4][4] = ob->absPose.data();
-	//double newTrans[4][4];
-	//memcpy(&newTrans,ob->absPose.data(),16*sizeof(double));
 
 	vcollide.UpdateTrans(eid,newTrans);
 }

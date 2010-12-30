@@ -20,6 +20,9 @@ class World;
 class RSTimeSlice;
 #include <vector>
 #include "TreeView.h"
+#include <Tools/Robot.h>
+#include <Tools/Link.h>
+#include <Tools/World.h>
 
 #include <string>
 using namespace std;

@@ -1,7 +1,7 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
-#define EIGEN_DONT_ALIGN
+//#define EIGEN_DONT_ALIGN
 // TODO Fix Eigen Alignment issues: http://eigen.tuxfamily.org/dox/UnalignedArrayAssert.html
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -10,12 +10,15 @@
 #include <Tools/GL/glcommon.h>
 #include <Tools/Model3DS.h>
 
+using namespace Eigen;
+
 class Viewer: public wxGLCanvas {
 public:
-	Eigen::Transform<double, 3, Eigen::Affine> camT, prevCamT, camRotT;
-	Eigen::Transform<double, 3, Eigen::Affine> targT, prevTargT;
-	Eigen::Transform<double, 3, Eigen::Affine> worldT, prevWorldT;
-	Eigen::Vector3d upV;
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+	Eigen::Transform<double, 3, Eigen::Affine> camT, prevCamT;
+	Matrix3d camRotT;
+	Vector3d worldV, prevWorldV;
+
 	Model3DS* model;
 
 	Viewer(wxWindow * parent, wxWindowID id, const wxPoint & pos,
@@ -35,15 +38,13 @@ public:
 	}
 
 	void InitGL();
-	void setClearColor(double r, double g, double b, double a);
+	void setClearColor();
 	void UpdateCamera();
-	void ResetCamera();
-	int DrawGLScene();
+	int  DrawGLScene();
 	void ResetGL();
 	void addGrid();
 
 	long x, y, xInit, yInit;
-
 	int w, h;
 
 	bool existsUpdate;
@@ -64,6 +65,10 @@ public:
 	bool mouseRDown;
 	bool mouseMDown;
 	int redrawCount;
+	bool loading;
+
+	Vector3d gridColor;
+	Vector3d backColor;
 
 	bool mouseCaptured;
 

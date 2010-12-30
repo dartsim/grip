@@ -13,18 +13,13 @@
 #include <iostream>
 #include <wx/wx.h>
 
+#include "InspectorTab.h"
+
 #include <GUI/Viewer.h>
 #include <GUI/GUI.h>
 #include <GUI/RSTSlider.h>
 #include <GUI/RSTFrame.h>
 
-#include <Tools/World.h>
-#include <Tools/Robot.h>
-#include <Tools/Link.h>
-#include <Tools/Object.h>
-#include <Tools/Constants.h>
-
-#include <Tabs/InspectorTab.h>
 
 using namespace std;
 using namespace Eigen;
@@ -109,8 +104,13 @@ void InspectorTab::OnSlider(wxCommandEvent &evt){
 	if(selectedTreeNode==NULL){ return; }
 
 	int selected = selectedTreeNode->dType;
-	if(selected == Return_Type_Object || selected == Return_Type_Link)
+	if(selected == Return_Type_Object){
 		o = (Object*)(selectedTreeNode->data);
+	}
+	else if(selected == Return_Type_Link){
+		l = (Link*)(selectedTreeNode->data);
+		o = (Object*)(selectedTreeNode->data);
+	}
 	else if(selected == Return_Type_Robot){
 		r = (Robot*)(selectedTreeNode->data);
 		o = (Object*)r->baseLink;
@@ -118,7 +118,6 @@ void InspectorTab::OnSlider(wxCommandEvent &evt){
 
 	//TODO ask mike if the logic for fromJoints is legit wrt reverseLinkORder
 	if(slnum == J_SLIDER && selected == Return_Type_Link){
-		l = (Link*)(o);
 		if(l->jType == Link::REVOL)
 			l->jVal = DEG2RAD(pos);
 		else
@@ -155,11 +154,6 @@ void InspectorTab::OnSlider(wxCommandEvent &evt){
 				o->absPose = rot;
 				o->absPose.translation() = tempTrans;
 				sprintf(numBuf,"Angle Change: %7.4f", pos);
-
-				//o->absPose.rot.setrpy(DEG2RAD(rollSlider->pos),DEG2RAD(pitchSlider->pos),DEG2RAD(yawSlider->pos));
-				//sprintf(numBuf,"Pitch Change: %7.4f", pos);
-				//o->absPose.rot.setrpy(DEG2RAD(rollSlider->pos),DEG2RAD(pitchSlider->pos),DEG2RAD(yawSlider->pos));
-				//sprintf(numBuf,"Yaw Change: %7.4f", pos);
 				break;
 			default:
 				return;
@@ -213,8 +207,13 @@ void InspectorTab::RSTStateChange() {
 
 	// Get the absPose data from each type of element
 
-	if(selected == Return_Type_Object || selected == Return_Type_Link)
+	if(selected == Return_Type_Object){
 		o = (Object*)(selectedTreeNode->data);
+	}
+	else if(selected == Return_Type_Link){
+		l = (Link*)(selectedTreeNode->data);
+		o = (Object*)l;
+	}
 	else if(selected == Return_Type_Robot){
 		r = (Robot*)(selectedTreeNode->data);
 		o = (Object*)r->baseLink;
@@ -228,7 +227,6 @@ void InspectorTab::RSTStateChange() {
 	xSlider->setValue(o->absPose(0,3),false);
 	ySlider->setValue(o->absPose(1,3),false);
 	zSlider->setValue(o->absPose(2,3),false);
-//	o->absPose.rot.torpy(roll,pitch,yaw);
 
 	rollSlider->setValue(RAD2DEG(roll),false);
 	pitchSlider->setValue(RAD2DEG(pitch),false);
@@ -254,7 +252,9 @@ void InspectorTab::RSTStateChange() {
 	}
 
 	if(selected == Return_Type_Link){
-		l = (Link*)o;
+		//cout << world->robots[0]->links[4] << " " << world->robots[0]->links[4]->name << " " << world->robots[0]->links[4]->parent << endl;
+		//cout << l << " " << l->name << " " << l->parent << endl;
+
 		statusBuf = " Selected Link: " + l->name + " of Robot: " + l->robot->name;
 		buf = "Link: " + l->name;
 		itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
@@ -275,8 +275,6 @@ void InspectorTab::RSTStateChange() {
 		parentName->Show();
 	}
 
-
 	//frame->SetStatusText(wxString(statusBuf.c_str(),wxConvUTF8));
-
 	//sizerFull->Layout();
 }
