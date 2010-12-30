@@ -355,65 +355,29 @@ void RSTFrame::OnToolMovie(wxCommandEvent& event){
 
 void RSTFrame::OnToolScreenshot(wxCommandEvent& event){
 	wxYield();
+
 	int w,h;
-
-	wxClientDC dc2(viewer);
-	dc2.GetSize(&w, &h);
-
-	unsigned char* imageData = (unsigned char*) malloc(w * h * 3);
-	glReadPixels(0, 0, w - 1, h - 1, GL_RGB, GL_UNSIGNED_BYTE, imageData);
-	wxImage img_ud(w,h,imageData);
-	wxImage img = img_ud.Mirror(false);
-	img.SaveFile(wxT("screenGL.png"), wxBITMAP_TYPE_PNG );
-
-	SetStatusText(wxT("Screenshot saved in: screenGL.png"));
-	event.Skip();
-/*
-	// Draw Full window pixels first
-	wxClientDC dc2(this);
-	dc2.GetSize(&w, &h);
-	wxMemoryDC memDC2;
-	wxBitmap memBmp2(w, h);
-	memDC2.SelectObject(memBmp2);
-	memDC2.Blit(0,0, w,h, &dc2, 0,0);
-
-	// Then draw viewer pixels, in case we're looping
 	wxClientDC dc(viewer);
 	dc.GetSize(&w, &h);
-	wxMemoryDC memDC;
-	wxBitmap memBmp(w, h);
-	memDC.SelectObject(memBmp);
 
-	// The slow way:
 	unsigned char* imageData = (unsigned char*) malloc(w * h * 3);
-	glReadPixels(0, 0, w - 1, h - 1, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+	glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+	wxImage img_ud(w,h,imageData);
+	wxImage img = img_ud.Mirror(false);
+	img.SaveFile(wxT("ScreenGL.png"), wxBITMAP_TYPE_PNG ); // Save GL image
+	wxBitmap glbit(img); // Create a bitmap from GL image
 
-	int wIndex = 0;
-	int hIndex = 0;
-	for (int i = 0; i < w * h * 3; i += 3, ++wIndex) {
-		if (wIndex >= w) {
-			wIndex = 0;
-			hIndex++;
-		}
-		// vertically flip the image
-		int hout = -hIndex + h - 1;
+	int w2,h2;
+	wxClientDC dc2(this);
+	dc2.GetSize(&w2, &h2);
+	wxBitmap bit;
+	bit.Create(w2,h2);
+	wxMemoryDC mem(bit);
+	mem.Blit(0,0,w2,h2,&dc2,0,0); // Blit the window
+	mem.DrawBitmap(glbit,2,2);    // Draw the GL image
+	bit.SaveFile(wxT("Screen.png"), wxBITMAP_TYPE_PNG );
 
-		memDC.SetPen(wxPen(wxColor((int) imageData[i], (int) imageData[i + 1], (int) imageData[i + 2]), 1));
-		memDC.DrawCircle(wIndex, hout, 1);
-		memDC2.SetPen(wxPen(wxColor((int) imageData[i], (int) imageData[i + 1], (int) imageData[i + 2]), 1));
-		memDC2.DrawCircle(wIndex, hout, 1);
-	}
-	free(imageData);
-
-    memDC.SelectObject(wxNullBitmap);
-    memDC2.SelectObject(wxNullBitmap);
-
-	wxString fname2(wxT("screen.png"));
-	memBmp2.SaveFile(fname2, wxBITMAP_TYPE_PNG);
-
-	wxString fname(wxT("screenGL.png"));
-	memBmp.SaveFile(fname, wxBITMAP_TYPE_PNG);
-*/
+	SetStatusText(wxT("Screenshots saved in: Screen.png and ScreenGL.png"));
 }
 
 int RSTFrame::saveText(wxString scenepath, const char* llfile)
