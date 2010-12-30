@@ -119,8 +119,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\librst\RSTApp.h" />
-    <ClInclude Include="..\mswd\wx\msw\rcdefs.h" />
-    <ClInclude Include="..\mswd\wx\setup.h" />
     <ClInclude Include="..\..\librst\Tools\Collision\AABB.H">
       <Filter>ANN</Filter>
     </ClInclude>
