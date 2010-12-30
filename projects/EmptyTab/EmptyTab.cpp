@@ -67,7 +67,7 @@ void EmptyTab::RSTStateChange() {
 
 // RST Library Calls THIS function to add your tab (put initialization here)
 void RSTApp::AddTab() {
-	ADD_TAB(EmptyTab,wxT("EmptyTab"));
+	ADD_TAB(EmptyTab,wxT("Empty Tab"));
 }
 
 
