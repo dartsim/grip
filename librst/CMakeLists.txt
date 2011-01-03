@@ -26,7 +26,6 @@ GUI/TreeView
 
 set ( SRC_FILES 
 Tools/GLTools
-Tools/InertiaTensor
 Tools/Link
 Tools/Model3DS
 Tools/Object
@@ -67,9 +66,9 @@ find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
   include_directories (${HEADERS})
-  #add_library (rst STATIC ${SRC})
-  add_executable (rst_exe ${SRC})
-  target_link_libraries (rst_exe ${wxWidgets_LIBRARIES})
+  add_library (rst STATIC ${SRC})
+  #add_executable (rst_exe ${SRC})
+  #target_link_libraries (rst_exe ${wxWidgets_LIBRARIES})
 else (wxWidgets_FOUND)
   message ("wxWidgets not found!")
 endif (wxWidgets_FOUND)
