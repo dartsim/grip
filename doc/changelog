@@ -1,10 +1,6 @@
-RST (0.2) unstable; urgency=low
+RST (0.1) unstable
 
-Thu, 09 Apr 2009
+Thu, 30 Dec 2010
 
   * Initial release
 
-Mon, 19 Oct 2009  pushkar
-
-  * Added a worker thread class to work for each RSTTab
-  * Added CMake and tested for GCC and Eclipse
