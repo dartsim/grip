@@ -52,4 +52,22 @@ Dependencies:
    cmake -G Xcode . 
    This will generate the Xcode project files. Open the Xcode project.
    Known Bugs: Project compiles, but cannot interact with RST.  
+
+3.2 For Eclipse:
+
+	Download wxWidgets2.9.x
+	Go to wxWidgets2.9.x folder
+	
+	mkdir osx-build
+	cd osx-build
+	../configure --with-osx_cocoa --enable-unicode --enable-universal-binary CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64" CPPFLAGS="-arch x86_64 " LDFLAGS="-arch x86_64" OBJCFLAGS="-arch x86_64" OBJCXXFLAGS="-arch x86_64 " --without-macosx-sdk
+	make
+	sudo make install
+	
+	Go to rst folder
+	
+	cmake -G"Eclipse CDT4 - Unix Makefiles" -D CMAKE_BUILD_TYPE=Debug .
+	make
+	
+
     
