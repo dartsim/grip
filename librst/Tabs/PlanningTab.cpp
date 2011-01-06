@@ -85,15 +85,15 @@ PlanningTab::PlanningTab(wxWindow *parent, const wxWindowID id,
 	// Create a sizer for radio buttons in 1st column
 	wxBoxSizer *col1Sizer = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *miniSizer = new wxBoxSizer(wxVERTICAL); // annoying hack to get checkboxes close together
-	miniSizer->Add(new wxCheckBox(this, checkbox_beGreedy, _T("&goal bias (be greedy)")),
+	miniSizer->Add(new wxCheckBox(this, checkbox_beGreedy, _T("&Goal Bias")),
 			1, // vertical stretch evenly
 			wxALIGN_NOT,
 			0);
-	miniSizer->Add(new wxCheckBox(this, checkbox_useConnect, _T("use &connect algorithm (be really greedy)")),
+	miniSizer->Add(new wxCheckBox(this, checkbox_useConnect, _T("Use &Connect algorithm")),
 			1, // vertical stretch evenly
 			wxALIGN_NOT,
 			0);
-	miniSizer->Add(new wxCheckBox(this, checkbox_showProgress, _T("show &progress (update viewer online)")),
+	miniSizer->Add(new wxCheckBox(this, checkbox_showProgress, _T("Show &Progress")),
 				1, // vertical stretch evenly
 				wxALIGN_NOT,
 				0);

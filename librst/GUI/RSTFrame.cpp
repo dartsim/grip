@@ -359,7 +359,7 @@ void RSTFrame::OnToolMovie(wxCommandEvent& event){
 		wxYield();
 
 		unsigned char* imageData = (unsigned char*) malloc(w * h * 3);
-		glReadPixels(0, 0, w - 1, h - 1, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+		glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, imageData);
 		wxImage img_ud(w,h,imageData);
 		wxImage img = img_ud.Mirror(false);
 
