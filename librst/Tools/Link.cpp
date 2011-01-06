@@ -112,7 +112,7 @@ void Link::updateRecursive(bool fromJoints, bool collisions){
 }
 
 // Updates absolute parent position based on child absolute position
-void Link::updateParentPose(){
+void Link::updateParentPose() {
 	if(parent != NULL) {
 		updateRelPose();
 		parent->absPose = absPose*pose.inverse(Eigen::Affine);

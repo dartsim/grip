@@ -55,8 +55,7 @@
 #endif
 
 
-World::World()
-{
+World::World() {
 }
 
 World::World(World &copyFrom)
@@ -380,29 +379,26 @@ int World::findRobot(string name){
 	return -1;
 }
 
-bool World::checkCollisions(){
+// returns true iff collision
+bool World::checkCollisions() {
 	VCReport report; // jon: why declaring internal report here???
     vcollide.Collide( &report, VC_FIRST_CONTACT);  //perform collision test.
-	if(report.numObjPairs() > 0) return false;
-	return true;
+	return report.numObjPairs() > 0;
 }
 
-void World::clearCollisions(){
-    for (unsigned int i = 0; i < entities.size(); i++)
-    {
+void World::clearCollisions() {
+    for (unsigned int i = 0; i < entities.size(); i++) {
 		entities[i].object->collisionFlag = false;
     }
 }
 
 void World::detectCollisions(){
-    vcollide.Collide( &report, VC_FIRST_CONTACT);  //perform collision test.
-	for(unsigned int i=0; i<entities.size(); i++){
+    vcollide.Collide(&report, VC_FIRST_CONTACT); //perform collision test.
+	for(unsigned int i = 0; i < entities.size(); i++) {
 		entities[i].object->collisionFlag = false;
-
 	}
-    for (int j = 0; j < report.numObjPairs(); j++)
-    {
-        flag=true;
+    for (int j = 0; j < report.numObjPairs(); j++) {
+        flag = true;
 		entities[report.obj1ID(j)].object->collisionFlag = true;
 		entities[report.obj2ID(j)].object->collisionFlag = true;
 		//cout << "COLL: "   << entities[report.obj1ID(j)].object->name<< " : " << entities[report.obj2ID(j)].object->name<<endl;
@@ -410,17 +406,17 @@ void World::detectCollisions(){
 }
 
 void World::updateAllCollisions(){
-	for(unsigned int i=0; i<entities.size(); i++){
+	for(unsigned int i = 0; i < entities.size(); i++) {
 		updateCollision(entities[i].object);
 		entities[i].object->collisionFlag = false;
 	}
-	for(unsigned int i=0; i<robots.size(); i++){
+	for(unsigned int i = 0; i < robots.size(); i++) {
 		Robot* r = robots[i];
-		for(unsigned int j=0; j<r->links.size(); j++){
-			for(unsigned int k=j; k<r->links.size(); k++){
+		for(unsigned int j=0; j<r->links.size(); j++) {
+			for(unsigned int k=j; k<r->links.size(); k++) {
 				Link* l1 = r->links[j];
 				Link* l2 = r->links[k];
-				if(l1->model != NULL && l2->model != NULL){
+				if(l1->model != NULL && l2->model != NULL) {
 					vcollide.DeactivatePair(l1->eid,l2->eid);
 				}
 			}
@@ -428,7 +424,7 @@ void World::updateAllCollisions(){
 	}
 }
 
-void World::updateCollision(Object* ob){
+void World::updateCollision(Object* ob) {
 	if(ob->model == NULL) return;
 	int eid = ob->eid;
 
@@ -438,7 +434,7 @@ void World::updateCollision(Object* ob){
 	{ob->absPose(2,0), ob->absPose(2,1), ob->absPose(2,2), ob->absPose(2,3)},
 	{0, 0, 0, 1}};
 
-	vcollide.UpdateTrans(eid,newTrans);
+	vcollide.UpdateTrans(eid, newTrans);
 }
 
 void World::updateRobot(Robot* robot)
@@ -453,5 +449,3 @@ void World::updateRobot(Robot* robot)
 		}
 	}
 }
-
-

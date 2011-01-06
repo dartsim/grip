@@ -41,45 +41,44 @@
 #include "../Tools/Link.h"
 #include "../Tools/Object.h"
 #include "RSTimeSlice.h"
+#include <iostream>
 
-RSTimeSlice::RSTimeSlice(World *w){
-	/*
+RSTimeSlice::RSTimeSlice(World *w) {
+	
 	oPose.clear();
 	rPose.clear();
 	rJoints.clear();
-	for(unsigned int i=0; i<w->objects.size(); i++){
+	for(unsigned int i = 0; i < w->objects.size(); i++) {
 		oPose.push_back(w->objects[i]->absPose);
 	}
-	for(unsigned int i=0; i<w->robots.size(); i++){
+	for(unsigned int i = 0; i < w->robots.size(); i++) {
 		Robot* r = w->robots[i];
 		rPose.push_back(r->baseLink->absPose);
-		vector<double> RJointVec;
-		RJointVec.clear();
-		for(unsigned int j=0; j<r->links.size(); j++){
-			RJointVec.push_back(r->links[j]->jVal);
+		Eigen::VectorXd RJointVec(r->links.size());
+		for(unsigned int j = 0; j < r->links.size(); j++) {
+			RJointVec[j] = r->links[j]->jVal;
 		}
 		rJoints.push_back(RJointVec);
 	}
-	*/
 }
 
-RSTimeSlice::~RSTimeSlice(){
+RSTimeSlice::~RSTimeSlice() {
+}
+
+void RSTimeSlice::SetToWorld(World* w) {
 	
-}
-
-void RSTimeSlice::SetToWorld(World* w){
-	/*
-	for(unsigned int i=0; i<w->objects.size(); i++){
+	for(unsigned int i = 0; i < w->objects.size(); i++) {
 		w->objects[i]->absPose = oPose[i];
 	}
-	for(unsigned int i=0; i<w->robots.size(); i++){
+	for(unsigned int i = 0; i < w->robots.size(); i++) {
 		Robot* r = w->robots[i];
 		r->baseLink->absPose = rPose[i];
-		for(unsigned int j=0; j<r->links.size(); j++){
+		for(unsigned int j = 0; j < r->links.size(); j++) {
 			r->links[j]->jVal = (rJoints[i])[j];
+			cout << (rJoints[i])[j] << endl;
 		}
+		cout << endl;
 		r->baseLink->updateRecursive(true); // used to say false before jon removed this arg in favor of global check_for_collisions
 	}
-	*/
+	
 }
-

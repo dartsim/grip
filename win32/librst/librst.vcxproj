@@ -112,6 +112,7 @@
     <ClCompile Include="..\..\librst\RST.cpp" />
     <ClCompile Include="..\..\librst\Tabs\AllTabs.cpp" />
     <ClCompile Include="..\..\librst\Tabs\InspectorTab.cpp" />
+    <ClCompile Include="..\..\librst\Tabs\PlanningTab.cpp" />
     <ClCompile Include="..\..\librst\Tools\ANN\ANN.cpp" />
     <ClCompile Include="..\..\librst\Tools\ANN\bd_fix_rad_search.cpp" />
     <ClCompile Include="..\..\librst\Tools\ANN\bd_pr_search.cpp" />
@@ -140,7 +141,9 @@
     <ClCompile Include="..\..\librst\Tools\Link.cpp" />
     <ClCompile Include="..\..\librst\Tools\Model3DS.cpp" />
     <ClCompile Include="..\..\librst\Tools\Object.cpp" />
+    <ClCompile Include="..\..\librst\Tools\PathPlanner.cpp" />
     <ClCompile Include="..\..\librst\Tools\Robot.cpp" />
+    <ClCompile Include="..\..\librst\Tools\RRT.cpp" />
     <ClCompile Include="..\..\librst\Tools\World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +156,7 @@
     <ClInclude Include="..\..\librst\RSTApp.h" />
     <ClInclude Include="..\..\librst\Tabs\AllTabs.h" />
     <ClInclude Include="..\..\librst\Tabs\InspectorTab.h" />
+    <ClInclude Include="..\..\librst\Tabs\PlanningTab.h" />
     <ClInclude Include="..\..\librst\Tabs\RSTTab.h" />
     <ClInclude Include="..\..\librst\Tabs\RSTThread.h" />
     <ClInclude Include="..\..\librst\Tools\ANN\ANN.h" />
@@ -187,7 +191,9 @@
     <ClInclude Include="..\..\librst\Tools\Link.h" />
     <ClInclude Include="..\..\librst\Tools\Model3DS.h" />
     <ClInclude Include="..\..\librst\Tools\Object.h" />
+    <ClInclude Include="..\..\librst\Tools\PathPlanner.h" />
     <ClInclude Include="..\..\librst\Tools\Robot.h" />
+    <ClInclude Include="..\..\librst\Tools\RRT.h" />
     <ClInclude Include="..\..\librst\Tools\World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

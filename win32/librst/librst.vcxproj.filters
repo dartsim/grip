@@ -116,6 +116,15 @@
     <ClCompile Include="..\..\librst\Tools\Collision\sample_client.cpp">
       <Filter>Collision</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\RRT.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\PathPlanner.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\librst\Tabs\PlanningTab.cpp">
+      <Filter>Tabs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\librst\RSTApp.h" />
@@ -250,6 +259,15 @@
     </ClInclude>
     <ClInclude Include="..\..\librst\Tools\GL\GLTexture.h">
       <Filter>GL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\RRT.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\PathPlanner.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tabs\PlanningTab.h">
+      <Filter>Tabs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
