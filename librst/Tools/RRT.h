@@ -61,8 +61,8 @@
  *      Author: jscholz
  */
 
-#ifndef RRT_H_
-#define RRT_H_
+#ifndef RRT_H
+#define RRT_H
 
 #include "ANN/ANN.h"
 #include <vector>
@@ -73,20 +73,24 @@
 #include "World.h"
 #include "Link.h"
 
-#define RANDNM(N,M) N + ((M-N) * (rand() / ((double)RAND_MAX + 1))) // random # between N&M
+#define RANDNM(N,M) N + ((M-N) * ((double)rand() / ((double)RAND_MAX + 1))) // random # between N&M
 
 // For representing and manipulating state configurations:
 #define config Eigen::VectorXd
-
-std::ostream& operator<<(std::ostream& os,const config& l);
 
 class RRT {
 public:
 	RRT();
 	~RRT();
 
+	typedef enum {
+		STEP_COLLISION,
+		STEP_REACHED,
+		STEP_PROGRESS
+	} StepResult;
+
 	// Fixed initialization code
-	void initialize(World* world, vector<Link*> links, config &ic, config &gc, config &mins, config &maxs, double ss = 0.02, int mn = 100000, int ll = 1000, double AE = 0);
+	void initialize(World* world, vector<Link*> links, config &ic, double ss = 0.02, int mn = 100000, int ll = 1000, double AE = 0);
 
 	void Init_ANN();
 
@@ -102,17 +106,13 @@ public:
 	double ANNeps;
 
 	config initConfig; // Container for starting configuration
-	config goalConfig; // Container for goalConfig configuration
 
 	config qtmp; // Container for random configuration
 
 	config minconfig; // Container for minimum configuration values
 	config maxconfig; // Container for maximum configuration values
 
-	config bestConfig;  // actual best configuration params
-	int bestConfIDX;	// refers to an index in configVector
-	double bestSD;		// squared distance to best config
-	int ssi; 			// steps since improvement - useful for planning TODO: use it
+	int activeNode;
 
 	std::vector<int> parentVector;		// vector of indices to relate configs in RRT
 	std::vector<config> configVector; 	// vector of all visited configs
@@ -126,17 +126,18 @@ public:
 	ANNdistArray		dists;					// near neighbor distances
 	ANNkd_tree*			kdTree;					// search structure
 
-	// Optional helper: takes a step from NN in a random direction
-	void stepRandom();
+	bool connect();
+	bool connect(config target);
+	
+	StepResult tryStep();
 
-	// Optional helper: takes a greedy step from NN towards target
-	void stepGreedy(config &target);
+	StepResult tryStep(config qtry);
 
 	// Tries to extend tree towards provided sample (must be overridden for MBP)
-	virtual void tryStep(config qtry, int NNidx);
+	virtual StepResult tryStep(config qtry, int NNidx);
 
 	// Adds qnew to the tree
-	void addNode(config &qnew, int parentID);
+	int addNode(config &qnew, int parentID);
 
 	// Sets qsamp a random configuration (may be overridden you want to do something else with sampled states)
 	virtual config& getRandomConfig();
@@ -144,16 +145,15 @@ public:
 	// Returns NN to query point
 	int getNearestNeighbor(config &qsamp);
 
-	// traces the path from bestConf to initConfig node
-	void tracePath(std::vector<config> &path);
+	double getGap(config target);
+
+	// traces the path from some node to the initConfig node
+	void tracePath(int node, std::vector<config> &path);
 
 	// Implementation-specific function for checking collisions  (must be overridden for MBP)
 	virtual bool checkCollisions(config &c);
-	/*
-	 * do virtual functions for all action stuff, and derive from RRT to do it?
-	 */
 };
 
 
 
-#endif /* RRT_H_ */
+#endif /* RRT_H */

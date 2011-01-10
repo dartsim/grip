@@ -42,20 +42,11 @@
 
 using namespace std;
 
-ostream& operator<<(ostream& os, const config& c) {
-	for (int i=0; i<c.size(); ++i){
-		os << c[i];
-		if (i<c.size()-1)
-			os << " ";
-	}
-	return os;
-}
-
 RRT::RRT() {
 	dataPts = NULL;
 }
 
-void RRT::initialize(World* world, vector<Link*> links, config &ic, config &gc, config &mins, config &maxs, double ss, int mn, int ll, double AE)
+void RRT::initialize(World* world, vector<Link*> links, config &ic, double ss, int mn, int ll, double AE)
 {
 	// clean-up from previous
 	cleanup();
@@ -70,18 +61,11 @@ void RRT::initialize(World* world, vector<Link*> links, config &ic, config &gc, 
 	ANNeps = AE;
 
 	initConfig = config(ic);
-	goalConfig = config(gc);
 
 	qtmp = config(ic);
 
-	minconfig = config(mins);
-	maxconfig = config(maxs);
-
 	parentVector.clear();
 	configVector.clear();
-
-	bestConfIDX = -1;
-	bestSD = DBL_MAX;
 
 	srand(time(NULL));
 
@@ -128,7 +112,7 @@ void RRT::Init_ANN()
 
 	nPts = 0;									// counter for number of data points
 
-	addNode(initConfig, bestConfIDX); 				// Add initConfig config and "-1" to state vectors and ANN
+	addNode(initConfig, -1); 				// Add initConfig config and "-1" to state vectors and ANN
 
 	kdTree = new ANNkd_tree(		// build search structure
 		dataPts,					// the data points
@@ -136,28 +120,36 @@ void RRT::Init_ANN()
 		ndim);						// dimension of space
 }
 
-void RRT::stepRandom()
-{
-	/*
-	 * Take a step in a random direction (wraps getRandomConfig,
-	 * getNearestNeighbor, and tryStep)
-	 */
-	getRandomConfig();
-	int NNidx = getNearestNeighbor(qtmp);
-	tryStep(qtmp, NNidx);
+bool RRT::connect() {
+	config qtry = getRandomConfig();
+	return connect(qtry);
 }
 
-void RRT::stepGreedy(config &target)
+bool RRT::connect(config target)
 {
-	/*
-	 * Implement this to take a step towards a specific configuration (also
-	 * wraps getRandomConfig, getNearestNeighbor, and addNode)
-	 */
 	int NNidx = getNearestNeighbor(target);
-	tryStep(target, NNidx);
+	StepResult result = STEP_PROGRESS;
+	int i = 0;
+	while(result == STEP_PROGRESS) {
+		result = tryStep(target, NNidx);
+		NNidx = configVector.size() - 1;
+		i++;
+	}
+	//cout << i << " " << result << endl;
+	return (result == STEP_REACHED);
 }
 
-void RRT::tryStep(config qtry, int NNidx)
+RRT::StepResult RRT::tryStep() {
+	config qtry = getRandomConfig();
+	return tryStep(qtry);
+}
+
+RRT::StepResult RRT::tryStep(config qtry) {
+	int NNidx = getNearestNeighbor(qtry);
+	return tryStep(qtry, NNidx);
+}
+
+RRT::StepResult RRT::tryStep(config qtry, int NNidx)
 {
 	/*
 	 * Calculates a new node to grow towards qtry, checks for collisions, and adds
@@ -166,35 +158,33 @@ void RRT::tryStep(config qtry, int NNidx)
 
 	config qnear(ndim);
 	config qnew(ndim);
-	qnear = configVector[NNidx];	// sets qnear to the closest configuration to qsamp
+	qnear = configVector[NNidx];
 
 	// Compute direction and magnitude
-	qnew = qtry - qnear;
-	double edist = qnew.norm();
+	Eigen::VectorXd diff = qtry - qnear;
+	double edist = diff.norm();
 
-	// Scale this vector to step_size and add to end of qnear
-	double scale = (double)step_size / edist;
-	for (int i=0; i<ndim; ++i){
-		qnew[i] = qnew[i] * scale + qnear[i];
+	if(edist < step_size) {
+		return STEP_REACHED;
 	}
 
+	// Scale this vector to step_size and add to end of qnear
+	double scale = step_size / edist;
+	for (int i=0; i<ndim; ++i){
+		qnew[i] = qnear[i] + diff[i] * scale;
+	}
+	
 	if (!checkCollisions(qnew)) {
 		addNode(qnew, NNidx);
-
-		double sd = (qnew - goalConfig).squaredNorm();
-
-		if (sd < bestSD) {
-			bestConfIDX = configVector.size()-1;	// if last node is closest, mark idx as greatestConf
-			bestSD = sd;
-			bestConfig = configVector[bestConfIDX];
-			//cout << "achieved best SD: " << bestSD << endl;
-			cout << "achieved best SD: " << bestSD << " (treesize=" << configVector.size() << ")" << endl;
-		}
+		return STEP_PROGRESS;
+	}
+	else {
+		return STEP_COLLISION;
 	}
 }
 
 
-void RRT::addNode(config &qnew, int parentID)
+int RRT::addNode(config &qnew, int parentID)
 {
 	/*
 	 * Expands RRT by attaching qnew at parentID (and
@@ -220,6 +210,9 @@ void RRT::addNode(config &qnew, int parentID)
 		kdTree = new ANNkd_tree(dataPts, nPts, ndim);
 		linearNNstart = configVector.size();
 	}
+
+	activeNode = configVector.size() - 1;
+	return configVector.size() - 1;
 }
 
 config& RRT::getRandomConfig()
@@ -229,7 +222,7 @@ config& RRT::getRandomConfig()
 	 * bounded by the provided configuration vectors (and returns ref to it)
 	 */
 	for (int i = 0; i < ndim; ++i) {
-		qtmp[i] = RANDNM(minconfig[i], maxconfig[i]);
+		qtmp[i] = RANDNM(links[i]->jMin, links[i]->jMax);
 	}
 	return qtmp;
 }
@@ -278,16 +271,21 @@ int RRT::getNearestNeighbor(config &qsamp)
 		if (dists[0] < min)
 			nearest = nnIdx[0];
 	}
+	activeNode = nearest;
 	return nearest;
 }
 
-void RRT::tracePath(std::vector<config> &path)
+double RRT::getGap(config target) {
+	return (target - configVector[activeNode]).norm();
+}
+
+void RRT::tracePath(int node, std::vector<config> &path)
 {
 	path.clear();
 
-	int x = bestConfIDX;
+	int x = node;
 
-	while(parentVector[x] != -1){
+	while(parentVector[x] != -1) {
 		path.insert(path.begin(), configVector[x]);
 		x = parentVector[x];
 	}

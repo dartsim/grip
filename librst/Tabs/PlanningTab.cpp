@@ -311,11 +311,24 @@ void PlanningTab::OnButton(wxCommandEvent &evt) {
 			//wxThread planThread;
 			//planThread.Create();
 			{
-			vector<Eigen::VectorXd> path;
+				vector<Eigen::VectorXd> path;
 
-			planner->planPath(world, world->robots[robotID]->activeLinks, startConf, goalConf, path);
+				std::vector<Link*> links;
+				for(int i = 0; i < 7; i++) {
+					links.push_back(world->robots[robotID]->activeLinks[i]);
+				}
+
+				bool success;
+				if(rrtStyle == 0) {
+					success = planner->planPath(world, links, startConf, goalConf, path, connectMode);
+				}
+				else {
+					success = planner->planPathBidirectional(world, links, startConf, goalConf, path, connectMode);
+				}
 			
-			SetTimeline(world->robots[robotID]->activeLinks, path);
+				if(success) {
+					SetTimeline(world->robots[robotID]->activeLinks, path);
+				}
 			}
 		break;
 
