@@ -75,9 +75,7 @@ void RSTimeSlice::SetToWorld(World* w) {
 		r->baseLink->absPose = rPose[i];
 		for(unsigned int j = 0; j < r->links.size(); j++) {
 			r->links[j]->jVal = (rJoints[i])[j];
-			cout << (rJoints[i])[j] << endl;
 		}
-		cout << endl;
 		r->baseLink->updateRecursive(true); // used to say false before jon removed this arg in favor of global check_for_collisions
 	}
 	

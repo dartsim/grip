@@ -72,12 +72,8 @@ public:
 	void updateParentPose();
 	void updateParentPoseRecursive(bool fromJoints = false, bool collisions = false);
 
-	void recursiveSetAncestry(Robot *, Link *);
+	void recursiveSetAncestry(Robot*, Link*);
 	void updateRecursiveCOM();
-
-	Link();
-	Link(Link &);
-	~Link();
 };
 
 #endif

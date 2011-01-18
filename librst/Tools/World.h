@@ -42,46 +42,37 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <vector>
-#include <queue>
-#include <list>
 #include <Tools/Collision/VCollide.h>
 #include <Tools/Model3DS.h>
 #include <Tools/Constants.h>
 
-using namespace std;
-using namespace Eigen;
 class Object;
 class Robot;
 
-struct Entity{
-	bool isLink;
-	Object* object;
-	Model3DS* model;
-};
-
 class World{
 public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 	World();
-	World(World &copyFrom);
+	World(const World &copyFrom);
 	~World();
 
 	bool flag;
-	vector<Robot*>	robots;
-	vector<Object*> objects;
-	vector<Entity>	entities;
+	std::vector<Robot*>	robots;
+	std::vector<Object*> objects;
+	std::vector<Object*> entities;
 
 	// Collision detection
 	VCollide vcollide;
 	VCReport report;
 
 	// Camera position
-	Matrix3d camRotT;
-	Vector3d worldV;
+	Eigen::Matrix3d camRotT;
+	Eigen::Vector3d worldV;
 	double camRadius;
 	// World colors
-	Vector3d gridColor;
-	Vector3d backColor;
+	Eigen::Vector3d gridColor;
+	Eigen::Vector3d backColor;
 
 	void Draw();
 	void DeleteModels();
@@ -93,7 +84,7 @@ public:
 	void clearCollisions();
 	bool checkCollisions();
 	void planeDetect();
-	void CreateEntity(Object* object, string path, bool link=false);
+	void CreateEntity(Object* object);
 
 	int Save(string);
 	int Load(string);

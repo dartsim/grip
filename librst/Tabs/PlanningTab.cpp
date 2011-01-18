@@ -306,26 +306,21 @@ void PlanningTab::OnButton(wxCommandEvent &evt) {
 			if(world == NULL){ cout << "Must load a world." << endl; break; }
 			if(world->robots.size() < 1){ cout << "Must load a world with a robot." << endl; break; }
 
-			planner = new PathPlanner();
+			planner = new PathPlanner(*world);
+
 
 			//wxThread planThread;
 			//planThread.Create();
 			{
-				vector<Eigen::VectorXd> path;
+				list<Eigen::VectorXd> path;
 
-				std::vector<Link*> links;
-				for(int i = 0; i < 7; i++) {
-					links.push_back(world->robots[robotID]->activeLinks[i]);
+				std::vector<int> linkIds;
+				for(int i = 0; i < world->robots[robotID]->activeLinks.size(); i++) {
+					linkIds.push_back(i);
 				}
 
-				bool success;
-				if(rrtStyle == 0) {
-					success = planner->planPath(world, links, startConf, goalConf, path, connectMode);
-				}
-				else {
-					success = planner->planPathBidirectional(world, links, startConf, goalConf, path, connectMode);
-				}
-			
+				bool success = planner->planPath(robotID, linkIds, startConf, goalConf, path, rrtStyle, connectMode);
+				
 				if(success) {
 					SetTimeline(world->robots[robotID]->activeLinks, path);
 				}
@@ -341,7 +336,7 @@ void PlanningTab::OnButton(wxCommandEvent &evt) {
 	}
 }
 
-void PlanningTab::SetTimeline(vector<Link*> links, vector<Eigen::VectorXd> path){
+void PlanningTab::SetTimeline(vector<Link*> links, list<Eigen::VectorXd> path){
 		if(world == NULL || planner == NULL || path.size() == 0){
 			cout << "Must create a valid plan before updating its duration." << endl;
 			return;
@@ -357,9 +352,9 @@ void PlanningTab::SetTimeline(vector<Link*> links, vector<Eigen::VectorXd> path)
 
 		frame->InitTimer(string("RRT_Plan"),increment);
 
-		for(int i=0; i < numsteps; i++) {
+		for(list<VectorXd>::iterator it = path.begin(); it != path.end(); it++) {
 			for(int l=0; l < links.size(); l++) {
-				links[l]->jVal = path[i][l];
+				links[l]->jVal = (*it)[l];
             }
             world->updateRobot(links[0]->robot);
             frame->AddWorld(world);

@@ -46,9 +46,8 @@
 #include <list>
 #include <string>
 
-using namespace std;
-
 class World;
+
 #include "Link.h"
 
 class Robot {
@@ -59,8 +58,8 @@ public:
 	Robot(Robot &);
 	~Robot();
 
-	vector<Link*> links;
-	vector<Link*> activeLinks;
+	std::vector<Link*> links;
+	std::vector<Link*> activeLinks;
 	Link* baseLink;
 	World* world;
 

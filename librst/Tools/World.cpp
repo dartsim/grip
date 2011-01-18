@@ -54,40 +54,36 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+using namespace Eigen;
 
 World::World() {
 }
 
-World::World(World &copyFrom)
+World::World(const World &copyFrom)
 {
-	this->entities.clear();
-	this->objects.clear();
-	this->robots.clear();
-
 	for(unsigned int i = 0; i < copyFrom.objects.size(); i++) {
-		this->objects.push_back(new Object(*copyFrom.objects[i]));
-		this->objects.back()->world = this; // don't forget to update the world ptr...
+		objects.push_back(new Object(*copyFrom.objects[i]));
+		objects.back()->world = this; // don't forget to update the world ptr...
+		CreateEntity(objects.back());
 	}
 
 	for(unsigned int i = 0; i < copyFrom.robots.size(); i++) {
-		this->robots.push_back(new Robot(*copyFrom.robots[i]));
-		this->robots.back()->world = this; // don't forget to update the world ptr...
+		robots.push_back(new Robot(*copyFrom.robots[i]));
+		robots.back()->world = this; // don't forget to update the world ptr...
+		for(int j = 0; j < robots.back()->links.size(); j++) {
+			CreateEntity(robots.back()->links[j]);
+		}
 	}
 
-	for(unsigned int i = 0; i < copyFrom.entities.size(); i++)
-		this->entities.push_back(copyFrom.entities[i]);
-
-	this->vcollide = copyFrom.vcollide; // just point to collision models originally created when 1st world was loaded
+	updateAllCollisions();
 }
 
 World::~World()
 {
 	for(unsigned int i = 0; i < this->objects.size(); i++)
 		delete this->objects[i];
-	this->objects.clear();
 	for(unsigned int i = 0; i < this->robots.size(); i++)
 		delete this->robots[i];
-	this->robots.clear();
 }
 
 void World::DeleteModels()
@@ -95,8 +91,8 @@ void World::DeleteModels()
 	cout << "deleting models... " << endl;
 	for(unsigned int i = 0; i < this->entities.size(); i++)
 	{
-		cout << "Deleting model for entity: " << this->entities[i].model->modelname << endl;
-		delete this->entities[i].model;
+		cout << "Deleting model for entity: " << this->entities[i]->model->modelname << endl;
+		delete this->entities[i]->model;
 	}
 	this->entities.clear();
 	cout << "done deleting models" << endl;
@@ -111,15 +107,9 @@ void World::Draw(){
 	}
 }
 
-void World::CreateEntity(Object* object, string path, bool link){
-	Entity ent;
-	ent.object = object;
-	ent.isLink = link;
+void World::CreateEntity(Object* object){
 
 	object->world = this;
-
-	Model3DS *model = object->LoadModel(path);
-	ent.model = model;
 
 	vector<Model3DS::Triangle> *trigs = new vector<Model3DS::Triangle>;
 	object->model->ReportTriangles(trigs);
@@ -127,7 +117,7 @@ void World::CreateEntity(Object* object, string path, bool link){
     flag=false;
 	vcollide.NewObject(&collCounter);
 	cerr << "Creating COLLISION MODEL: " << collCounter << endl;// << " for " << object->name << " # " << trigs->size() << endl;
-	for(unsigned int i = 0; i < trigs->size(); i++){
+	for(unsigned int i = 0; i < trigs->size(); i++) {
 		vcollide.AddTri((*trigs)[i].v1,(*trigs)[i].v2,(*trigs)[i].v3,collCounter);
 	}
 	vcollide.EndObject();
@@ -140,7 +130,7 @@ void World::CreateEntity(Object* object, string path, bool link){
 
 	object->eid = (int)entities.size();
 
-	entities.push_back(ent);
+	entities.push_back(object);
 }
 
 // Writes the scene state to a .rscene file
@@ -268,8 +258,8 @@ int World::Load(string fullname) {
 			if (object->pathname != "NOMODEL") {
 				fullpath = path;
 				fullpath.append(object->pathname);
-
-				CreateEntity(object, fullpath.c_str(), false);
+				object->LoadModel(fullpath);
+				CreateEntity(object);
 			}
 
 			object->absPose.Identity();
@@ -323,7 +313,6 @@ int World::Load(string fullname) {
 					cout << "Init: Link" << lnum << " to " << robot->links[lnum]->jVal << endl;
 				}
 			}
-
 		}
 		///////////////////////////////////
 		// READ OBJECT SPEC
@@ -388,27 +377,27 @@ bool World::checkCollisions() {
 
 void World::clearCollisions() {
     for (unsigned int i = 0; i < entities.size(); i++) {
-		entities[i].object->collisionFlag = false;
+		entities[i]->collisionFlag = false;
     }
 }
 
 void World::detectCollisions(){
     vcollide.Collide(&report, VC_FIRST_CONTACT); //perform collision test.
 	for(unsigned int i = 0; i < entities.size(); i++) {
-		entities[i].object->collisionFlag = false;
+		entities[i]->collisionFlag = false;
 	}
     for (int j = 0; j < report.numObjPairs(); j++) {
         flag = true;
-		entities[report.obj1ID(j)].object->collisionFlag = true;
-		entities[report.obj2ID(j)].object->collisionFlag = true;
+		entities[report.obj1ID(j)]->collisionFlag = true;
+		entities[report.obj2ID(j)]->collisionFlag = true;
 		//cout << "COLL: "   << entities[report.obj1ID(j)].object->name<< " : " << entities[report.obj2ID(j)].object->name<<endl;
     }
 }
 
 void World::updateAllCollisions(){
 	for(unsigned int i = 0; i < entities.size(); i++) {
-		updateCollision(entities[i].object);
-		entities[i].object->collisionFlag = false;
+		updateCollision(entities[i]);
+		entities[i]->collisionFlag = false;
 	}
 	for(unsigned int i = 0; i < robots.size(); i++) {
 		Robot* r = robots[i];

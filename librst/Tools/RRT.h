@@ -66,6 +66,7 @@
 
 #include "ANN/ANN.h"
 #include <vector>
+#include <list>
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctime>
@@ -131,10 +132,10 @@ public:
 	
 	StepResult tryStep();
 
-	StepResult tryStep(config qtry);
+	StepResult tryStep(const config &qtry);
 
 	// Tries to extend tree towards provided sample (must be overridden for MBP)
-	virtual StepResult tryStep(config qtry, int NNidx);
+	virtual StepResult tryStep(const config &qtry, int NNidx);
 
 	// Adds qnew to the tree
 	int addNode(config &qnew, int parentID);
@@ -143,17 +144,15 @@ public:
 	virtual config& getRandomConfig();
 
 	// Returns NN to query point
-	int getNearestNeighbor(config &qsamp);
+	int getNearestNeighbor(const config &qsamp);
 
 	double getGap(config target);
 
 	// traces the path from some node to the initConfig node
-	void tracePath(int node, std::vector<config> &path);
+	void tracePath(int node, std::list<config> &path, bool reverse = false);
 
 	// Implementation-specific function for checking collisions  (must be overridden for MBP)
 	virtual bool checkCollisions(config &c);
 };
-
-
 
 #endif /* RRT_H */

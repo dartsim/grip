@@ -144,12 +144,12 @@ RRT::StepResult RRT::tryStep() {
 	return tryStep(qtry);
 }
 
-RRT::StepResult RRT::tryStep(config qtry) {
+RRT::StepResult RRT::tryStep(const config &qtry) {
 	int NNidx = getNearestNeighbor(qtry);
 	return tryStep(qtry, NNidx);
 }
 
-RRT::StepResult RRT::tryStep(config qtry, int NNidx)
+RRT::StepResult RRT::tryStep(const config &qtry, int NNidx)
 {
 	/*
 	 * Calculates a new node to grow towards qtry, checks for collisions, and adds
@@ -227,7 +227,7 @@ config& RRT::getRandomConfig()
 	return qtmp;
 }
 
-int RRT::getNearestNeighbor(config &qsamp)
+int RRT::getNearestNeighbor(const config &qsamp)
 {
 	/*
 	 * Returns ID of config node nearest to qsamp
@@ -279,14 +279,17 @@ double RRT::getGap(config target) {
 	return (target - configVector[activeNode]).norm();
 }
 
-void RRT::tracePath(int node, std::vector<config> &path)
+void RRT::tracePath(int node, std::list<config> &path, bool reverse)
 {
-	path.clear();
-
 	int x = node;
-
+	
 	while(parentVector[x] != -1) {
-		path.insert(path.begin(), configVector[x]);
+		if(!reverse) {
+			path.push_front(configVector[x]);
+		}
+		else {
+			path.push_back(configVector[x]);
+		}
 		x = parentVector[x];
 	}
 }
@@ -297,6 +300,17 @@ bool RRT::checkCollisions(config &c)
 		links[i]->jVal = c[i];
 	}
 	links[0]->robot->baseLink->updateRecursive(true, true);
+	
+
+	for(unsigned int i=0; i < links[0]->robot->links.size(); i++){
+		Link* link = links[0]->robot->links[i];
+		if(link->parent == NULL) {
+			link->updateRecursive(true, true); // always check collisions?
+		}
+	}
+
+	world->updateRobot(links[0]->robot);
+
 	return world->checkCollisions();
 }
 

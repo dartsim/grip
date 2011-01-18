@@ -78,7 +78,6 @@ public:
 	bool comFlag;
 
 	Object();
-	Object(Object&);
 	~Object();
 
 	Model3DS* LoadModel(string);

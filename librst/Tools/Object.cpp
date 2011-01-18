@@ -62,18 +62,6 @@ Object::Object()
 	//gluQuadricTexture(quadratic, GL_TRUE);
 }
 
-Object::Object(Object &copyFrom)
-{
-	this->absPose = copyFrom.absPose;
-	this->COM = copyFrom.COM;
-	this->idNum = copyFrom.idNum;
-	this->inertia = copyFrom.inertia;
-	this->mass = copyFrom.mass;
-	this->model = copyFrom.model;
-	this->movable = copyFrom.movable;
-	this->name = copyFrom.name;
-	this->primitiveType = copyFrom.primitiveType;
-}
 
 Object::~Object()
 {
