@@ -38,10 +38,10 @@
 
 #include <Tabs/AllTabs.h>
 #include <Tabs/InspectorTab.h>
-#include <Tabs/PlanningTab.h>
+// #include <Tabs/PlanningTab.h>
 
 void addAllTabs() {
 	ADD_TAB(InspectorTab,wxT("Inspector"))
-	ADD_TAB(PlanningTab,wxT("Path Planner"))
+	// ADD_TAB(PlanningTab,wxT("Path Planner"))
 	tabView->SetSelection(0);
 }
