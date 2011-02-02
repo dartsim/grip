@@ -42,37 +42,6 @@
 
 using namespace Eigen;
 
-Link::Link()
-{
-}
-
-Link::~Link()
-{
-}
-
-Link::Link(Link &copyFrom): Object(copyFrom)
-{
-	this->absPose = copyFrom.absPose;
-	this->COM = copyFrom.COM;
-	this->idNum = copyFrom.idNum;
-	this->inertia = copyFrom.inertia;
-	this->jAxis = copyFrom.jAxis;
-	this->jMax = copyFrom.jMax;
-	this->jMin = copyFrom.jMin;
-	this->jTrans = copyFrom.jTrans;
-	this->jType = copyFrom.jType;
-	this->jVal = copyFrom.jVal;
-	this->mass = copyFrom.mass;
-	this->pose = copyFrom.pose;
-	this->model = copyFrom.model;
-	this->movable = copyFrom.movable;
-	this->name = copyFrom.name;
-	this->index = copyFrom.index;
-	this->parent = NULL;
-	this->robot = NULL;
-	this->children.clear();
-}
-
 void Link::recursiveSetAncestry(Robot *rootRobot, Link *parentLink)
 {
 	this->parent = parentLink;
@@ -112,7 +81,7 @@ void Link::updateRecursive(bool fromJoints, bool collisions){
 }
 
 // Updates absolute parent position based on child absolute position
-void Link::updateParentPose(){
+void Link::updateParentPose() {
 	if(parent != NULL) {
 		updateRelPose();
 		parent->absPose = absPose*pose.inverse(Eigen::Affine);
@@ -125,7 +94,7 @@ void Link::updateParentPoseRecursive(bool fromJoints, bool collisions){
 		updateRelPose();
 		parent->absPose = absPose*pose.inverse(Eigen::Affine);
 		parent->updateParentPoseRecursive(fromJoints, collisions);
-	}else{
+	} else {
 		// When all the way up to the base link, come back down
 		updateRecursive(fromJoints, collisions);
 	}

@@ -54,7 +54,6 @@ Robot::Robot(Robot &copyFrom)
 {
 	links.clear();
 	activeLinks.clear();
-	//this->world = NULL; // good for safety, but we may want to clone robots w/in a world
 
 	this->name = copyFrom.name;
 	this->idNum = copyFrom.idNum;
@@ -62,9 +61,11 @@ Robot::Robot(Robot &copyFrom)
 
 	for(unsigned int i = 0; i < copyFrom.links.size(); i++){
 		this->links.push_back(new Link(*copyFrom.links[i]));
+		this->links.back()->robot = this;
 	}
 
-	for(unsigned int i = 0; i < copyFrom.links.size(); i++){
+	for(unsigned int i = 0; i < copyFrom.links.size(); i++) {
+		links[i]->children.clear();
 		if(copyFrom.links[i]->parent == NULL){
 			this->links[i]->parent = NULL;
 			this->baseLink = this->links[i];
@@ -77,11 +78,10 @@ Robot::Robot(Robot &copyFrom)
 		}
 	}
 
-	int numRootLinks = (int)this->links.size();
+	/*int numRootLinks = (int)this->links.size();
 	for(int i = 0; i < numRootLinks; i++)
-		this->links[i]->recursiveSetAncestry(this, NULL);
+		this->links[i]->recursiveSetAncestry(this, NULL);*/
 
-	// Added copy of active links by jon in rst2.1
 	for(unsigned int i = 0; i < copyFrom.activeLinks.size(); i++){
 		int fromIDX = copyFrom.activeLinks[i]->index;
 		this->activeLinks.push_back(this->links[fromIDX]);
@@ -156,7 +156,7 @@ int Robot::Load(string fullname, World* w){
 	int fpos;
 	int lnum=0;
 
-	while(!rstream.eof()){
+	while(!rstream.eof()) {
 		fpos = rstream.tellg();
 		lnum++;
 
@@ -182,8 +182,10 @@ int Robot::Load(string fullname, World* w){
 				if(filename != "NOMODEL"){
 					string fullpath(path);
 					fullpath.append(filename);
-					world->CreateEntity(link,fullpath,true);
+					link->LoadModel(fullpath);
+					world->CreateEntity(link);
 				}
+
 
 				streampos curpos = rstream.tellg();
 				rstream >> str;
@@ -195,7 +197,6 @@ int Robot::Load(string fullname, World* w){
 
 				links.push_back(link);
 				link->index = (int)links.size()-1;
-
 		}
 		//NEW ELSE IF FOR COM
 		else if(str == "COM"){
@@ -219,7 +220,7 @@ int Robot::Load(string fullname, World* w){
 
 				cout<<endl<<"Link: "<<link->name<<" mass: "<<link->mass <<" COM X: "<<link->COM(0) <<" Y: "<<link->COM(1) <<" Z: "<< link->COM(2) <<endl;
 		}
-		else if(str == "CON"){
+		else if(str == "CON") {
 				string pname, cname;
 				rstream >> pname;
 				rstream >> cname;
@@ -227,7 +228,7 @@ int Robot::Load(string fullname, World* w){
 				int pnum, cnum;
 				if(pname == "WORLD"){
 					pnum = -2;
-				}else{
+				} else {
 					pnum = findLink(pname); // find index of parent name
 				}
 				cnum = findLink(cname);		// find index of link name
@@ -280,9 +281,11 @@ int Robot::Load(string fullname, World* w){
 				if(buf == "FREE") link->jType = Link::FREE;
 
 				if(link->jType == Link::REVOL || link->jType == Link::PRISM){
-					rstream >> link->jMin;
-					rstream >> link->jMax;
-
+					double min, max;
+					rstream >> min;
+					rstream >> max;
+					link->jMin = DEG2RAD(min);
+					link->jMax = DEG2RAD(max);
 					activeLinks.push_back(link);
 				}
 				link->updateRelPose();

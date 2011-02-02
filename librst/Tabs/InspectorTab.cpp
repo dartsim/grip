@@ -286,7 +286,7 @@ void InspectorTab::RSTStateChange() {
 		itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
 		if(l->parent != NULL){
 			buf2 = "Parent Link: " + l->parent->name + "   Robot: " + l->robot->name;
-			jSlider->setRange(l->jMin,l->jMax);
+			jSlider->setRange(RAD2DEG(l->jMin),RAD2DEG(l->jMax));
 			if(l->jType == Link::REVOL){
 				jSlider->setValue(RAD2DEG(l->jVal));
 			}else{
