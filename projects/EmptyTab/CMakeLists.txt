@@ -5,7 +5,7 @@ include_directories(../../librst ../../)
 
 set (CMAKE_CXX_FLAGS "-L../../librst")
 
-set ( SRC_TAB_SIMULATION EmptyTab )
+set ( SRC_TAB_SIMULATION EmptyTab EmptyTabApp )
 
 set (wxWidgets_USE_LIBS base core gl)
 find_package (wxWidgets)

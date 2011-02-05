@@ -31,6 +31,7 @@ Tools/Model3DS
 Tools/Object
 Tools/Robot
 Tools/World
+Tools/IK
 Tools/GL/GLTexture.cpp
 Tools/Collision/build
 Tools/Collision/collide
