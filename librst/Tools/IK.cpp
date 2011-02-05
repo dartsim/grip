@@ -103,7 +103,7 @@ void IK::init(World* world, int robotId, int lastLinkId, const Transform<double,
 	Link* link = world->robots[robotId]->links[lastLinkId];
 	int i = 7;
 	while(i >= 0) {
-		if(link->jType == Link::JointType::REVOL || i == 0) {
+		if(link->jType == Link::REVOL || i == 0) {
 			links[i] = link;
 			i--;
 		}
