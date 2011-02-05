@@ -125,6 +125,9 @@
     <ClCompile Include="..\..\librst\Tabs\PlanningTab.cpp">
       <Filter>Tabs</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\IK.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\librst\RSTApp.h" />
@@ -268,6 +271,9 @@
     </ClInclude>
     <ClInclude Include="..\..\librst\Tabs\PlanningTab.h">
       <Filter>Tabs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\IK.h">
+      <Filter>Tools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

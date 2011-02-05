@@ -363,8 +363,18 @@ int World::Load(string fullname) {
 }
 
 int World::findRobot(string name){
-	for(unsigned int i=0; i<robots.size(); i++)
-		if(robots[i]->name == name) return i;
+	for(unsigned int i=0; i<robots.size(); i++) {
+		if(robots[i]->name == name)
+			return i;
+	}
+	return -1;
+}
+
+int World::findObject(string name) {
+	for(unsigned int i = 0; i < objects.size(); i++) {
+		if(objects[i]->name == name)
+			return i;
+	}
 	return -1;
 }
 

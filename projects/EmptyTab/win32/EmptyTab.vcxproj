@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\EmptyTab.cpp" />
+    <ClCompile Include="..\EmptyTabApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\EmptyTab.h" />
@@ -51,7 +52,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\wxWidgets\include;C:\wxWidgets\lib\msw;..\..\librst;..\..\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\wxWidgets\include;C:\wxWidgets\lib\msw;$(IncludePath)</IncludePath>
     <LibraryPath>C:\wxWidgets\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

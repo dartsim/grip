@@ -78,6 +78,7 @@ public:
 	void DeleteModels();
 	void updateRobot(Robot* robot);
 	int findRobot(string name);
+	int findObject(string name);
 	void updateAllCollisions();
 	void updateCollision(Object *ob);
 	void detectCollisions();

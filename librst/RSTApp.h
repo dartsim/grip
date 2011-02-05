@@ -39,14 +39,18 @@
 #ifndef RSTAPP_H_
 #define RSTAPP_H_
 
+#include "wx/wxprec.h"
+#ifndef WX_PRECOMP
+	#include "wx/wx.h"
+#endif
+#include <wx/notebook.h>
+#include "Tabs/RSTTab.h"
 
 class RSTApp : public wxApp
 {
 public:
     virtual bool OnInit();
-    void AddTab();
+	virtual void AddTabs() {}
 };
-
-DECLARE_APP(RSTApp)
 
 #endif /* RSTAPP_H_ */

@@ -48,6 +48,10 @@ class Robot;
 class Link: public Object {
 public:
 
+	Link::Link()
+		: attachedObject(NULL) {
+	}
+
 	Eigen::Transform<double, 3, Eigen::Affine> pose;
 	Eigen::Transform<double, 3, Eigen::Affine> jTrans;
 	Eigen::Vector3d jAxis;
@@ -55,6 +59,8 @@ public:
 	Robot *robot;
 	Link *parent;
 	vector<Link*> children;
+	Object* attachedObject;
+	Eigen::Transform<double, 3, Eigen::Affine> attachedObjectPose;
 
 	enum JointType {
 		REVOL, PRISM, FIXED, FREE
@@ -74,6 +80,9 @@ public:
 
 	void recursiveSetAncestry(Robot*, Link*);
 	void updateRecursiveCOM();
+
+	bool attachObject(Object* object);
+	void releaseObject();
 };
 
 #endif

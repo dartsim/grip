@@ -50,12 +50,6 @@ using namespace std;
 #include <RSTApp.h>
 
 
-
-void RSTApp::AddTab() {
-	ADD_TAB(TemplateTab,wxT("Template Tab"));
-}
-
-
 //Give each slider a number so we recognize them (also indicates order of select on tabbing)
 enum sliderNames {
 	SAMPLE_RST_SLIDER1 = 1000, SAMPLE_RST_SLIDER2 = 1001

@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\TemplateTab.cpp" />
+    <ClCompile Include="..\TemplateTabApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\TemplateTab.h" />

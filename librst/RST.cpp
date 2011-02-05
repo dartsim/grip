@@ -44,7 +44,6 @@
 #include "GUI/icons/robot.xpm"
 #include "RSTApp.h"
 
-IMPLEMENT_APP(RSTApp)
 
 bool RSTApp::OnInit()
 {
@@ -64,6 +63,8 @@ bool RSTApp::OnInit()
     frame = new RSTFrame(wxT("RST"));
 	frame->SetFocus();
 
+	AddTabs();
+
 	wxInitAllImageHandlers();
 	wxImage rstimg = wxImage(robot_xpm);
 	char r,g,b;
@@ -77,8 +78,6 @@ bool RSTApp::OnInit()
 	frame->SetIcon(ico);
     frame->Show(true);
 
-    AddTab();
-	tabView->SetSelection(0);
     return true;
 }
 

@@ -138,6 +138,7 @@
     <ClCompile Include="..\..\librst\Tools\Collision\VInternal.cpp" />
     <ClCompile Include="..\..\librst\Tools\GLTools.cpp" />
     <ClCompile Include="..\..\librst\Tools\GL\GLTexture.cpp" />
+    <ClCompile Include="..\..\librst\Tools\IK.cpp" />
     <ClCompile Include="..\..\librst\Tools\Link.cpp" />
     <ClCompile Include="..\..\librst\Tools\Model3DS.cpp" />
     <ClCompile Include="..\..\librst\Tools\Object.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="..\..\librst\Tools\GLTools.h" />
     <ClInclude Include="..\..\librst\Tools\GL\glcommon.h" />
     <ClInclude Include="..\..\librst\Tools\GL\GLTexture.h" />
+    <ClInclude Include="..\..\librst\Tools\IK.h" />
     <ClInclude Include="..\..\librst\Tools\Link.h" />
     <ClInclude Include="..\..\librst\Tools\Model3DS.h" />
     <ClInclude Include="..\..\librst\Tools\Object.h" />

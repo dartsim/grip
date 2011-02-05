@@ -64,10 +64,3 @@ EmptyTab::EmptyTab(wxWindow *parent, const wxWindowID id,
 // All tabs get a message for certain changes in RST (in case they want to do something)
 void EmptyTab::RSTStateChange() {
 }
-
-// RST Library Calls THIS function to add your tab (put initialization here)
-void RSTApp::AddTab() {
-	ADD_TAB(EmptyTab,wxT("Empty Tab"));
-}
-
-

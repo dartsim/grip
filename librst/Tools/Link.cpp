@@ -61,9 +61,12 @@ void Link::updateRelPose(){
 }
 
 // Updates absolute pose from relative pose and parent absolute pose
-void Link::updateAbsPose(){
+void Link::updateAbsPose() {
 	if(parent != NULL){
 		absPose = parent->absPose*pose;
+		if(attachedObject != NULL) {
+			attachedObject->absPose = absPose * attachedObjectPose;
+		}
 	}
 }
 
@@ -85,11 +88,14 @@ void Link::updateParentPose() {
 	if(parent != NULL) {
 		updateRelPose();
 		parent->absPose = absPose*pose.inverse(Eigen::Affine);
+		if(parent->attachedObject != NULL) {
+			attachedObject->absPose = parent->absPose * attachedObjectPose;
+		}
 	}
 }
 
 //Same as above but recurses effects throughout the robot
-void Link::updateParentPoseRecursive(bool fromJoints, bool collisions){
+void Link::updateParentPoseRecursive(bool fromJoints, bool collisions) {
 	if(parent != NULL) {
 		updateRelPose();
 		parent->absPose = absPose*pose.inverse(Eigen::Affine);
@@ -98,4 +104,20 @@ void Link::updateParentPoseRecursive(bool fromJoints, bool collisions){
 		// When all the way up to the base link, come back down
 		updateRecursive(fromJoints, collisions);
 	}
+}
+
+
+bool Link::attachObject(Object* object) {
+	if(attachedObject != NULL) {
+		return false;
+	}
+	else {
+		attachedObject = object;
+		attachedObjectPose = absPose.inverse() * object->absPose;
+		return true;
+	}
+}
+
+void Link::releaseObject() {
+	attachedObject = NULL;
 }
