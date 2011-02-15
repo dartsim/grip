@@ -283,7 +283,7 @@ void RRT::tracePath(int node, std::list<config> &path, bool reverse)
 {
 	int x = node;
 	
-	while(parentVector[x] != -1) {
+	while(x != -1) {
 		if(!reverse) {
 			path.push_front(configVector[x]);
 		}

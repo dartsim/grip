@@ -78,10 +78,6 @@ Robot::Robot(Robot &copyFrom)
 		}
 	}
 
-	/*int numRootLinks = (int)this->links.size();
-	for(int i = 0; i < numRootLinks; i++)
-		this->links[i]->recursiveSetAncestry(this, NULL);*/
-
 	for(unsigned int i = 0; i < copyFrom.activeLinks.size(); i++){
 		int fromIDX = copyFrom.activeLinks[i]->index;
 		this->activeLinks.push_back(this->links[fromIDX]);
@@ -116,11 +112,18 @@ int Robot::findLink(string name){
 	return -1;
 }
 
-void Robot::setConf(VectorXd conf, bool collision){
-	for(unsigned int i=0; i<activeLinks.size(); i++){
+void Robot::setConf(VectorXd conf, bool collision) {
+	for(unsigned int i = 0; i < activeLinks.size(); i++) {
 		activeLinks[i]->jVal = conf[i];
 	}
-	baseLink->updateRecursive(true,collision);
+	baseLink->updateRecursive(true, collision);
+}
+
+void Robot::setConf(vector<int> links, VectorXd conf, bool collision) {
+	for(unsigned int i = 0; i < links.size(); i++) {
+		this->links[links[i]]->jVal = conf[i];
+	}
+	baseLink->updateRecursive(true, collision);
 }
 
 void Robot::getConf(VectorXd conf){

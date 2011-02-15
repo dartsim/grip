@@ -2,6 +2,8 @@
 #include "RRT.h"
 #include "Robot.h"
 
+using namespace std;
+using namespace Eigen;
 
 PathPlanner::PathPlanner(World& world, bool copyWorld) {
 	if(copyWorld) {
@@ -10,6 +12,7 @@ PathPlanner::PathPlanner(World& world, bool copyWorld) {
 	else {
 		this->world = &world;
 	}
+	stepsize = 0.1;
 }
 
 PathPlanner::~PathPlanner() {
@@ -18,10 +21,43 @@ PathPlanner::~PathPlanner() {
 	}
 }
 
+bool PathPlanner::checkPathSegment(int robotId, vector<int> linkIds, VectorXd config1, VectorXd config2) {
+	int n = (int)((config2 - config1).norm() / stepsize);
+	for(int i = 0; i < n; i++) {
+		VectorXd conf = (double)(n - i)/(double)n * config1 + (double)(i)/(double)n * config2;
+		world->robots[0]->setConf(linkIds, conf, true);
+		if(world->checkCollisions()) {
+			return false;
+		}
+	}
+	return true;
+}
+
+void PathPlanner::smoothPath(int robotId, std::vector<int> linkIds, list<VectorXd> &path) {
+	list<VectorXd>::iterator temp, config1;
+	list<VectorXd>::iterator config2 = path.begin();
+
+	while(true) {
+		config1 = config2;
+		config2++;
+		if(config2 == path.end()) return;
+		temp = config2;
+		config2++;
+		if(config2 == path.end()) return;
+	
+		while(checkPathSegment(robotId, linkIds, *config1, *config2)) {
+			path.erase(temp);
+			temp = config2;
+			config2++;
+			if(config2 == path.end()) return;
+		}
+	}
+}
+
 bool PathPlanner::planPath(int robotId, std::vector<int> linkIds, Eigen::VectorXd start, Eigen::VectorXd goal, std::list<Eigen::VectorXd> &path, bool bidirectional, bool connect, bool smooth) {
 	std::vector<Link*> links(linkIds.size());
 	for(int i = 0; i < linkIds.size(); i++) {
-		links[i] = world->robots[robotId]->activeLinks[linkIds[i]];
+		links[i] = world->robots[robotId]->links[linkIds[i]];
 	}
 		
 	bool result;
@@ -30,7 +66,7 @@ bool PathPlanner::planPath(int robotId, std::vector<int> linkIds, Eigen::VectorX
 	else
 		result = planSingleTreeRrt(links, start, goal, path, connect);
 	if(result && smooth) {
-		//TODO: smooth path
+		smoothPath(robotId, linkIds, path);
 	}
 	return result;
 }
@@ -67,8 +103,8 @@ bool PathPlanner::planBidirectionalRrt(std::vector<Link*> links, Eigen::VectorXd
 	
 	RRT start_rrt;
 	RRT goal_rrt;
-	start_rrt.initialize(world, links, start);
-	goal_rrt.initialize(world, links, goal);
+	start_rrt.initialize(world, links, start, stepsize);
+	goal_rrt.initialize(world, links, goal, stepsize);
 	RRT* rrt1 = &start_rrt;
 	RRT* rrt2 = &goal_rrt;
 	

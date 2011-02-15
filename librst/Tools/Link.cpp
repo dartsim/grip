@@ -64,7 +64,7 @@ void Link::updateRelPose(){
 void Link::updateAbsPose() {
 	if(parent != NULL){
 		absPose = parent->absPose*pose;
-		if(attachedObject != NULL) {
+		if(attachedObject) {
 			attachedObject->absPose = absPose * attachedObjectPose;
 		}
 	}
@@ -72,8 +72,12 @@ void Link::updateAbsPose() {
 
 // Given a new absolute position, propogates effects down the tree
 void Link::updateRecursive(bool fromJoints, bool collisions){
-	if(collisions)
-		this->robot->world->updateCollision(this);
+	if(collisions) {
+		world->updateCollision(this);
+		if(attachedObject) {
+			world->updateCollision(attachedObject);
+		}
+	}
 
 	for(unsigned int i=0; i<children.size(); i++){
 		if(fromJoints)
@@ -88,8 +92,8 @@ void Link::updateParentPose() {
 	if(parent != NULL) {
 		updateRelPose();
 		parent->absPose = absPose*pose.inverse(Eigen::Affine);
-		if(parent->attachedObject != NULL) {
-			attachedObject->absPose = parent->absPose * attachedObjectPose;
+		if(parent->attachedObject) {
+			parent->attachedObject->absPose = parent->absPose * parent->attachedObjectPose;
 		}
 	}
 }
@@ -99,6 +103,9 @@ void Link::updateParentPoseRecursive(bool fromJoints, bool collisions) {
 	if(parent != NULL) {
 		updateRelPose();
 		parent->absPose = absPose*pose.inverse(Eigen::Affine);
+		if(parent->attachedObject) {
+			parent->attachedObject->absPose = parent->absPose * parent->attachedObjectPose;
+		}
 		parent->updateParentPoseRecursive(fromJoints, collisions);
 	} else {
 		// When all the way up to the base link, come back down

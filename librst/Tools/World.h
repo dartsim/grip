@@ -91,6 +91,4 @@ public:
 	int Load(string);
 };
 
-
-
 #endif

@@ -163,3 +163,11 @@ void Object::DrawPrimitive()
 	}
 }
 
+
+void Object::EnableCollision() {
+	world->vcollide.ActivateObject(eid);
+}
+
+void Object::DisableCollision() {
+	world->vcollide.DeactivateObject(eid);
+}

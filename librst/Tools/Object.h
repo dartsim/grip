@@ -45,12 +45,12 @@
 #include <Tools/Constants.h>
 #include <string>
 
+#include "World.h"
+
 //Defined here are the different geometric primitives
 enum{ NONE,SPHERE,BOX,RECT_FACE };
 
 extern const double threshold;
-
-class World;
 
 class Object{
 public:
@@ -84,6 +84,9 @@ public:
 
 	void Draw();
 	void DrawPrimitive(); //will draw the primitive object
+
+	void EnableCollision();
+	void DisableCollision();
 };
 
 

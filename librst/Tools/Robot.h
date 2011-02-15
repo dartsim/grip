@@ -71,7 +71,8 @@ public:
 
 	int findLink(string name);
 	int Load(string, World*);
-	void setConf(Eigen::VectorXd conf,bool collision=false);
+	void setConf(Eigen::VectorXd conf, bool collision = false);
+	void setConf(std::vector<int> links, Eigen::VectorXd conf, bool collision = false);
 	void getConf(Eigen::VectorXd conf);
 
 	void updateCOM();
