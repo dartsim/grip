@@ -48,7 +48,7 @@ class Robot;
 class Link: public Object {
 public:
 
-	Link::Link()
+	Link()
 		: attachedObject(NULL) {
 	}
 
