@@ -2,47 +2,8 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\..\librst\RST.cpp" />
-    <ClCompile Include="..\..\librst\Tools\ANN\ANN.cpp">
-      <Filter>ANN</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\librst\Tabs\AllTabs.cpp">
       <Filter>Tabs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\ANN\bd_fix_rad_search.cpp">
-      <Filter>ANN</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\ANN\bd_pr_search.cpp">
-      <Filter>ANN</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\ANN\bd_search.cpp">
-      <Filter>ANN</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\ANN\bd_tree.cpp">
-      <Filter>ANN</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\ANN\brute.cpp">
-      <Filter>ANN</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\ANN\kd_dump.cpp">
-      <Filter>ANN</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\ANN\kd_fix_rad_search.cpp">
-      <Filter>ANN</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\ANN\kd_pr_search.cpp">
-      <Filter>ANN</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\ANN\kd_search.cpp">
-      <Filter>ANN</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\ANN\kd_split.cpp">
-      <Filter>ANN</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\ANN\kd_tree.cpp">
-      <Filter>ANN</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\ANN\kd_util.cpp">
-      <Filter>ANN</Filter>
     </ClCompile>
     <ClCompile Include="..\..\librst\Tools\Collision\build.cpp">
       <Filter>Collision</Filter>
@@ -70,9 +31,6 @@
     </ClCompile>
     <ClCompile Include="..\..\librst\Tools\Collision\VCollide.cpp">
       <Filter>Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\ANN\perf.cpp">
-      <Filter>ANN</Filter>
     </ClCompile>
     <ClCompile Include="..\..\librst\Tools\GLTools.cpp">
       <Filter>Tools</Filter>
@@ -128,44 +86,14 @@
     <ClCompile Include="..\..\librst\Tools\IK.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\kdtree\kdtree.c">
+      <Filter>kdtree</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\librst\RSTApp.h" />
-    <ClInclude Include="..\..\librst\Tools\Collision\AABB.H">
-      <Filter>ANN</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\librst\Tools\ANN\ANNx.h">
-      <Filter>ANN</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\librst\Tools\ANN\ANN.h">
-      <Filter>ANN</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\librst\Tools\ANN\ANNperf.h">
-      <Filter>ANN</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\librst\Tabs\AllTabs.h">
       <Filter>Tabs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\librst\Tools\ANN\bd_tree.h">
-      <Filter>ANN</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\librst\Tools\ANN\kd_util.h">
-      <Filter>ANN</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\librst\Tools\ANN\kd_fix_rad_search.h">
-      <Filter>ANN</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\librst\Tools\ANN\kd_pr_search.h">
-      <Filter>ANN</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\librst\Tools\ANN\kd_search.h">
-      <Filter>ANN</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\librst\Tools\ANN\kd_split.h">
-      <Filter>ANN</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\librst\Tools\ANN\kd_tree.h">
-      <Filter>ANN</Filter>
     </ClInclude>
     <ClInclude Include="..\..\librst\Tools\Collision\EndPoint.H">
       <Filter>Collision</Filter>
@@ -205,12 +133,6 @@
     </ClInclude>
     <ClInclude Include="..\..\librst\Tools\Collision\VCollide.h">
       <Filter>Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\librst\Tools\ANN\pr_queue_k.h">
-      <Filter>ANN</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\librst\Tools\ANN\pr_queue.h">
-      <Filter>ANN</Filter>
     </ClInclude>
     <ClInclude Include="..\..\librst\Tools\Constants.h">
       <Filter>Tools</Filter>
@@ -275,6 +197,9 @@
     <ClInclude Include="..\..\librst\Tools\IK.h">
       <Filter>Tools</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\kdtree\kdtree.h">
+      <Filter>kdtree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\README" />
@@ -334,9 +259,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="ANN">
-      <UniqueIdentifier>{a2ea1820-1044-4b84-98df-589398528ff1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Tabs">
       <UniqueIdentifier>{fe14432f-685f-495b-b5b9-e544fbe52698}</UniqueIdentifier>
     </Filter>
@@ -354,6 +276,9 @@
     </Filter>
     <Filter Include="GL">
       <UniqueIdentifier>{f933b217-a466-49c6-80d2-c621c4b89bd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="kdtree">
+      <UniqueIdentifier>{26824963-bd31-4dbe-8a9f-67097cc2b230}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

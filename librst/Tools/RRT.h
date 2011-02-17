@@ -34,37 +34,12 @@
  */
 
 /** @file RRT.h
- *  @author Jon Scholz
- */
-
-/*
- * RRT.h
- * Compact RRT library used in stock form for finding a valid path n-dimensions,
- *	e.g. to create a trajectory for a robot arm controller.  Here, you
- *	only need the following:
- *		- start and end points expressible as a vector of doubles ("config")
- *		- lower and upper bounds on the search space, also expressible as configs
- *		- a collision function which returns true for invalid state configurations
- *
- * Using this should be as simple as implementing this collision function, either
- * by changing the actual code or just deriving from the RRT class.
- * 	notes:
- *    1) several functions are made virtual to make the class flexible to more
- * 		 general uses of RRT planning.  E.G. in the SPLinTER project I derived
- * 		 a version that replaced tryStep with a function that iterates over
- *       a set of action primitives rather than subtracting vectors...
- *    2) Init_extras function is there to make it easy to add additional
- *    	 initialization steps in derived classes as necessary
- *
- *
- *  Created on: Aug 27, 2009
- *      Author: jscholz
+ *  @author Tobias Kunz
  */
 
 #ifndef RRT_H
 #define RRT_H
 
-#include "ANN/ANN.h"
 #include <vector>
 #include <list>
 #include <stdlib.h>
@@ -73,15 +48,12 @@
 #include <Eigen/Core>
 #include "World.h"
 #include "Link.h"
+#include "kdtree/kdtree.h"
 
 #define RANDNM(N,M) N + ((M-N) * ((double)rand() / ((double)RAND_MAX + 1))) // random # between N&M
 
-// For representing and manipulating state configurations:
-#define config Eigen::VectorXd
-
 class RRT {
 public:
-	RRT();
 	~RRT();
 
 	typedef enum {
@@ -91,9 +63,7 @@ public:
 	} StepResult;
 
 	// Fixed initialization code
-	void initialize(World* world, vector<Link*> links, config &ic, double ss = 0.02, int mn = 100000, int ll = 1000, double AE = 0);
-
-	void Init_ANN();
+	void initialize(World* world, std::vector<Link*> links, Eigen::VectorXd &root, double stepSize = 0.02);
 
 	virtual void cleanup();
 
@@ -101,58 +71,40 @@ public:
 	vector<Link*> links;
 
 	int ndim;
-	double step_size;
-	int max_nodes;
-	int linear_limit;
-	double ANNeps;
-
-	config initConfig; // Container for starting configuration
-
-	config qtmp; // Container for random configuration
-
-	config minconfig; // Container for minimum configuration values
-	config maxconfig; // Container for maximum configuration values
+	double stepSize;
 
 	int activeNode;
-
 	std::vector<int> parentVector;		// vector of indices to relate configs in RRT
-	std::vector<config> configVector; 	// vector of all visited configs
+	std::vector<Eigen::VectorXd> configVector; 	// vector of all visited configs
 
-	// ANN stuff
-	int 				linearNNstart;
-	int					nPts;					// actual number of data points
-	ANNpointArray		dataPts;				// data points
-	ANNpoint			queryPt;				// query point
-	ANNidxArray			nnIdx;					// near neighbor indices
-	ANNdistArray		dists;					// near neighbor distances
-	ANNkd_tree*			kdTree;					// search structure
+	struct kdtree *kdTree;
 
 	bool connect();
-	bool connect(config target);
+	bool connect(Eigen::VectorXd target);
 	
 	StepResult tryStep();
 
-	StepResult tryStep(const config &qtry);
+	StepResult tryStep(const Eigen::VectorXd &qtry);
 
 	// Tries to extend tree towards provided sample (must be overridden for MBP)
-	virtual StepResult tryStep(const config &qtry, int NNidx);
+	virtual StepResult tryStep(const Eigen::VectorXd &qtry, int NNidx);
 
 	// Adds qnew to the tree
-	int addNode(config &qnew, int parentID);
+	int addNode(Eigen::VectorXd &qnew, int parentId);
 
-	// Sets qsamp a random configuration (may be overridden you want to do something else with sampled states)
-	virtual config& getRandomConfig();
+	// returns a random configuration (may be overridden you want to do something else with sampled states)
+	virtual Eigen::VectorXd getRandomConfig();
 
 	// Returns NN to query point
-	int getNearestNeighbor(const config &qsamp);
+	int getNearestNeighbor(const Eigen::VectorXd &qsamp);
 
-	double getGap(config target);
+	double getGap(Eigen::VectorXd target);
 
 	// traces the path from some node to the initConfig node
-	void tracePath(int node, std::list<config> &path, bool reverse = false);
+	void tracePath(int node, std::list<Eigen::VectorXd> &path, bool reverse = false);
 
 	// Implementation-specific function for checking collisions  (must be overridden for MBP)
-	virtual bool checkCollisions(config &c);
+	virtual bool checkCollisions(Eigen::VectorXd &c);
 };
 
 #endif /* RRT_H */

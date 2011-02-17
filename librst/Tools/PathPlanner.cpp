@@ -1,3 +1,4 @@
+#include <iostream>
 #include "PathPlanner.h"
 #include "RRT.h"
 #include "Robot.h"
