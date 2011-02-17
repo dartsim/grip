@@ -32,6 +32,9 @@ Tools/Object
 Tools/Robot
 Tools/World
 Tools/IK
+Tools/PathPlanner
+Tools/RRT
+Tools/kdtree/kdtree
 Tools/GL/GLTexture.cpp
 Tools/Collision/build
 Tools/Collision/collide
