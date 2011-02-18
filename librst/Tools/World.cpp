@@ -216,7 +216,6 @@ int World::Load(string fullname) {
 	string line, str, filename, fullpath;
 	fstream wstream(fullname.c_str(), ios::in);
 
-	int fpos;
 	int lnum = 0;
 
 	int state = BSTATE;
@@ -225,12 +224,10 @@ int World::Load(string fullname) {
 	Object* object;
 
 	while (!wstream.eof()) {
-		fpos = wstream.tellg();
 		lnum++;
 
 		wstream >> str;
 		if (str[0] != '>') {
-			wstream.seekg(fpos);
 			getline(wstream, line);
 			continue;
 		}
