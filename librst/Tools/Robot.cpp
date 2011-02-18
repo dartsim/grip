@@ -160,13 +160,13 @@ int Robot::Load(string fullname, World* w){
 	int lnum=0;
 
 	while(!rstream.eof()) {
-		fpos = rstream.tellg();
+		//fpos = rstream.tellg();
 		lnum++;
 
 		rstream >> str;
 
 		if(str[0] != '>'){
-			rstream.seekg(fpos);
+			//rstream.seekg(fpos);
 			getline(rstream,line);
 			continue;
 		}
@@ -189,14 +189,15 @@ int Robot::Load(string fullname, World* w){
 					world->CreateEntity(link);
 				}
 
-
-				streampos curpos = rstream.tellg();
-				rstream >> str;
-				if(str == "NOCOLLISION"){
-					cout << "NOCOL " << endl;
-					world->vcollide.DeactivateObject(link->eid);
-				}
-				rstream.seekg(curpos);
+				// Does not work under Windows if file uses Linux line breaks
+				// Current solution: NOCOLLISION is not supported anymore
+				//streampos curpos = rstream.tellg();
+				//rstream >> str;
+				//if(str == "NOCOLLISION"){
+				//	cout << "NOCOL " << endl;
+				//	world->vcollide.DeactivateObject(link->eid);
+				//}
+				//rstream.seekg(curpos);
 
 				links.push_back(link);
 				link->index = (int)links.size()-1;
@@ -239,7 +240,9 @@ int Robot::Load(string fullname, World* w){
 				//cerr << pnum << " " << cnum << endl;
 
 				if(pnum == -1){ cerr << "Non-existant parent: " << pname << endl; return 1; }
-				if(cnum == -1){ cerr << "Non-existant child: " << cname << endl; return 1; }
+				if(cnum == -1){
+					cerr << "Non-existant child: " << cname << endl; return 1;
+				}
 
 				link = links[cnum];
 				if(pnum == -2){
