@@ -315,8 +315,10 @@ void PlanningTab::OnButton(wxCommandEvent &evt) {
 				list<Eigen::VectorXd> path;
 
 				std::vector<int> linkIds;
-				for(int i = 0; i < world->robots[robotID]->activeLinks.size(); i++) {
-					linkIds.push_back(i);
+				for(int i = 0; i < world->robots[robotID]->links.size(); i++) {
+					if(world->robots[robotID]->links[i]->jType == Link::REVOL
+					|| world->robots[robotID]->links[i]->jType == Link::PRISM)
+						linkIds.push_back(i);
 				}
 
 				bool success = planner->planPath(robotID, linkIds, startConf, goalConf, path, rrtStyle, connectMode);
