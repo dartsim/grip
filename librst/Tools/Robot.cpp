@@ -290,8 +290,14 @@ int Robot::Load(string fullname, World* w){
 					double min, max;
 					rstream >> min;
 					rstream >> max;
-					link->jMin = DEG2RAD(min);
-					link->jMax = DEG2RAD(max);
+					if(link->jType == Link::REVOL) {
+						link->jMin = DEG2RAD(min);
+						link->jMax = DEG2RAD(max);
+					}
+					else {
+						link->jMin = min;
+						link->jMax = max;
+					}
 					activeLinks.push_back(link);
 				}
 				link->updateRelPose();
