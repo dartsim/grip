@@ -72,8 +72,7 @@ public:
 	double jMin, jMax;
 
 	void updateRelPose();
-	void updateAbsPose();
-	void updateRecursive(bool fromJoints = false, bool collisions = false);
+	void updateAbsPose(bool updateCollisionModels = true);
 
 	void updateParentPose();
 	void updateParentPoseRecursive(bool fromJoints = false, bool collisions = false);

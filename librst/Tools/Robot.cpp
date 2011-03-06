@@ -46,14 +46,12 @@ using namespace Eigen;
 
 Robot::Robot()
 {
-		activeLinks.clear();
 		links.clear();
 }
 
 Robot::Robot(Robot &copyFrom)
 {
 	links.clear();
-	activeLinks.clear();
 
 	this->name = copyFrom.name;
 	this->idNum = copyFrom.idNum;
@@ -76,11 +74,6 @@ Robot::Robot(Robot &copyFrom)
 			this->links[i]->children.push_back(childLink);
 			childLink->parent = this->links[i];
 		}
-	}
-
-	for(unsigned int i = 0; i < copyFrom.activeLinks.size(); i++){
-		int fromIDX = copyFrom.activeLinks[i]->index;
-		this->activeLinks.push_back(this->links[fromIDX]);
 	}
 }
 
@@ -112,23 +105,31 @@ int Robot::findLink(string name){
 	return -1;
 }
 
-void Robot::setConf(VectorXd conf, bool collision) {
-	for(unsigned int i = 0; i < activeLinks.size(); i++) {
-		activeLinks[i]->jVal = conf[i];
+void Robot::setConf(const VectorXd &conf, bool updateCollisionModel) {
+	int j = 0;
+	for(unsigned int i = 0; i < links.size(); i++) {
+		if(links[i]->jType == Link::REVOL || links[i]->jType == Link::PRISM) {
+			links[i]->jVal = conf[j];
+			j++;
+		}
 	}
-	baseLink->updateRecursive(true, collision);
+	baseLink->updateAbsPose(updateCollisionModel);
 }
 
-void Robot::setConf(vector<int> links, VectorXd conf, bool collision) {
+void Robot::setConf(const vector<int> &links, const VectorXd &conf, bool updateCollisionModel) {
 	for(unsigned int i = 0; i < links.size(); i++) {
 		this->links[links[i]]->jVal = conf[i];
 	}
-	baseLink->updateRecursive(true, collision);
+	baseLink->updateAbsPose(updateCollisionModel);
 }
 
-void Robot::getConf(VectorXd conf){
-	for(unsigned int i=0; i<activeLinks.size(); i++){
-		conf[i] = activeLinks[i]->jVal;
+void Robot::getConf(VectorXd &conf){
+	int j = 0;
+	for(unsigned int i = 0; i < links.size(); i++) {
+		if(links[i]->jType == Link::REVOL || links[i]->jType == Link::PRISM) {
+			conf[j] = activeLinks[i]->jVal;
+			j++;
+		}
 	}
 }
 

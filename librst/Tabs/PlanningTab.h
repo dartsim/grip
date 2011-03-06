@@ -51,7 +51,7 @@ public:
 	void OnRadio(wxCommandEvent &evt);
 	void OnButton(wxCommandEvent &evt);
 	void OnCheckBox(wxCommandEvent &evt);
-	void SetTimeline(std::vector<Link*> links, std::list<Eigen::VectorXd> path);
+	void SetTimeline(int robot, std::vector<int> links, std::list<Eigen::VectorXd> path);
 	void RSTStateChange();
 
 	DECLARE_DYNAMIC_CLASS(PlanningTab)

@@ -71,9 +71,9 @@ public:
 
 	int findLink(string name);
 	int Load(string, World*);
-	void setConf(Eigen::VectorXd conf, bool collision = false);
-	void setConf(std::vector<int> links, Eigen::VectorXd conf, bool collision = false);
-	void getConf(Eigen::VectorXd conf);
+	void setConf(const Eigen::VectorXd &conf, bool updateCollisionModel = true);
+	void setConf(const std::vector<int> &links, const Eigen::VectorXd &conf, bool updateCollisionModel = true);
+	void getConf(Eigen::VectorXd &conf);
 
 	void updateCOM();
 	void drawCOM();

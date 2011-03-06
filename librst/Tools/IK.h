@@ -8,7 +8,7 @@ class IK {
 public:
 	IK(World* world, int robotId, int lastLinkId);
 	IK(World* world, int robotId, int lastLinkId, const Eigen::Transform<double, 3, Eigen::Affine> &endEffector);
-	bool calculate(Eigen::VectorXd &angles, const Eigen::Transform<double, 3, Eigen::Affine>& goal);
+	bool calculate(Eigen::VectorXd &angles, const Eigen::Transform<double, 3, Eigen::Affine>& goal) const;
 private:
 	void init(World* world, int robotId, int lastLinkId, const Eigen::Transform<double, 3, Eigen::Affine> &endEffector);
 	Link* links[8];

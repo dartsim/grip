@@ -44,10 +44,7 @@
 #include <GUI/GUI.h>
 #include <GUI/RSTSlider.h>
 #include <GUI/RSTFrame.h>
-#include <iostream>
 using namespace std;
-#include <Tabs/AllTabs.h>
-#include <RSTApp.h>
 
 // Control IDs (used for event handling - be sure to start with a non-conflicted id)
 enum EmptyTabEvents {

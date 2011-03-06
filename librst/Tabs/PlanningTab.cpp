@@ -209,6 +209,15 @@ void PlanningTab::OnRadio(wxCommandEvent &evt) {
 
 // Handle Button Events
 void PlanningTab::OnButton(wxCommandEvent &evt) {
+
+	std::vector<int> linkIds;
+	for(int i = 0; i < world->robots[robotID]->links.size(); i++) {
+		if(world->robots[robotID]->links[i]->jType == Link::REVOL
+				|| world->robots[robotID]->links[i]->jType == Link::PRISM) {
+			linkIds.push_back(i);
+		}
+	}
+
 	int button_num = evt.GetId();
 	switch (button_num) {
 	case button_SetStart:
@@ -218,10 +227,10 @@ void PlanningTab::OnButton(wxCommandEvent &evt) {
 				break;
 			}
 			cout << "Setting Start state for " << world->robots[robotID]->name << ":" << endl;
-			int numlinks = world->robots[robotID]->activeLinks.size();
+			int numlinks = linkIds.size();
 			startConf.resize(numlinks);
 			for(int i=0; i<numlinks; i++){
-				startConf[i] = world->robots[robotID]->activeLinks[i]->jVal;
+				startConf[i] = world->robots[robotID]->links[linkIds[i]]->jVal;
 				cout << startConf[i] << " ";
 			}
 			cout << endl;
@@ -237,10 +246,10 @@ void PlanningTab::OnButton(wxCommandEvent &evt) {
 					break;
 				}
 				cout << "Setting Goal state for " << world->robots[robotID]->name << ":" << endl;
-				int numlinks = world->robots[robotID]->activeLinks.size();
+				int numlinks = linkIds.size();
 				goalConf.resize(numlinks);
 				for(int i=0; i<numlinks; i++){
-					goalConf[i] = world->robots[robotID]->activeLinks[i]->jVal;
+					goalConf[i] = world->robots[robotID]->links[linkIds[i]]->jVal;
 					cout << goalConf[i] << " ";
 				}
 				cout << endl;
@@ -254,12 +263,7 @@ void PlanningTab::OnButton(wxCommandEvent &evt) {
 				cout << "First, set a start config." << endl;
 				break;
 			}
-			for(unsigned int i=0; i<world->robots[robotID]->activeLinks.size(); i++){
-				world->robots[robotID]->activeLinks[i]->jVal = startConf[i];
-				cout << startConf[i] << " ";
-			}
-			cout << endl;
-			world->updateRobot(world->robots[robotID]);
+			world->robots[robotID]->setConf(linkIds, startConf);
 			viewer->UpdateCamera();
 		break;
 
@@ -268,12 +272,8 @@ void PlanningTab::OnButton(wxCommandEvent &evt) {
 				cout << "First, set a goal config." << endl;
 				break;
 			}
-			for(unsigned int i=0; i<world->robots[robotID]->activeLinks.size(); i++){
-				world->robots[robotID]->activeLinks[i]->jVal = goalConf[i];
-				cout << goalConf[i] << " ";
-			}
-			cout << endl;
-			world->updateRobot(world->robots[robotID]);
+
+			world->robots[robotID]->setConf(linkIds, goalConf);
 			viewer->UpdateCamera();
 		break;
 
@@ -313,18 +313,10 @@ void PlanningTab::OnButton(wxCommandEvent &evt) {
 			//planThread.Create();
 			{
 				list<Eigen::VectorXd> path;
-
-				std::vector<int> linkIds;
-				for(int i = 0; i < world->robots[robotID]->links.size(); i++) {
-					if(world->robots[robotID]->links[i]->jType == Link::REVOL
-					|| world->robots[robotID]->links[i]->jType == Link::PRISM)
-						linkIds.push_back(i);
-				}
-
 				bool success = planner->planPath(robotID, linkIds, startConf, goalConf, path, rrtStyle, connectMode);
 				
 				if(success) {
-					SetTimeline(world->robots[robotID]->activeLinks, path);
+					SetTimeline(robotID, linkIds, path);
 				}
 			}
 		break;
@@ -338,7 +330,7 @@ void PlanningTab::OnButton(wxCommandEvent &evt) {
 	}
 }
 
-void PlanningTab::SetTimeline(vector<Link*> links, list<Eigen::VectorXd> path){
+void PlanningTab::SetTimeline(int robot, vector<int> links, list<Eigen::VectorXd> path){
 		if(world == NULL || planner == NULL || path.size() == 0){
 			cout << "Must create a valid plan before updating its duration." << endl;
 			return;
@@ -355,10 +347,7 @@ void PlanningTab::SetTimeline(vector<Link*> links, list<Eigen::VectorXd> path){
 		frame->InitTimer(string("RRT_Plan"),increment);
 
 		for(list<VectorXd>::iterator it = path.begin(); it != path.end(); it++) {
-			for(int l=0; l < links.size(); l++) {
-				links[l]->jVal = (*it)[l];
-            }
-            world->updateRobot(links[0]->robot);
+			world->robots[robot]->setConf(links, *it);
             frame->AddWorld(world);
 		}
 }

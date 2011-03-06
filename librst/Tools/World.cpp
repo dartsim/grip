@@ -78,7 +78,7 @@ World::World(const World &copyFrom)
 		CreateEntity(objects.back());
 	}
 
-	updateAllCollisions();
+	updateAllCollisionModels();
 }
 
 World::~World()
@@ -351,10 +351,10 @@ int World::Load(string fullname) {
 	}
 	wstream.close();
 	for (unsigned int j = 0; j < robots.size(); j++) {
-		updateRobot(robots[j]);
+		robots[j]->baseLink->updateAbsPose();
 	}
 
-	updateAllCollisions();
+	updateAllCollisionModels();
 	cout << "Finished Loading!" << endl;
 
 	detectCollisions();
@@ -380,7 +380,7 @@ int World::findObject(string name) {
 
 // returns true iff collision
 bool World::checkCollisions() {
-	VCReport report; // jon: why declaring internal report here???
+	VCReport report;
     vcollide.Collide( &report, VC_FIRST_CONTACT);  //perform collision test.
 	return report.numObjPairs() > 0;
 }
@@ -391,7 +391,7 @@ void World::clearCollisions() {
     }
 }
 
-void World::detectCollisions(){
+void World::detectCollisions() {
 	VCReport report;
     vcollide.Collide(&report, VC_FIRST_CONTACT); //perform collision test.
 	for(unsigned int i = 0; i < entities.size(); i++) {
@@ -407,11 +407,11 @@ void World::detectCollisions(){
     }
 }
 
-void World::updateAllCollisions(){
+void World::updateAllCollisionModels(){
 	for(unsigned int i = 0; i < entities.size(); i++) {
-		updateCollision(entities[i]);
-		entities[i]->collisionFlag = false;
+		updateCollisionModel(entities[i]);
 	}
+
 	for(unsigned int i = 0; i < robots.size(); i++) {
 		Robot* r = robots[i];
 		for(unsigned int j=0; j<r->links.size(); j++) {
@@ -426,9 +426,8 @@ void World::updateAllCollisions(){
 	}
 }
 
-void World::updateCollision(Object* ob) {
+void World::updateCollisionModel(Object* ob) {
 	if(ob->model == NULL) return;
-	int eid = ob->eid;
 
 	double newTrans[4][4] =
 	{{ob->absPose(0,0), ob->absPose(0,1), ob->absPose(0,2), ob->absPose(0,3)},
@@ -436,18 +435,6 @@ void World::updateCollision(Object* ob) {
 	{ob->absPose(2,0), ob->absPose(2,1), ob->absPose(2,2), ob->absPose(2,3)},
 	{0, 0, 0, 1}};
 
-	vcollide.UpdateTrans(eid, newTrans);
-}
-
-void World::updateRobot(Robot* robot)
-{
-	for(unsigned int i=0; i < robot->links.size(); i++){
-		//cerr << "LS - " << robot->links.size() << " ";
-		Link* link = robot->links[i];
-		if(link->parent == NULL){
-			//cerr << "ROOT: " << link->name;
-			//link->absPose = robot->absPose*link->pose;
-			link->updateRecursive(true, true); // right?? changed by jon to test
-		}
-	}
+	vcollide.UpdateTrans(ob->eid, newTrans);
+	ob->collisionFlag = false;
 }

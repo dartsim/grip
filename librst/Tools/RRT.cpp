@@ -43,12 +43,13 @@
 using namespace std;
 using namespace Eigen;
 
-void RRT::initialize(World* world, vector<Link*> links, VectorXd &root, double stepSize)
+void RRT::initialize(World* world, int robot, vector<int> links, VectorXd &root, double stepSize)
 {
 	// clean-up from previous
 	cleanup();
 
 	this->world = world;
+	this->robot = robot;
 	this->links = links;
 
 	ndim = links.size();
@@ -80,7 +81,7 @@ bool RRT::connect() {
 	return connect(qtry);
 }
 
-bool RRT::connect(VectorXd target)
+bool RRT::connect(const VectorXd &target)
 {
 	int NNidx = getNearestNeighbor(target);
 	StepResult result = STEP_PROGRESS;
@@ -137,7 +138,7 @@ RRT::StepResult RRT::tryStep(const VectorXd &qtry, int NNidx)
 	}
 }
 
-int RRT::addNode(VectorXd &qnew, int parentId)
+int RRT::addNode(const VectorXd &qnew, int parentId)
 {
 	// Update graph vectors
 	configVector.push_back(qnew);
@@ -167,12 +168,12 @@ VectorXd RRT::getRandomConfig()
 	 */
 	VectorXd config(ndim);
 	for (int i = 0; i < ndim; ++i) {
-		config[i] = RANDNM(links[i]->jMin, links[i]->jMax);
+		config[i] = RANDNM(world->robots[robot]->links[links[i]]->jMin, world->robots[robot]->links[links[i]]->jMax);
 	}
 	return config;
 }
 
-double RRT::getGap(VectorXd target) {
+double RRT::getGap(const VectorXd &target) {
 	return (target - configVector[activeNode]).norm();
 }
 
@@ -191,23 +192,12 @@ void RRT::tracePath(int node, std::list<VectorXd> &path, bool reverse)
 	}
 }
 
-bool RRT::checkCollisions(VectorXd &c)
+bool RRT::checkCollisions(const VectorXd &c)
 {
-	for(int i = 0; i < links.size(); i++) {
-		links[i]->jVal = c[i];
-	}
-	links[0]->robot->baseLink->updateRecursive(true, true);
-	
-
-	for(unsigned int i=0; i < links[0]->robot->links.size(); i++){
-		Link* link = links[0]->robot->links[i];
-		if(link->parent == NULL) {
-			link->updateRecursive(true, true); // always check collisions?
-		}
-	}
-
-	world->updateRobot(links[0]->robot);
-
+	world->robots[robot]->setConf(links, c);
 	return world->checkCollisions();
 }
 
+const unsigned int RRT::getSize() {
+	return configVector.size();
+}

@@ -52,38 +52,31 @@ void Link::recursiveSetAncestry(Robot *rootRobot, Link *parentLink)
 }
 
 // Updates relative position based on updated joint value
-void Link::updateRelPose(){
+void Link::updateRelPose() {
 	Transform<double, 3, Eigen::Affine> jT;
 	jT.setIdentity();
 	if(jType == PRISM) jT.translate(jAxis*jVal);
-	if(jType == REVOL) jT = AngleAxisd(jVal,jAxis);
+	if(jType == REVOL) jT = AngleAxisd(jVal, jAxis);
 	pose = jTrans*jT;
 }
 
 // Updates absolute pose from relative pose and parent absolute pose
-void Link::updateAbsPose() {
-	if(parent != NULL){
+void Link::updateAbsPose(bool updateCollisionModels) {
+	updateRelPose();
+	if(parent != NULL) {
 		absPose = parent->absPose*pose;
+	}
+	if(attachedObject) {
+		attachedObject->absPose = absPose * attachedObjectPose;
+	}
+	if(updateCollisionModels) {
+		robot->world->updateCollisionModel(this);
 		if(attachedObject) {
-			attachedObject->absPose = absPose * attachedObjectPose;
+			robot->world->updateCollisionModel(attachedObject);
 		}
 	}
-}
-
-// Given a new absolute position, propogates effects down the tree
-void Link::updateRecursive(bool fromJoints, bool collisions){
-	if(collisions) {
-		world->updateCollision(this);
-		if(attachedObject) {
-			world->updateCollision(attachedObject);
-		}
-	}
-
-	for(unsigned int i=0; i<children.size(); i++){
-		if(fromJoints)
-			children[i]->updateRelPose();
-		children[i]->updateAbsPose();
-		children[i]->updateRecursive(fromJoints, collisions);
+	for(unsigned int i = 0; i < children.size(); i++) {
+		children[i]->updateAbsPose(updateCollisionModels);
 	}
 }
 
@@ -101,15 +94,11 @@ void Link::updateParentPose() {
 //Same as above but recurses effects throughout the robot
 void Link::updateParentPoseRecursive(bool fromJoints, bool collisions) {
 	if(parent != NULL) {
-		updateRelPose();
-		parent->absPose = absPose*pose.inverse(Eigen::Affine);
-		if(parent->attachedObject) {
-			parent->attachedObject->absPose = parent->absPose * parent->attachedObjectPose;
-		}
+		updateParentPose();
 		parent->updateParentPoseRecursive(fromJoints, collisions);
 	} else {
 		// When all the way up to the base link, come back down
-		updateRecursive(fromJoints, collisions);
+		updateAbsPose(collisions);
 	}
 }
 

@@ -154,7 +154,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt){
 		}else{
 			l->updateRelPose();
 			l->updateAbsPose();
-			l->updateRecursive(true, check_for_collisions);
+			//l->updateRecursive(true, check_for_collisions);
 			//world->updateRobot(l->robot); // was commented in 2.1 for some reason
 		}
 		sprintf(numBuf,"Joint Change: %7.4f", pos);
@@ -190,15 +190,15 @@ void InspectorTab::OnSlider(wxCommandEvent &evt){
 		}
 		if(selected == Return_Type_Robot){
 			l = (Link*)o;
-			l->updateRecursive(false, check_for_collisions);
+			//l->updateRecursive(false, check_for_collisions);
 		}
 
 		if(selected == Return_Type_Object && check_for_collisions){
-			world->updateCollision(o);
+			world->updateCollisionModel(o);
 		}
 	}
 
-	world->updateAllCollisions(); // added because the collision updates above weren't catching everything
+	world->updateAllCollisionModels(); // added because the collision updates above weren't catching everything
 //	static int cdCount = 0;
 //	if (cdCount % 5 == 0) { //  && check_for_collisions
 	world->clearCollisions();

@@ -57,18 +57,19 @@ public:
 	~RRT();
 
 	typedef enum {
-		STEP_COLLISION,
-		STEP_REACHED,
-		STEP_PROGRESS
+		STEP_COLLISION, // Collided with obstacle. No node added.
+		STEP_REACHED, // The configuration that we grow to is less than stepSize away from the node we grow from. No node added.
+		STEP_PROGRESS // One node added.
 	} StepResult;
 
 	// Fixed initialization code
-	void initialize(World* world, std::vector<Link*> links, Eigen::VectorXd &root, double stepSize = 0.02);
+	void initialize(World* world, int robot, std::vector<int> links, Eigen::VectorXd &root, double stepSize = 0.02);
 
 	virtual void cleanup();
 
 	World* world;
-	vector<Link*> links;
+	int robot;
+	std::vector<int> links;
 
 	int ndim;
 	double stepSize;
@@ -80,7 +81,7 @@ public:
 	struct kdtree *kdTree;
 
 	bool connect();
-	bool connect(Eigen::VectorXd target);
+	bool connect(const Eigen::VectorXd &target);
 	
 	StepResult tryStep();
 
@@ -90,7 +91,7 @@ public:
 	virtual StepResult tryStep(const Eigen::VectorXd &qtry, int NNidx);
 
 	// Adds qnew to the tree
-	int addNode(Eigen::VectorXd &qnew, int parentId);
+	int addNode(const Eigen::VectorXd &qnew, int parentId);
 
 	// returns a random configuration (may be overridden you want to do something else with sampled states)
 	virtual Eigen::VectorXd getRandomConfig();
@@ -98,13 +99,15 @@ public:
 	// Returns NN to query point
 	int getNearestNeighbor(const Eigen::VectorXd &qsamp);
 
-	double getGap(Eigen::VectorXd target);
+	double getGap(const Eigen::VectorXd &target);
 
 	// traces the path from some node to the initConfig node
 	void tracePath(int node, std::list<Eigen::VectorXd> &path, bool reverse = false);
 
 	// Implementation-specific function for checking collisions  (must be overridden for MBP)
-	virtual bool checkCollisions(Eigen::VectorXd &c);
+	virtual bool checkCollisions(const Eigen::VectorXd &c);
+
+	const unsigned int getSize();
 };
 
 #endif /* RRT_H */

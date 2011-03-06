@@ -76,11 +76,10 @@ public:
 
 	void Draw();
 	void DeleteModels();
-	void updateRobot(Robot* robot);
 	int findRobot(string name);
 	int findObject(string name);
-	void updateAllCollisions();
-	void updateCollision(Object *ob);
+	void updateAllCollisionModels();
+	void updateCollisionModel(Object *ob);
 	void detectCollisions();
 	void clearCollisions();
 	bool checkCollisions();

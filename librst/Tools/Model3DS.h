@@ -89,8 +89,6 @@ extern bool showPrimitive;
 #include <stdio.h>
 #include <vector>
 
-using namespace std;
-
 #define PATH_LENGTH 5000
 
 class Model3DS {

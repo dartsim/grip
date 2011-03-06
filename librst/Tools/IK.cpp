@@ -151,7 +151,7 @@ void anglesFromRotationMatrix(double &theta1, double &theta2, double &theta3, co
 }
 
 
-bool IK::calculate(VectorXd &angles, const Transform<double, 3, Eigen::Affine> &goal) {
+bool IK::calculate(VectorXd &angles, const Transform<double, 3, Eigen::Affine> &goal) const {
     
 	const Transform<double, 3, Affine> relGoal = T0Inverse * goal * TeInverse; // target relative to shoulder
 
@@ -167,7 +167,7 @@ bool IK::calculate(VectorXd &angles, const Transform<double, 3, Eigen::Affine> &
 	const double theta4 = acos((L3*L3 - L2*L2 - L1*L1)/(2*L1*L2));
 	const Vector3d n = relGoal.translation().normalized();
 	
-	const Vector3d a = -1 * Te.translation();
+	const Vector3d a = T0.inverse() * Vector3d(0.0, sqrt(0.5), -sqrt(0.5));
 	const Vector3d u = (a - a.dot(n) * n).normalized();
 	const Vector3d v = n.cross(u);
 
