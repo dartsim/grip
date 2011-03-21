@@ -81,10 +81,11 @@ extern bool showPrimitive;
 // I decided to use my GLTexture class b/c adding all of its functions
 // Would have greatly bloated the model class's code
 // Just replace this with your favorite texture class
-#include "GL/glcommon.h"
-#include "GL/GLTexture.h"
+#include <wx/wx.h> // This is necessary. I don't know why.
+#include <Tools/GL/glcommon.h>
+#include <Tools/GL/GLTexture.h>
 
-#include "Constants.h"
+#include <Tools/Constants.h>
 
 #include <stdio.h>
 #include <vector>

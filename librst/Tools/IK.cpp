@@ -151,7 +151,7 @@ void anglesFromRotationMatrix(double &theta1, double &theta2, double &theta3, co
 }
 
 
-bool IK::calculate(VectorXd &angles, const Transform<double, 3, Eigen::Affine> &goal) const {
+bool IK::calculate(const Transform<double, 3, Eigen::Affine> &goal, double phi, VectorXd &angles) const {
     
 	const Transform<double, 3, Affine> relGoal = T0Inverse * goal * TeInverse; // target relative to shoulder
 
@@ -160,22 +160,21 @@ bool IK::calculate(VectorXd &angles, const Transform<double, 3, Eigen::Affine> &
 	const double L3 = relGoal.translation().norm();
 
 	if(L3 > L1 + L2) {
-		cout << "Error: Goal too far away" << endl;
+		//cout << "Error: Goal too far away" << endl;
 		return false;
 	}
 
 	const double theta4 = acos((L3*L3 - L2*L2 - L1*L1)/(2*L1*L2));
 	const Vector3d n = relGoal.translation().normalized();
 	
-	const Vector3d a = T0.inverse() * Vector3d(0.0, sqrt(0.5), -sqrt(0.5));
-	const Vector3d u = (a - a.dot(n) * n).normalized();
-	const Vector3d v = n.cross(u);
-
 	const double cosAlpha = (L3*L3 + L1*L1 - L2*L2) / (2*L3*L1);
 	const Vector3d c = cosAlpha * L1 * n;
 	const double R = sqrt(1 - cosAlpha*cosAlpha) * L1;
 
-	const double phi = 0.0;
+	const Vector3d a = T0.inverse() * Vector3d(0.0, 0.0, -1.0);
+	const Vector3d u = (a - a.dot(n) * n).normalized();
+	const Vector3d v = n.cross(u);
+
     const Vector3d elbow = c + R*cos(phi)*u + R*sin(phi)*v;
 
 	Transform<double, 3, Affine> Ty;
@@ -186,7 +185,6 @@ bool IK::calculate(VectorXd &angles, const Transform<double, 3, Eigen::Affine> &
 	Vector3d y = (w - w.dot(x) * x).normalized();
 	Vector3d z = x.cross(y);
 
-	//Vector3d wg = relGoal.translation();
 	Vector3d wg = relGoal.translation();
 	Vector3d xg = elbow.normalized();
 	Vector3d yg = (wg - wg.dot(xg) * xg).normalized();
@@ -207,9 +205,6 @@ bool IK::calculate(VectorXd &angles, const Transform<double, 3, Eigen::Affine> &
 	Transform<double, 3, Affine> T1 = Transform<double, 3, Affine>(R1g * R1r.transpose());
 	
 	Transform<double, 3, Affine> T2 = (T1 * A * Ty * B).inverse() * relGoal;
-
-	Transform<double, 3, Affine> temp2 = T1 * A * Ty * B;
-	Transform<double, 3, Affine> temp3 = T1 * A * Ty * B * T2;
 
 	double theta1, theta2, theta3;
 	Vector3d n1 = links[1]->jAxis;

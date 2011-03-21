@@ -87,11 +87,11 @@ Robot::~Robot()
 
 void Robot::drawCOM()
 {
-			glPushMatrix();
-			glColor3f(1.0f,0.0f,0.0f);
-			glTranslated(this->COM(0, 3),this->COM(1, 3),0.0);
-			DrawSphere(0.02f,10,10);
-			glPopMatrix();
+	glPushMatrix();
+	glColor3f(1.0f,0.0f,0.0f);
+	glTranslated(this->COM(0, 3),this->COM(1, 3),0.0);
+	DrawSphere(0.02f,10,10);
+	glPopMatrix();
 }
 
 void Robot::Draw(){
@@ -127,7 +127,7 @@ void Robot::getConf(VectorXd &conf){
 	int j = 0;
 	for(unsigned int i = 0; i < links.size(); i++) {
 		if(links[i]->jType == Link::REVOL || links[i]->jType == Link::PRISM) {
-			conf[j] = activeLinks[i]->jVal;
+			conf[j] = links[i]->jVal;
 			j++;
 		}
 	}
@@ -299,7 +299,6 @@ int Robot::Load(string fullname, World* w){
 						link->jMin = min;
 						link->jMax = max;
 					}
-					activeLinks.push_back(link);
 				}
 				link->updateRelPose();
 
@@ -342,7 +341,6 @@ void Robot::Info() {
 		//cout << "  jTrans = " << links[i]->jTrans << endl;
 		//cout << "  jAxis = " << links[i]->jAxis << endl;
 	}
-	cout << "activeLinks.size() = " << activeLinks.size() << endl;
 
 //	cout << "world " << world->robots[0]->links[4] << " " << world->robots[0]->links[4]->name << " " << world->robots[0]->links[4]->parent << endl;
 

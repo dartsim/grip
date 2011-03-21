@@ -59,7 +59,6 @@ public:
 	~Robot();
 
 	std::vector<Link*> links;
-	std::vector<Link*> activeLinks;
 	Link* baseLink;
 	World* world;
 

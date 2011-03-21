@@ -6,6 +6,8 @@
 using namespace std;
 using namespace Eigen;
 
+PathPlanner::PathPlanner() : copyWorld(false), world(NULL) {}
+
 PathPlanner::PathPlanner(World& world, bool copyWorld) {
 	this->copyWorld = copyWorld;
 	if(copyWorld) {
@@ -80,7 +82,7 @@ bool PathPlanner::planPath(int robotId, std::vector<int> links, Eigen::VectorXd 
 bool PathPlanner::planSingleTreeRrt(int robot, std::vector<int> links, Eigen::VectorXd start, Eigen::VectorXd goal, std::list<Eigen::VectorXd> &path, bool connect, unsigned int maxNodes) const {
 
 	RRT rrt;
-	rrt.initialize(world, robot, links, start);
+	rrt.initialize(world, robot, links, start, stepsize);
 	RRT::StepResult result = RRT::STEP_PROGRESS;
 	double smallestGap = DBL_MAX;
 	while (result != RRT::STEP_REACHED) {
