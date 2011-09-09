@@ -143,7 +143,9 @@ IK::IK(World* world, int robotId, int lastLinkId, const Transform<double, 3, Aff
 }
 
 
-void anglesFromRotationMatrix(double &theta1, double &theta2, double &theta3, const Vector3d &n1, const Vector3d &n2, const Vector3d &n3, const Matrix3d &A) {
+void IK::anglesFromRotationMatrix(double &theta1, double &theta2, double &theta3, const Vector3d &n1, const Vector3d &n2, const Vector3d &n3, const Matrix3d &A) {
+	// M. D. Shuster, F. L. Markley. Generalization of the Euler Angles. The Journal of the Astronautical Sciences, Vol. 51, No. 2, April-June 2003, pp. 123-123
+	// A = R(n1, theta1) * R(n2, theta2) * R(n3, theta3)
 	double lambda = std::atan2(n3.cross(n2).dot(n1), n3.dot(n1));
 	theta2 = -lambda - acos(n1.transpose() * A * n3);
 	theta3 = -std::atan2(n1.transpose() * A * n2, -n1.transpose() * A * n3.cross(n2));

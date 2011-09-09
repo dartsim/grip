@@ -108,7 +108,6 @@ RRT::StepResult RRT::tryStep(const VectorXd &qtry, int NNidx)
 {
 	/*
 	 * Calculates a new node to grow towards qtry, checks for collisions, and adds
-	 * * also maintains distance to goalConfig
 	 */
 
 	VectorXd qnear(ndim);

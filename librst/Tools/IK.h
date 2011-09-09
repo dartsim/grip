@@ -10,6 +10,7 @@ public:
 	IK(World* world, int robotId, int lastLinkId);
 	IK(World* world, int robotId, int lastLinkId, const Eigen::Transform<double, 3, Eigen::Affine> &endEffector);
 	bool calculate(const Eigen::Transform<double, 3, Eigen::Affine>& goal, double phi, Eigen::VectorXd &angles) const;
+	static void anglesFromRotationMatrix(double &theta1, double &theta2, double &theta3, const Eigen::Vector3d &n1, const Eigen::Vector3d &n2, const Eigen::Vector3d &n3, const Eigen::Matrix3d &A);
 private:
 	void init(World* world, int robotId, int lastLinkId, const Eigen::Transform<double, 3, Eigen::Affine> &endEffector);
 	Link* links[8];

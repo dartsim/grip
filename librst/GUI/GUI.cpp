@@ -43,7 +43,6 @@
 
 World*		world=0;
 Robot*		robot=0;
-Trajectory*	trajectory=0;
 
 RSTFrame*	frame=0;
 Viewer*		viewer=0;

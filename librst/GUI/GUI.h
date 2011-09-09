@@ -49,7 +49,7 @@
 #include <wx/notebook.h>
 
 //class Planner;
-class Trajectory;
+//class Trajectory;
 class Robot;
 class World;
 
@@ -64,7 +64,6 @@ class TemplateTab;
 
 extern World*		world;
 extern Robot*		robot;
-extern Trajectory*	trajectory;
 
 extern RSTFrame*	frame;
 extern Viewer*		viewer;
