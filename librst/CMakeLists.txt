@@ -33,6 +33,7 @@ Tools/Robot
 Tools/World
 Tools/IK
 Tools/PathPlanner
+Tools/Trajectory
 Tools/RRT
 Tools/kdtree/kdtree
 Tools/GL/GLTexture.cpp
