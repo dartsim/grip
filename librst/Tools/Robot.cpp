@@ -203,6 +203,24 @@ int Robot::Load(string fullname, World* w){
 				links.push_back(link);
 				link->index = (int)links.size()-1;
 		}
+
+
+                //NEW ELSE IF FOR LIM -- Addedd September 9th, 2011
+                else if( str == "LIM" ){
+                        char cname[100];
+                        rstream >> cname;
+                        int cnum;
+                        cnum = findLink( cname );
+                        link = links[cnum];
+                        double accMax; double velMax;
+                	rstream >> accMax;
+                        rstream >> velMax;
+                        link->accMax = accMax; 
+		        link->velMax = velMax;
+                        cout << "-- Link " << cname << " Acc max: " << link->accMax << " Vel max: " << link->velMax << endl;  
+                }
+ 
+
 		//NEW ELSE IF FOR COM
 		else if(str == "COM"){
 				char cname[100];

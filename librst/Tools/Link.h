@@ -70,6 +70,10 @@ public:
 	JointType jType;
 	double jVal;
 	double jMin, jMax;
+        //-- Added on Fri, Sept 9th
+        double accMax;
+        double velMax;
+        //--
 
 	void updateRelPose();
 	void updateAbsPose(bool updateCollisionModels = true);

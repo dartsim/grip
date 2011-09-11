@@ -17,6 +17,7 @@ public:
 	bool planPath(int robotId, std::vector<int> linkIds, Eigen::VectorXd start, Eigen::VectorXd goal, std::list<Eigen::VectorXd> &path, bool bidirectional = true, bool connect = true, bool smooth = true, unsigned int maxNodes = 0) const;
 	bool checkPathSegment(int robotId, std::vector<int> linkIds, Eigen::VectorXd config1, Eigen::VectorXd config2) const;
 	void smoothPath(int robotId, std::vector<int> links, std::list<Eigen::VectorXd> &path) const;
+        void smoothPath2( int robotId, std::vector<int> linkIds, std::list<Eigen::VectorXd> &path ) const;
 private:
 	bool copyWorld;
 	bool planSingleTreeRrt(int robot, std::vector<int> links, Eigen::VectorXd start, Eigen::VectorXd goal, std::list<Eigen::VectorXd> &path, bool connect, unsigned int maxNodes) const;

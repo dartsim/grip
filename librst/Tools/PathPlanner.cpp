@@ -59,6 +59,52 @@ void PathPlanner::smoothPath(int robotId, std::vector<int> linkIds, list<VectorX
 	}
 }
 
+//-----------------------
+void PathPlanner::smoothPath2( int robotId, std::vector<int> linkIds, list<VectorXd> &path ) const
+{
+   srand(time(NULL));
+
+   int node_1; int node_2; int aux_node;
+
+   int num_points = path.size();
+   int num_checks = (int) num_points*1;
+
+   // Number of checks
+   for( int i = 0; i < num_checks; i++ )
+   {
+      if( path.size() < 5 ) { return; } //-- No way we can reduce something leaving out the extremes
+
+      int minNode = 0;
+      int maxNode = path.size() - 1;
+
+      node_1 = (int) RANDNM( minNode + 1, maxNode - 1 );
+
+      do{ node_2 = (int) RANDNM( minNode + 1, maxNode - 1 ); } while( node_2 == node_1 );
+
+      if( node_2 < node_1 ) 
+      {  aux_node = node_1;
+         node_1 = node_2;
+         node_2 = aux_node; }
+      
+      //-- Check
+      list<Eigen::VectorXd>::iterator n1 = path.begin();
+      list<Eigen::VectorXd>::iterator n2 = path.begin();
+      advance( n1, node_1 - 1 );
+      advance( n2, node_2 - 1 );
+
+      bool result = checkPathSegment( robotId, linkIds, *n1, *n2 );
+      if( result == true )
+      { int times = node_2 - node_1 - 1;
+        for( int j = 0; j < times; j++ )
+        { list<Eigen::VectorXd>::iterator temp = path.begin(); 
+          advance( temp, node_1 + 1 );
+          path.erase( temp );  }
+      }
+   }   
+
+}
+//-----------------------
+
 bool PathPlanner::planPath(int robotId, std::vector<int> links, Eigen::VectorXd start, Eigen::VectorXd goal, std::list<Eigen::VectorXd> &path, bool bidirectional, bool connect, bool smooth, unsigned int maxNodes) const {
 	
 	world->robots[robotId]->setConf(links, start);
