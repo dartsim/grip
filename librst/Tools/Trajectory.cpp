@@ -80,7 +80,7 @@ VectorXd Trajectory::getPosition(double time) const {
 	}
 	double t = time;
 	if(t <= 0.5 * blendDurations[0]) {
-		return path[0] + t * t * accelerations[0];
+		return path[0] + 0.5 * t * t * accelerations[0];
 	}
 	else {
 		t -= 0.5 * blendDurations[0];
@@ -92,7 +92,7 @@ VectorXd Trajectory::getPosition(double time) const {
 	}
 	if(i == path.size() - 1) {
 		t = 0.5 * blendDurations.back() - t;
-		return path.back() + t * t * accelerations.back();
+		return path.back() + 0.5 * t * t * accelerations.back();
 	}
 
 
@@ -101,11 +101,11 @@ VectorXd Trajectory::getPosition(double time) const {
 
 	if(t < switchingTime1) {
 		t = switchingTime1 - t;
-		return path[i] + switchingTime1 * velocities[i] - t * velocities[i] + t * t * accelerations[i];
+		return path[i] + switchingTime1 * velocities[i] - t * velocities[i] + 0.5 * t * t * accelerations[i];
 	}
 	else if(t > switchingTime2) {
 		t -= switchingTime2;
-		VectorXd config = path[i] + switchingTime2 * velocities[i] + t * velocities[i] + t * t * accelerations[i+1];
+		VectorXd config = path[i] + switchingTime2 * velocities[i] + t * velocities[i] + 0.5 * t * t * accelerations[i+1];
 		return config;
 	}
 	else {
