@@ -92,6 +92,9 @@
     <ClCompile Include="..\..\librst\Tools\Trajectory.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\librst\Tools\Path.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\librst\RSTApp.h" />
@@ -204,6 +207,9 @@
       <Filter>kdtree</Filter>
     </ClInclude>
     <ClInclude Include="..\..\librst\Tools\Trajectory.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\librst\Tools\Path.h">
       <Filter>Tools</Filter>
     </ClInclude>
   </ItemGroup>
