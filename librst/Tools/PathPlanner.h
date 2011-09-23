@@ -10,11 +10,11 @@
 class PathPlanner {
 public:
 	PathPlanner(); // You need to call one of the other constructors before the object is usable.
-	PathPlanner(World& world, bool copyWorld = true);
+	PathPlanner(World& world, bool copyWorld = true, double stepsize = 0.1 );
 	~PathPlanner();
 	double stepsize;
 	World* world;
-	bool planPath(int robotId, std::vector<int> linkIds, Eigen::VectorXd start, Eigen::VectorXd goal, std::list<Eigen::VectorXd> &path, bool bidirectional = true, bool connect = true, bool smooth = true, unsigned int maxNodes = 0) const;
+	bool planPath(int robotId, std::vector<int> linkIds, Eigen::VectorXd start, Eigen::VectorXd goal, std::list<Eigen::VectorXd> &path, bool bidirectional = true, bool connect = true, bool smooth = true, unsigned int maxNodes = 0 ) const;
 	bool checkPathSegment(int robotId, std::vector<int> linkIds, Eigen::VectorXd config1, Eigen::VectorXd config2) const;
 	void smoothPath(int robotId, std::vector<int> links, std::list<Eigen::VectorXd> &path) const;
         void smoothPath2( int robotId, std::vector<int> linkIds, std::list<Eigen::VectorXd> &path ) const;

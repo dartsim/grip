@@ -8,7 +8,7 @@ using namespace Eigen;
 
 PathPlanner::PathPlanner() : copyWorld(false), world(NULL) {}
 
-PathPlanner::PathPlanner(World& world, bool copyWorld) {
+PathPlanner::PathPlanner(World& world, bool copyWorld, double stepsize ) {
 	this->copyWorld = copyWorld;
 	if(copyWorld) {
 		this->world = new World(world);
@@ -16,7 +16,7 @@ PathPlanner::PathPlanner(World& world, bool copyWorld) {
 	else {
 		this->world = &world;
 	}
-	stepsize = 0.1;
+	this->stepsize = stepsize;
 }
 
 PathPlanner::~PathPlanner() {
@@ -67,7 +67,7 @@ void PathPlanner::smoothPath2( int robotId, std::vector<int> linkIds, list<Vecto
    int node_1; int node_2; int aux_node;
 
    int num_points = path.size();
-   int num_checks = (int) num_points*1;
+   int num_checks = (int) num_points*1.0;
 
    // Number of checks
    for( int i = 0; i < num_checks; i++ )
@@ -105,7 +105,7 @@ void PathPlanner::smoothPath2( int robotId, std::vector<int> linkIds, list<Vecto
 }
 //-----------------------
 
-bool PathPlanner::planPath(int robotId, std::vector<int> links, Eigen::VectorXd start, Eigen::VectorXd goal, std::list<Eigen::VectorXd> &path, bool bidirectional, bool connect, bool smooth, unsigned int maxNodes) const {
+bool PathPlanner::planPath(int robotId, std::vector<int> links, Eigen::VectorXd start, Eigen::VectorXd goal, std::list<Eigen::VectorXd> &path, bool bidirectional, bool connect, bool smooth, unsigned int maxNodes ) const {
 	
 	world->robots[robotId]->setConf(links, start);
 	if(world->checkCollisions())
