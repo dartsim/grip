@@ -65,7 +65,6 @@ Trajectory::Trajectory(const list<VectorXd> &_path, const VectorXd &maxVelocity,
 		accelerations[i] = (nextVelocity - previousVelocity) / blendDurations[i];
 	}
 
-
 	for(int i = 0; i < path.size() - 1; i++) {
 		duration += durations[i];
 	}
