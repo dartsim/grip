@@ -32,6 +32,7 @@ Tools/Object
 Tools/Robot
 Tools/World
 Tools/IK
+Tools/Path
 Tools/PathPlanner
 Tools/Trajectory
 Tools/RRT
