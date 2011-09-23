@@ -162,7 +162,9 @@ bool IK::calculate(const Transform<double, 3, Eigen::Affine> &goal, double phi, 
 	const double L3 = relGoal.translation().norm();
 
 	if(L3 > L1 + L2) {
-		//cout << "Error: Goal too far away" << endl;
+		cout << "Error: Goal too far away" << endl;
+		cout << "L3: " << L3 << "   L1 + L2: " << L1 + L2 << endl;
+		cout << "Wrist: " << (T0 * relGoal).translation() << endl;
 		return false;
 	}
 

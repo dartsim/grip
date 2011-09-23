@@ -129,6 +129,7 @@
     <ClCompile Include="..\..\librst\Tools\Link.cpp" />
     <ClCompile Include="..\..\librst\Tools\Model3DS.cpp" />
     <ClCompile Include="..\..\librst\Tools\Object.cpp" />
+    <ClCompile Include="..\..\librst\Tools\Path.cpp" />
     <ClCompile Include="..\..\librst\Tools\PathPlanner.cpp" />
     <ClCompile Include="..\..\librst\Tools\Robot.cpp" />
     <ClCompile Include="..\..\librst\Tools\RRT.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="..\..\librst\Tools\Link.h" />
     <ClInclude Include="..\..\librst\Tools\Model3DS.h" />
     <ClInclude Include="..\..\librst\Tools\Object.h" />
+    <ClInclude Include="..\..\librst\Tools\Path.h" />
     <ClInclude Include="..\..\librst\Tools\PathPlanner.h" />
     <ClInclude Include="..\..\librst\Tools\Robot.h" />
     <ClInclude Include="..\..\librst\Tools\RRT.h" />

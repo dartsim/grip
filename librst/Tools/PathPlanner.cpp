@@ -39,14 +39,15 @@ bool PathPlanner::checkPathSegment(int robotId, vector<int> linkIds, VectorXd co
 }
 
 void PathPlanner::smoothPath(int robotId, std::vector<int> linkIds, list<VectorXd> &path) const {
-	list<VectorXd>::iterator temp, config1;
-	list<VectorXd>::iterator config2 = path.begin();
+	list<VectorXd>::iterator config1, config2;
+	list<VectorXd>::iterator temp = path.begin();
+	if(temp == path.end()) return;
 
 	while(true) {
-		config1 = config2;
-		config2++;
-		if(config2 == path.end()) return;
-		temp = config2;
+		config1 = temp;
+		temp++;
+		if(temp == path.end()) return;
+		config2 = temp;
 		config2++;
 		if(config2 == path.end()) return;
 		
