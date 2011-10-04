@@ -130,7 +130,6 @@
     <ClCompile Include="..\..\librst\Tools\Model3DS.cpp" />
     <ClCompile Include="..\..\librst\Tools\Object.cpp" />
     <ClCompile Include="..\..\librst\Tools\Path.cpp" />
-    <ClCompile Include="..\..\librst\Tools\PathPlanner.cpp" />
     <ClCompile Include="..\..\librst\Tools\Robot.cpp" />
     <ClCompile Include="..\..\librst\Tools\RRT.cpp" />
     <ClCompile Include="..\..\librst\Tools\Trajectory.cpp" />

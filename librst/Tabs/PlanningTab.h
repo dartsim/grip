@@ -33,7 +33,7 @@ public:
 	bool greedyMode;
 	bool connectMode;
 	bool showProg;
-	PathPlanner *planner;
+	PathPlanner<> *planner;
 
 	int robotID;
 

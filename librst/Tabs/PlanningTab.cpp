@@ -306,7 +306,7 @@ void PlanningTab::OnButton(wxCommandEvent &evt) {
 			if(world == NULL){ cout << "Must load a world." << endl; break; }
 			if(world->robots.size() < 1){ cout << "Must load a world with a robot." << endl; break; }
 
-			planner = new PathPlanner(*world);
+			planner = new PathPlanner<>(*world);
 
 
 			//wxThread planThread;

@@ -50,22 +50,17 @@
 #include "Link.h"
 #include "kdtree/kdtree.h"
 
-#define RANDNM(N,M) N + ((M-N) * ((double)rand() / ((double)RAND_MAX + 1))) // random # between N&M
 
 class RRT {
 public:
-	~RRT();
+	RRT(World* world, int robot, const std::vector<int> &links, const Eigen::VectorXd &root, double stepSize = 0.02);
+	virtual ~RRT();
 
 	typedef enum {
 		STEP_COLLISION, // Collided with obstacle. No node added.
 		STEP_REACHED, // The configuration that we grow to is less than stepSize away from the node we grow from. No node added.
 		STEP_PROGRESS // One node added.
 	} StepResult;
-
-	// Fixed initialization code
-	void initialize(World* world, int robot, std::vector<int> links, Eigen::VectorXd &root, double stepSize = 0.02);
-
-	virtual void cleanup();
 
 	World* world;
 	int robot;
@@ -88,7 +83,7 @@ public:
 	StepResult tryStep(const Eigen::VectorXd &qtry);
 
 	// Tries to extend tree towards provided sample (must be overridden for MBP)
-	virtual StepResult tryStep(const Eigen::VectorXd &qtry, int NNidx);
+	virtual StepResult tryStepFromNode(const Eigen::VectorXd &qtry, int NNidx);
 
 	// Adds qnew to the tree
 	int addNode(const Eigen::VectorXd &qnew, int parentId);
@@ -108,6 +103,9 @@ public:
 	virtual bool checkCollisions(const Eigen::VectorXd &c);
 
 	const unsigned int getSize();
+
+protected:
+	double RRT::randomInRange(double min, double max);
 };
 
 #endif /* RRT_H */

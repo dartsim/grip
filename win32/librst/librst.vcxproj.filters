@@ -77,9 +77,6 @@
     <ClCompile Include="..\..\librst\Tools\RRT.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\librst\Tools\PathPlanner.cpp">
-      <Filter>Tools</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\librst\Tabs\PlanningTab.cpp">
       <Filter>Tabs</Filter>
     </ClCompile>

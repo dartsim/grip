@@ -43,18 +43,13 @@
 using namespace std;
 using namespace Eigen;
 
-void RRT::initialize(World* world, int robot, vector<int> links, VectorXd &root, double stepSize)
+RRT::RRT(World* world, int robot, const vector<int> &links, const VectorXd &root, double stepSize) :
+	world(world),
+	robot(robot),
+	links(links),
+	stepSize(stepSize),
+	ndim(links.size())
 {
-	// clean-up from previous
-	cleanup();
-
-	this->world = world;
-	this->robot = robot;
-	this->links = links;
-
-	ndim = links.size();
-	this->stepSize = stepSize;
-
 	srand(time(NULL));
 
 	kdTree = kd_create(ndim);
@@ -62,18 +57,7 @@ void RRT::initialize(World* world, int robot, vector<int> links, VectorXd &root,
 }
 
 RRT::~RRT() {
-	cleanup();
-}
-
-void RRT::cleanup()
-{
-	links.clear();
-	links.resize(0);
-
-	parentVector.clear();
-	configVector.clear();
-	parentVector.resize(0);
-	configVector.resize(0);
+	kd_free(kdTree);
 }
 
 bool RRT::connect() {
@@ -87,7 +71,7 @@ bool RRT::connect(const VectorXd &target)
 	StepResult result = STEP_PROGRESS;
 	int i = 0;
 	while(result == STEP_PROGRESS) {
-		result = tryStep(target, NNidx);
+		result = tryStepFromNode(target, NNidx);
 		NNidx = configVector.size() - 1;
 		i++;
 	}
@@ -101,32 +85,27 @@ RRT::StepResult RRT::tryStep() {
 
 RRT::StepResult RRT::tryStep(const VectorXd &qtry) {
 	int NNidx = getNearestNeighbor(qtry);
-	return tryStep(qtry, NNidx);
+	return tryStepFromNode(qtry, NNidx);
 }
 
-RRT::StepResult RRT::tryStep(const VectorXd &qtry, int NNidx)
+RRT::StepResult RRT::tryStepFromNode(const VectorXd &qtry, int NNidx)
 {
 	/*
 	 * Calculates a new node to grow towards qtry, checks for collisions, and adds
 	 */
 
-	VectorXd qnear(ndim);
-	VectorXd qnew(ndim);
-	qnear = configVector[NNidx];
+	VectorXd qnear = configVector[NNidx];
 
 	// Compute direction and magnitude
 	Eigen::VectorXd diff = qtry - qnear;
-	double edist = diff.norm();
+	double dist = diff.norm();
 
-	if(edist < stepSize) {
+	if(dist < stepSize) {
 		return STEP_REACHED;
 	}
 
 	// Scale this vector to step_size and add to end of qnear
-	double scale = stepSize / edist;
-	for (int i=0; i<ndim; ++i){
-		qnew[i] = qnear[i] + diff[i] * scale;
-	}
+	VectorXd qnew = qnear + diff * (stepSize / dist);
 	
 	if (!checkCollisions(qnew)) {
 		addNode(qnew, NNidx);
@@ -159,6 +138,11 @@ int RRT::getNearestNeighbor(const VectorXd &qsamp)
 	return nearest;
 }
 
+// random # between min & max
+inline double RRT::randomInRange(double min, double max) {
+	return min + ((max-min) * ((double)rand() / ((double)RAND_MAX + 1)));
+}
+
 VectorXd RRT::getRandomConfig()
 {
 	/*
@@ -167,7 +151,7 @@ VectorXd RRT::getRandomConfig()
 	 */
 	VectorXd config(ndim);
 	for (int i = 0; i < ndim; ++i) {
-		config[i] = RANDNM(world->robots[robot]->links[links[i]]->jMin, world->robots[robot]->links[links[i]]->jMax);
+		config[i] = randomInRange(world->robots[robot]->links[links[i]]->jMin, world->robots[robot]->links[links[i]]->jMax);
 	}
 	return config;
 }
