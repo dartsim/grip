@@ -14,7 +14,7 @@ template <class R = RRT>
 class PathPlanner {
 public:
 	PathPlanner(); // You need to call one of the other constructors before the object is usable.
-	PathPlanner(World& world, bool copyWorld = true);
+	PathPlanner(World& world, bool copyWorld = true, double stepsize = 0.1 );
 	~PathPlanner();
 	double stepsize;
 	World* world;

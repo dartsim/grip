@@ -32,7 +32,9 @@ Tools/Object
 Tools/Robot
 Tools/World
 Tools/IK
+Tools/Path
 Tools/PathPlanner
+Tools/Shortener
 Tools/Trajectory
 Tools/RRT
 Tools/kdtree/kdtree
