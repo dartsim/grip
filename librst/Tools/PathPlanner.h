@@ -33,7 +33,7 @@ template <class R>
 PathPlanner<R>::PathPlanner() : copyWorld(false), world(NULL) {}
 
 template <class R>
-PathPlanner<R>::PathPlanner(World& world, bool copyWorld) {
+PathPlanner<R>::PathPlanner(World& world, bool copyWorld, double stepSize) {
 	this->copyWorld = copyWorld;
 	if(copyWorld) {
 		this->world = new World(world);
@@ -41,7 +41,7 @@ PathPlanner<R>::PathPlanner(World& world, bool copyWorld) {
 	else {
 		this->world = &world;
 	}
-	stepsize = 0.1;
+	stepsize = stepSize;
 }
 
 template <class R>
