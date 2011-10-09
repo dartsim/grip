@@ -105,7 +105,7 @@ public:
 	const unsigned int getSize();
 
 protected:
-	double RRT::randomInRange(double min, double max);
+	double randomInRange(double min, double max);
 };
 
 #endif /* RRT_H */
