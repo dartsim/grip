@@ -94,7 +94,6 @@ VectorXd Trajectory::getPosition(double time) const {
 		return path.back() + 0.5 * t * t * accelerations.back();
 	}
 
-
 	double switchingTime1 = 0.5 * blendDurations[i];
 	double switchingTime2 = durations[i] - 0.5 * blendDurations[i+1];
 
@@ -104,13 +103,51 @@ VectorXd Trajectory::getPosition(double time) const {
 	}
 	else if(t > switchingTime2) {
 		t -= switchingTime2;
-		VectorXd config = path[i] + switchingTime2 * velocities[i] + t * velocities[i] + 0.5 * t * t * accelerations[i+1];
-		return config;
+		return path[i] + switchingTime2 * velocities[i] + t * velocities[i] + 0.5 * t * t * accelerations[i+1];
 	}
 	else {
 		return path[i] + t * velocities[i];
 	}
 }
+
+
+VectorXd Trajectory::getVelocity(double time) const {
+	if(time > duration) {
+		return VectorXd::Zero(path.back().size());
+	}
+	double t = time;
+	if(t <= 0.5 * blendDurations[0]) {
+		return t * accelerations[0];
+	}
+	else {
+		t -= 0.5 * blendDurations[0];
+	}
+	int i = 0;
+	while(i < path.size() - 1 && t > durations[i]) {
+		t -= durations[i];
+		i++;
+	}
+	if(i == path.size() - 1) {
+		t = 0.5 * blendDurations.back() - t;
+		return - t * accelerations.back();
+	}
+
+	double switchingTime1 = 0.5 * blendDurations[i];
+	double switchingTime2 = durations[i] - 0.5 * blendDurations[i+1];
+
+	if(t < switchingTime1) {
+		t = switchingTime1 - t;
+		return velocities[i] - t * accelerations[i];
+	}
+	else if(t > switchingTime2) {
+		t -= switchingTime2;
+		return velocities[i] + t * accelerations[i+1];
+	}
+	else {
+		return velocities[i];
+	}
+}
+
 
 double Trajectory::getDuration() const {
 	return duration;

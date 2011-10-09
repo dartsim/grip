@@ -1,4 +1,5 @@
 #include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <vector>
 #include "Link.h"
 #include "World.h"
@@ -13,6 +14,9 @@ public:
 	static void anglesFromRotationMatrix(double &theta1, double &theta2, double &theta3, const Eigen::Vector3d &n1, const Eigen::Vector3d &n2, const Eigen::Vector3d &n3, const Eigen::Matrix3d &A);
 private:
 	void init(World* world, int robotId, int lastLinkId, const Eigen::Transform<double, 3, Eigen::Affine> &endEffector);
+	Eigen::Transform<double, 3, Eigen::Affine> transform(Eigen::Vector3d translation);
+	Eigen::Transform<double, 3, Eigen::Affine> transform(Eigen::Matrix3d rotation);
+
 	Link* links[8];
 	Eigen::Transform<double, 3, Eigen::Affine> T0;
 	Eigen::Transform<double, 3, Eigen::Affine> A;

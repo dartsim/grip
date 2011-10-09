@@ -84,14 +84,14 @@ bool intersect3Joints(Link* link1, Link* link2, Link* link3, Vector3d& intersect
 	return intersect3Lines(o1, d1, o2, d2, o3, d3, intersection);
 }
 
-Transform<double, 3, Affine> transform(Vector3d translation) {
+Transform<double, 3, Affine> IK::transform(Vector3d translation) {
 	Transform<double, 3, Affine> T;
 	T.setIdentity();
 	T.translation() = translation;
 	return T;
 }
 
-Transform<double, 3, Affine> transform(Matrix3d rotation) {
+Transform<double, 3, Affine> IK::transform(Matrix3d rotation) {
 	Transform<double, 3, Affine> T;
 	T.setIdentity();
 	T.rotation() = rotation;

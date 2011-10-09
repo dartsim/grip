@@ -9,6 +9,7 @@ class Trajectory
 public:
 	Trajectory(const std::list<Eigen::VectorXd> &path, const Eigen::VectorXd &maxVelocity, const Eigen::VectorXd &maxAcceleration);
 	Eigen::VectorXd getPosition(double time) const;
+	Eigen::VectorXd getVelocity(double time) const;
 	double getDuration() const;
 private:
 	std::vector<Eigen::VectorXd> path;
