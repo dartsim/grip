@@ -26,6 +26,7 @@ private:
 	bool copyWorld;
 	bool planSingleTreeRrt(int robot, const std::vector<int> &links, const Eigen::VectorXd &start, const Eigen::VectorXd &goal, std::list<Eigen::VectorXd> &path, bool connect, unsigned int maxNodes) const;
 	bool planBidirectionalRrt(int robot, const std::vector<int> &links, const Eigen::VectorXd &start, const Eigen::VectorXd &goal, std::list<Eigen::VectorXd> &path, bool connect, unsigned int maxNodes) const;
+	inline void randomInRange(double min, double max);
 };
 
 
@@ -88,7 +89,11 @@ void PathPlanner<R>::smoothPath(int robotId, std::vector<int> linkIds, list<Eige
 	}
 }
 
-//-----------------------
+template <class R>
+inline void PathPlanner<R>::randomInRange(double min, double max) {
+	return min + ((max-min) * ((double)rand() / ((double)RAND_MAX + 1)));
+}
+
 template <class R>
 void PathPlanner<R>::smoothPath2( int robotId, std::vector<int> linkIds, list<Eigen::VectorXd> &path ) const
 {
@@ -107,9 +112,9 @@ void PathPlanner<R>::smoothPath2( int robotId, std::vector<int> linkIds, list<Ei
       int minNode = 0;
       int maxNode = path.size() - 1;
 
-      node_1 = (int) RANDNM( minNode + 1, maxNode - 1 );
+      node_1 = (int) randomInRange( minNode + 1, maxNode - 1 );
 
-      do{ node_2 = (int) RANDNM( minNode + 1, maxNode - 1 ); } while( node_2 == node_1 );
+      do{ node_2 = (int) randomInRange( minNode + 1, maxNode - 1 ); } while( node_2 == node_1 );
 
       if( node_2 < node_1 ) 
       {  aux_node = node_1;
