@@ -47,8 +47,8 @@ RRT::RRT(World* world, int robot, const vector<int> &links, const VectorXd &root
 	world(world),
 	robot(robot),
 	links(links),
-	stepSize(stepSize),
-	ndim(links.size())
+	ndim(links.size()),
+	stepSize(stepSize)
 {
 	srand(time(NULL));
 
@@ -181,6 +181,6 @@ bool RRT::checkCollisions(const VectorXd &c)
 	return world->checkCollisions();
 }
 
-const unsigned int RRT::getSize() {
+unsigned int RRT::getSize() {
 	return configVector.size();
 }

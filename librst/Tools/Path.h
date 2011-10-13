@@ -36,11 +36,11 @@ public:
 		return (1.0 - s) * start + s * end;
 	}
 
-	Eigen::VectorXd getPathVelocity(double s) const {
+	Eigen::VectorXd getPathVelocity(double /* s */) const {
 		return (end - start) / length;
 	}
 
-	Eigen::VectorXd getPathAcceleration(double s) const {
+	Eigen::VectorXd getPathAcceleration(double /* s */) const {
 		return Eigen::VectorXd::Zero(start.size());
 	}
 

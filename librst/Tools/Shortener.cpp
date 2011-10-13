@@ -165,7 +165,7 @@ void Shortener::InitGroups( const std::list< Eigen::VectorXd > &path )
    mGroupID.resize(0);
    if( mGroupInfo.size() != 0 ) { mGroupInfo.clear(); }
 
-   for( int i = 0; i < path.size(); i++ )
+   for(unsigned int i = 0; i < path.size(); i++ )
    {  mGroupID.push_back(0);  }
 }
 
@@ -186,13 +186,13 @@ void Shortener::CheckGroups( )
 
    bool alreadyThere;
 
-   for( int i = 1; i < mGroupID.size(); i++ )
+   for(unsigned int i = 1; i < mGroupID.size(); i++ )
    {
       if( mGroupID[i] != mGroupID[i-1] )
       {
          alreadyThere = false;
          //-- Check if this is part of an existent group
-         for( int j = 0; j < mGroupInfo.size(); j++ )
+         for(unsigned int j = 0; j < mGroupInfo.size(); j++ )
          {
             if( group == mGroupInfo[j].group )
             {  int oldSize = mGroupInfo[j].nodes.size();
@@ -216,7 +216,7 @@ void Shortener::CheckGroups( )
  
    //-- For the last group
    alreadyThere = false;
-   for( int j = 0; j < mGroupInfo.size(); j++ )
+   for(unsigned int j = 0; j < mGroupInfo.size(); j++ )
    {
       if( group == mGroupInfo[j].group )
       {  int oldSize = mGroupInfo[j].nodes.size();

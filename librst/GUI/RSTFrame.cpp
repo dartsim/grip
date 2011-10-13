@@ -259,7 +259,7 @@ void RSTFrame::OnSaveRobot(wxCommandEvent& WXUNUSED(event)) {
 
 
 
-void RSTFrame::OnLoad(wxCommandEvent& event){
+void RSTFrame::OnLoad(wxCommandEvent& WXUNUSED(event)){
 	viewer->loading=true;
 	wxString filename = wxFileSelector(wxT("Choose a file to open"),wxT("../scene/"),wxT(""),wxT(""), // -- default extension
                                        wxT("*.rscene"), 0);
@@ -267,7 +267,7 @@ void RSTFrame::OnLoad(wxCommandEvent& event){
 		DoLoad(string(filename.mb_str()));
 }
 
-void RSTFrame::OnQuickLoad(wxCommandEvent& event){
+void RSTFrame::OnQuickLoad(wxCommandEvent& WXUNUSED(event)){
 	viewer->loading=true;
 	ifstream lastloadFile;
 	lastloadFile.open(".lastload", ios::in);
@@ -376,7 +376,7 @@ void RSTFrame::OnToolMovie(wxCommandEvent& event){
 	event.Skip();
 }
 
-void RSTFrame::OnToolScreenshot(wxCommandEvent& event){
+void RSTFrame::OnToolScreenshot(wxCommandEvent& WXUNUSED(event)){
 	wxYield();
 
 	int w,h;
@@ -473,7 +473,7 @@ void RSTFrame::setTimeValue(double value, bool sendSignal){
 	updateTimeValue(value, sendSignal);
 }
 
-void RSTFrame::updateTimeValue(double value, bool sendSignal){
+void RSTFrame::updateTimeValue(double /* value */, bool sendSignal){
 	if(tIncrement == 0) return;
 	char buf[100];
 	sprintf(buf, "%6.2f", tCurrent);
@@ -502,7 +502,7 @@ void RSTFrame::AddWorld(World* world){
 	timeTrack->SetRange(0, tMax * tPrecision);
 }
 
-void RSTFrame::InitTimer(string title, double period){
+void RSTFrame::InitTimer(string /* title */, double period){
 	for(size_t i=0; i<timeVector.size(); i++){
 		delete timeVector[i];
 	}

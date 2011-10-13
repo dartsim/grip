@@ -64,7 +64,7 @@ World::World(const World &copyFrom)
 	for(unsigned int i = 0; i < copyFrom.robots.size(); i++) {
 		robots.push_back(new Robot(*copyFrom.robots[i]));
 		robots.back()->world = this; // don't forget to update the world ptr...
-		for(int j = 0; j < robots.back()->links.size(); j++) {
+		for(unsigned int j = 0; j < robots.back()->links.size(); j++) {
 			robots.back()->links[j]->world = this;
 			if(robots.back()->links[j]->model != NULL) {
 				CreateEntity(robots.back()->links[j]);
@@ -399,8 +399,8 @@ void World::detectCollisions() {
 	}
     for (int j = 0; j < report.numObjPairs(); j++) {
         flag = true;
-		Object* object1 = entities[report.obj1ID(j)];
-		Object* object2 = entities[report.obj2ID(j)];
+		// Object* object1 = entities[report.obj1ID(j)];
+		// Object* object2 = entities[report.obj2ID(j)];
 		entities[report.obj1ID(j)]->collisionFlag = true;
 		entities[report.obj2ID(j)]->collisionFlag = true;
 		//cout << "COLL: "   << entities[report.obj1ID(j)].object->name<< " : " << entities[report.obj2ID(j)].object->name<<endl;

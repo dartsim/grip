@@ -348,8 +348,8 @@ void Viewer::addGrid(){
 	glEnable(GL_FOG);
 	double sizeX=100.0f;
 	double sizeY=100.0f;
-	double inc=.5f;
-	double d = .005;
+	//double inc=.5f;
+	//double d = .005;
 
 	double startX=-sizeX/2.f;
 	double endX  =sizeX/2.f;

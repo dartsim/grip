@@ -53,9 +53,6 @@
 
 class RRT {
 public:
-	RRT(World* world, int robot, const std::vector<int> &links, const Eigen::VectorXd &root, double stepSize = 0.02);
-	virtual ~RRT();
-
 	typedef enum {
 		STEP_COLLISION, // Collided with obstacle. No node added.
 		STEP_REACHED, // The configuration that we grow to is less than stepSize away from the node we grow from. No node added.
@@ -74,6 +71,9 @@ public:
 	std::vector<Eigen::VectorXd> configVector; 	// vector of all visited configs
 
 	struct kdtree *kdTree;
+
+	RRT(World* world, int robot, const std::vector<int> &links, const Eigen::VectorXd &root, double stepSize = 0.02);
+	virtual ~RRT();
 
 	bool connect();
 	bool connect(const Eigen::VectorXd &target);
@@ -102,7 +102,7 @@ public:
 	// Implementation-specific function for checking collisions  (must be overridden for MBP)
 	virtual bool checkCollisions(const Eigen::VectorXd &c);
 
-	const unsigned int getSize();
+	unsigned int getSize();
 
 protected:
 	double randomInRange(double min, double max);

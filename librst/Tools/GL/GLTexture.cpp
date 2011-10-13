@@ -78,7 +78,7 @@ void GLTexture::Use()
 	glBindTexture(GL_TEXTURE_2D, texture[0]);				// Bind the texture as the current one
 }
 
-void GLTexture::LoadBMP(string name)
+void GLTexture::LoadBMP(string /* name */)
 {
 	/*
 	// Create a place to store the texture

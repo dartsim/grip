@@ -155,7 +155,7 @@ void RSTSlider::setValue(double value, bool sendSignal){
 	updateValue(value, sendSignal);
 }
 
-void RSTSlider::updateValue(double value, bool sendSignal){
+void RSTSlider::updateValue(double /* value */, bool sendSignal){
 	char buf[100];
 	sprintf(buf, "%6.2f", pos);
 	wxString posString = wxString(buf,wxConvUTF8);

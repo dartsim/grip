@@ -157,7 +157,7 @@ int Robot::Load(string fullname, World* w){
 
 	fstream rstream(fullname.c_str(),ios::in);
 
-	int fpos;
+	// int fpos;
 	int lnum=0;
 
 	while(!rstream.eof()) {
