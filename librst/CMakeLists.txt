@@ -5,31 +5,18 @@
 cmake_minimum_required (VERSION 2.6)
 project (librst)
 
+# Global Variables
+if(MSVC)
+    set(INCLUDE_DIR_PREFIX "C:/Golems" )
+else ()
+    set(INCLUDE_DIR_PREFIX /usr/local )
+endif()
+
 set (CMAKE_VERBOSE_MAKEFILE OFF)
 if(NOT MSVC)
   set (CMAKE_CXX_FLAGS "-g -O0 -Wall -Wextra -Wpointer-arith -fno-default-inline -fno-implicit-inline-templates -DwxUSE_THREADS")
 endif(NOT MSVC)
-
-# ------------------------
-# Added 2011-11-06 achq
-set ( DART_PATH "/home/ana/Research/Grip/dart" )
-
-set( DART_HEADERS "${DART_PATH}/src" )
-
-set ( DART_LIBS collision
-                dynamics
-                geometry
-                integration
-                kinematics
-                lcpsolver
-                optimizer
-                renderer
-                utils
-                yui )
-
-link_directories( ${DART_PATH}/lib )
-
-# ------------------------
+set (CMAKE_CXX_FLAGS -L{INCLUDE_DIR_PREFIX}/lib )
 
 set( SRC_GUI 
 GUI/Viewer
@@ -66,8 +53,6 @@ set ( HEADERS
 ./Tools
 ./GUI
 ./
-../
-${DART_HEADERS}
 )
 
 set (wxWidgets_USE_LIBS base core gl)
@@ -75,9 +60,11 @@ find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
   include_directories (${HEADERS})
+  include_directories (${INCLUDE_DIR_PREFIX}/include/dart)
+  include_directories (${INCLUDE_DIR_PREFIX}/include/eigen3)
   add_library (rst STATIC ${SRC})
   #add_executable (rst_exe ${SRC})
-  #target_link_libraries (rst_exe ${wxWidgets_LIBRARIES})
+  #target_link_libraries (rst_exe ${wxWidgets_LIBRARIES} dart)
 else (wxWidgets_FOUND)
   message ("wxWidgets not found!")
 endif (wxWidgets_FOUND)
