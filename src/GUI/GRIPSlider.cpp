@@ -36,25 +36,25 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "RSTSlider.h"
+#include "GRIPSlider.h"
 #include <string>
 #include <iostream>
 using namespace std;
 
-BEGIN_EVENT_TABLE(RSTSlider, wxPanel)
-	EVT_COMMAND_SCROLL(1009, RSTSlider::OnScroll)
-	EVT_TEXT_ENTER(1008, RSTSlider::OnEnter)
+BEGIN_EVENT_TABLE(GRIPSlider, wxPanel)
+	EVT_COMMAND_SCROLL(1009, GRIPSlider::OnScroll)
+	EVT_TEXT_ENTER(1008, GRIPSlider::OnEnter)
 END_EVENT_TABLE()
 
-IMPLEMENT_DYNAMIC_CLASS(RSTSlider, wxPanel)
-DEFINE_EVENT_TYPE(wxEVT_RST_SLIDER_CHANGE)
+IMPLEMENT_DYNAMIC_CLASS(GRIPSlider, wxPanel)
+DEFINE_EVENT_TYPE(wxEVT_GRIP_SLIDER_CHANGE)
 
 /**
- * @function RSTSlider
+ * @function GRIPSlider
  * @brief Constructor
  * @date 2011-10-13
  */
-RSTSlider::RSTSlider(const char* name, double left, double right, int precision, double initialpos,
+GRIPSlider::GRIPSlider(const char* name, double left, double right, int precision, double initialpos,
 					 int lineSize, int pageSize,
 					 wxWindow *parent, const wxWindowID id, bool vertical,
                        const wxPoint& pos, const wxSize& size,
@@ -96,9 +96,9 @@ RSTSlider::RSTSlider(const char* name, double left, double right, int precision,
 }
 
 /**
- * @function RSTSlider
+ * @function GRIPSlider
  */
-RSTSlider::RSTSlider(wxBitmap bmp, double left, double right, int precision, double initialpos,
+GRIPSlider::GRIPSlider(wxBitmap bmp, double left, double right, int precision, double initialpos,
 					 int lineSize, int pageSize,
 					 wxWindow *parent, const wxWindowID id, bool vertical,
                        const wxPoint& pos, const wxSize& size,
@@ -148,14 +148,14 @@ RSTSlider::RSTSlider(wxBitmap bmp, double left, double right, int precision, dou
 /**
  * @function setPrecision
  */
-void RSTSlider::setPrecision(int precision){
+void GRIPSlider::setPrecision(int precision){
 	prec = precision;
 }
 
 /**
  * @function setRange
  */
-void RSTSlider::setRange(double left, double right) {
+void GRIPSlider::setRange(double left, double right) {
     leftBound = left;
     rightBound = right;
     track->SetRange(leftBound * prec, rightBound * prec);
@@ -164,7 +164,7 @@ void RSTSlider::setRange(double left, double right) {
 /**
  * @function setValue
  */
-void RSTSlider::setValue(double value, bool sendSignal){
+void GRIPSlider::setValue(double value, bool sendSignal){
     pos = value;
     track->SetValue(value * prec);
     updateValue(value, sendSignal);
@@ -173,7 +173,7 @@ void RSTSlider::setValue(double value, bool sendSignal){
 /**
  * @function updateValue
  */
-void RSTSlider::updateValue(double value, bool sendSignal){
+void GRIPSlider::updateValue(double value, bool sendSignal){
     char buf[100];
     sprintf(buf, "%6.2f", pos);
     wxString posString = wxString(buf,wxConvUTF8);
@@ -181,7 +181,7 @@ void RSTSlider::updateValue(double value, bool sendSignal){
 
     //Send a slider change event up to the parent window
     if(sendSignal) {
-       	wxCommandEvent evt(wxEVT_RST_SLIDER_CHANGE,GetId());
+       	wxCommandEvent evt(wxEVT_GRIP_SLIDER_CHANGE,GetId());
 	evt.SetEventObject(this);
 	evt.SetClientData((void*)&pos);
 	GetEventHandler()->ProcessEvent(evt);
@@ -191,7 +191,7 @@ void RSTSlider::updateValue(double value, bool sendSignal){
 /**
  * @function OnScroll
  */
-void RSTSlider::OnScroll(wxScrollEvent &evt) {
+void GRIPSlider::OnScroll(wxScrollEvent &evt) {
     pos = (double)(evt.GetPosition())/(double)prec;
     updateValue(pos);
 }
@@ -199,7 +199,7 @@ void RSTSlider::OnScroll(wxScrollEvent &evt) {
 /**
  * @function OnEnter
  */
-void RSTSlider::OnEnter(wxCommandEvent& WXUNUSED(evt)){
+void GRIPSlider::OnEnter(wxCommandEvent& WXUNUSED(evt)){
     double p;
     rText->GetValue().ToDouble(&p);
     if(p < leftBound) p = leftBound;

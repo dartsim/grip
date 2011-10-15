@@ -36,45 +36,65 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef INSPECTOR_TAB
-#define INSPECTOR_TAB
+#ifndef GRIP_GUI_H
+#define GRIP_GUI_H
 
-#include <Tabs/RSTTab.h>
-#include <Tools/Constants.h>
+//--------------------------------------------------------------------
+//   GLOBAL VARIABLES: Keep track of the user's current
+//   loaded files, robot, planners, and other intentions w.r.t. the GUI
+//---------------------------------------------------------------------
 
-/**
- * @class InspectorTab
- * @brief
- * @date 2011-10-13
- */
-class InspectorTab : public RSTTab
-{
-public:
-	InspectorTab(){};
-    InspectorTab(wxWindow * parent, wxWindowID id = -1,
-             const wxPoint & pos = wxDefaultPosition,
-             const wxSize & size = wxDefaultSize,
-             long style = wxTAB_TRAVERSAL);
-	virtual ~InspectorTab(){}
+// FiGRIP some declarations of variable types
 
-	wxStaticText* itemName;
-	wxStaticText* parentName;
-/* 	wxSlider* jointSlider; */
+#include <wx/notebook.h>
+#include <planning/World.h>
 
-	wxSizer* sizerFull;
-	RSTSlider* jSlider;
-	RSTSlider* xSlider;
-	RSTSlider* ySlider;
-	RSTSlider* zSlider;
-	RSTSlider* rollSlider;
-	RSTSlider* pitchSlider;
-	RSTSlider* yawSlider;
+class GRIPFrame;
+class Viewer;
+class TreeView;
+class TreeViewReturn;
+class InspectorTab;
+class TemplateTab;
 
-	void OnSlider(wxCommandEvent &evt);
-	void RSTStateChange();
+// The actual variables that are global to GUI elements
 
-	DECLARE_DYNAMIC_CLASS(InspectorTab)
-	DECLARE_EVENT_TABLE()
-};
+extern planning::World  *mWorld;
+
+extern GRIPFrame*	frame;
+extern Viewer*		viewer;
+extern TreeView*	treeView;
+extern wxNotebook*	tabView;
+
+extern TreeViewReturn* selectedTreeNode;
+
+extern bool reverseLinkOrder;
+extern bool check_for_collisions;
+
+// Camera position
+extern Eigen::Matrix3d mCamRotT;
+extern Eigen::Vector3d mWorldV;
+extern double mCamRadius;
+// World colors
+extern Eigen::Vector3d mGridColor;
+extern Eigen::Vector3d mBackColor;
+
+
+// Please don't change these constants - they are important to GUI functionality
+static const int toolBarHeight = 30;
+
+//#ifdef __APPLE__
+//static const int prefViewerWidth = 644;
+//#else
+static const int prefViewerWidth = 644;
+//#endif
+static const int prefViewerHeight = 484;
+static const int prefTreeViewWidth = 210;
+static const int prefTabsHeight = 200;
+static const int statusBarHeight = 22;
+static const double defaultCamRadius = 10.f;
+static const double CAMERASPEED = 0.003f;
+
+
+DECLARE_EVENT_TYPE(wxEVT_GRIP_STATE_CHANGE, -1)
 
 #endif

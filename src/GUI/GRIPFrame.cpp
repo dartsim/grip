@@ -40,15 +40,15 @@
 #include <fstream>
 
 #include "GUI.h"
-#include "RSTFrame.h"
+#include "GRIPFrame.h"
 #include "Viewer.h"
 #include "TreeView.h"
 
 #include <Tabs/AllTabs.h>
-#include <Tabs/RSTTab.h>
-#include "RSTSlider.h"
-#include "RSTimeSlice.h"
-#include "RSTFrame.h"
+#include <Tabs/GRIPTab.h>
+#include "GRIPSlider.h"
+#include "GRIPTimeSlice.h"
+#include "GRIPFrame.h"
 
 #include "icons/open.xpm"
 #include "icons/save.xpm"
@@ -78,17 +78,17 @@ extern bool check_for_collisions;
 //wxSTD_MDIPARENTFRAME ICON wxICON(ROBOT_xpm)
 
 /**
- * @function RSTFrame
+ * @function GRIPFrame
  * @brief Constructor 
  * @date 2011-10-13
  */
-RSTFrame::RSTFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
+GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
 {
 	tPrecision = 1000;
 	tMax = 5;
 	tMax = 0;
 	InitTimer("",0);
-    std::cout << "RSTFrame 1" << std::endl;
+    std::cout << "GRIPFrame 1" << std::endl;
     wxMenu *fileMenu = new wxMenu;
     wxMenu *helpMenu = new wxMenu;
 	wxMenu *settingsMenu = new wxMenu;
@@ -138,7 +138,7 @@ RSTFrame::RSTFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
 	filebar->AddTool(Tool_movie, _T("Movie"),toolBarBitmaps[6], toolBarBitmaps[6], wxITEM_NORMAL, _T("Export film sequence"));
 
 
-	//timeSlider = new RSTSlider(clockBmp,0,1000,100,0,100,500,this,ID_TIMESLIDER,true);
+	//timeSlider = new GRIPSlider(clockBmp,0,1000,100,0,100,500,this,ID_TIMESLIDER,true);
 	wxPanel* timePanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, 0);
 
 #ifdef WIN32 // For windows use a thicker slider - it looks nice
@@ -165,7 +165,7 @@ RSTFrame::RSTFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
 	optionbar->AddControl(timeText);
 
     CreateStatusBar(2);
-    SetStatusText(wxT("RST Loading..."));
+    SetStatusText(wxT("GRIP Loading..."));
 
 	// Create sizers - these will manage the layout/resizing of the frame elements
 	wxSizer *sizerFull = new wxBoxSizer(wxVERTICAL);
@@ -235,7 +235,7 @@ RSTFrame::RSTFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
  * @function OnSaveScene
  * @brief Checks if the input file is a .rscene file or not and then writes the scene to it.
  */
-void RSTFrame::OnSaveScene(wxCommandEvent& WXUNUSED(event)) {
+void GRIPFrame::OnSaveScene(wxCommandEvent& WXUNUSED(event)) {
     wxString filepath;
     string filename;
     size_t endpath;
@@ -264,7 +264,7 @@ void RSTFrame::OnSaveScene(wxCommandEvent& WXUNUSED(event)) {
 /**
  * @function OnSaveRobot
  */
-void RSTFrame::OnSaveRobot(wxCommandEvent& WXUNUSED(event)) {
+void GRIPFrame::OnSaveRobot(wxCommandEvent& WXUNUSED(event)) {
 
 }
 
@@ -272,7 +272,7 @@ void RSTFrame::OnSaveRobot(wxCommandEvent& WXUNUSED(event)) {
 /**
  * @function OnLoad
  */
-void RSTFrame::OnLoad(wxCommandEvent& event){
+void GRIPFrame::OnLoad(wxCommandEvent& event){
 	viewer->loading=true;
 	wxString filename = wxFileSelector(wxT("Choose a file to open"),wxT("../scene/"),wxT(""),wxT(""), // -- default extension
                                        wxT("*.rscene"), 0);
@@ -283,7 +283,7 @@ void RSTFrame::OnLoad(wxCommandEvent& event){
 /**
  * @function OnQuickLoad
  */
-void RSTFrame::OnQuickLoad(wxCommandEvent& event){
+void GRIPFrame::OnQuickLoad(wxCommandEvent& event){
 	viewer->loading=true;
 	ifstream lastloadFile;
 	lastloadFile.open(".lastload", ios::in);
@@ -301,7 +301,7 @@ void RSTFrame::OnQuickLoad(wxCommandEvent& event){
  * @function DoLoad
  * @brief Load world from RSDH file
  */
-void RSTFrame::DoLoad(string filename){
+void GRIPFrame::DoLoad(string filename){
 	DeleteWorld();
   
         mWorld = parseWorld( string(filename) );
@@ -330,7 +330,7 @@ void RSTFrame::DoLoad(string filename){
  * @brief 
  * @date 2011-10-13
  */
-void RSTFrame::DeleteWorld(){
+void GRIPFrame::DeleteWorld(){
 	InitTimer("",0);
 	for(size_t i=0; i<timeVector.size(); i++){
 		if(timeVector[i]!=NULL)
@@ -352,7 +352,7 @@ void RSTFrame::DeleteWorld(){
 /**
  * @function OnToolOrder
  */
-void RSTFrame::OnToolOrder(wxCommandEvent& WXUNUSED(event)){
+void GRIPFrame::OnToolOrder(wxCommandEvent& WXUNUSED(event)){
 	reverseLinkOrder = !reverseLinkOrder;
 }
 
@@ -360,7 +360,7 @@ void RSTFrame::OnToolOrder(wxCommandEvent& WXUNUSED(event)){
  * @function OnToolCheckColl
  * @brief 
  */
-void RSTFrame::OnToolCheckColl(wxCommandEvent& ){
+void GRIPFrame::OnToolCheckColl(wxCommandEvent& ){
 	// toggle collision detection
 	check_for_collisions = !check_for_collisions;
 }
@@ -370,7 +370,7 @@ void RSTFrame::OnToolCheckColl(wxCommandEvent& ){
  * @brief
  * @date 2011-10-13
  */
-void RSTFrame::OnToolMovie(wxCommandEvent& event){
+void GRIPFrame::OnToolMovie(wxCommandEvent& event){
 	wxString dirname = wxDirSelector(wxT("Choose output directory for movie pictures:")); // , "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST
 
 	if ( dirname.empty() ){ // filename
@@ -419,7 +419,7 @@ void RSTFrame::OnToolMovie(wxCommandEvent& event){
  * @brief
  * @date 2011-10-13
  */
-void RSTFrame::OnToolScreenshot(wxCommandEvent& event){
+void GRIPFrame::OnToolScreenshot(wxCommandEvent& event){
 	wxYield();
 
 	int w,h;
@@ -451,7 +451,7 @@ void RSTFrame::OnToolScreenshot(wxCommandEvent& event){
  * @brief
  * @date 2011-10-13
  */
-int RSTFrame::saveText(wxString scenepath, const char* llfile)
+int GRIPFrame::saveText(wxString scenepath, const char* llfile)
 {
      try {
 		 ofstream lastloadFile(llfile, ios::out);
@@ -476,7 +476,7 @@ int RSTFrame::saveText(wxString scenepath, const char* llfile)
  * @brief
  * @date 2011-10-13
  */
-void RSTFrame::OnClose(wxCommandEvent& WXUNUSED(event)){
+void GRIPFrame::OnClose(wxCommandEvent& WXUNUSED(event)){
 	DeleteWorld();
 	//viewer->UpdateCamera();
 	//exit(0);
@@ -488,7 +488,7 @@ void RSTFrame::OnClose(wxCommandEvent& WXUNUSED(event)){
  * @brief
  * @date 2011-10-13
  */
-void RSTFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
+void GRIPFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 {
 	exit(0);
     //Close(true);
@@ -499,9 +499,9 @@ void RSTFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
  * @brief
  * @date 2011-10-13
  */
-void RSTFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
+void GRIPFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
-	wxMessageBox(wxString::Format(wxT("RST: Humanoid Robotics Lab. Georgia Tech. \
+	wxMessageBox(wxString::Format(wxT("GRIP: Humanoid Robotics Lab. Georgia Tech. \
                                       \n\n Mike Stilman, Saul Reynolds-Haertl, Jon Scholz\
 									  \n Pushkar Kolhe, Jiuguang Wang, Tobias Kunz"),
                                   wxVERSION_STRING,
@@ -514,7 +514,7 @@ void RSTFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
  * @brief
  * @date 2011-10-13
  */
-void RSTFrame::onTVChange(wxTreeEvent& WXUNUSED(event)){
+void GRIPFrame::onTVChange(wxTreeEvent& WXUNUSED(event)){
 	updateAllTabs();
 }
 
@@ -523,15 +523,15 @@ void RSTFrame::onTVChange(wxTreeEvent& WXUNUSED(event)){
  * @brief Go through all the tabs and indicate a state change
  * @date 2011-10-13
  */
-void RSTFrame::updateAllTabs(){
+void GRIPFrame::updateAllTabs(){
 	int type = 0;
-	wxCommandEvent evt(wxEVT_RST_STATE_CHANGE,GetId());
+	wxCommandEvent evt(wxEVT_GRIP_STATE_CHANGE,GetId());
 	evt.SetEventObject(this);
 	evt.SetClientData((void*)&type);
 	size_t numPages = tabView->GetPageCount();
 	for(size_t i=0; i< numPages; i++){
-		RSTTab* tab = (RSTTab*)tabView->GetPage(i);
-		tab->RSTStateChange();
+		GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
+		tab->GRIPStateChange();
 	}
 }
 
@@ -541,7 +541,7 @@ void RSTFrame::updateAllTabs(){
  * @brief 
  * @date 2011-10-13
  */
-void RSTFrame::setTimeValue(double value, bool sendSignal){
+void GRIPFrame::setTimeValue(double value, bool sendSignal){
 	tCurrent = value;
 	timeTrack->SetValue(value * tPrecision);
 	updateTimeValue(value, sendSignal);
@@ -552,7 +552,7 @@ void RSTFrame::setTimeValue(double value, bool sendSignal){
  * @brief 
  * @date 2011-10-13
  */
-void RSTFrame::updateTimeValue(double value, bool sendSignal){
+void GRIPFrame::updateTimeValue(double value, bool sendSignal){
 	if(tIncrement == 0) return;
 	char buf[100];
 	sprintf(buf, "%6.2f", tCurrent);
@@ -573,7 +573,7 @@ void RSTFrame::updateTimeValue(double value, bool sendSignal){
  * @brief 
  * @date 2011-10-13
  */
-void RSTFrame::OnTimeScroll(wxScrollEvent& event){
+void GRIPFrame::OnTimeScroll(wxScrollEvent& event){
 	tCurrent = (double)(event.GetPosition())/(double)tPrecision;
 	//updateTimeValue(tCurrent);
 	updateTimeValue(tCurrent,true);
@@ -585,8 +585,8 @@ void RSTFrame::OnTimeScroll(wxScrollEvent& event){
  * @date 2011-10-13
  */
 /*
-void RSTFrame::AddWorld(World* world){
-	RSTimeSlice* tsnew = new RSTimeSlice(world);
+void GRIPFrame::AddWorld(World* world){
+	GRIPTimeSlice* tsnew = new GRIPTimeSlice(world);
 	timeVector.push_back(tsnew);
 	tMax += tIncrement;
 	timeTrack->SetRange(0, tMax * tPrecision);
@@ -598,7 +598,7 @@ void RSTFrame::AddWorld(World* world){
  * @brief 
  * @date 2011-10-13
  */
-void RSTFrame::InitTimer(string title, double period){
+void GRIPFrame::InitTimer(string title, double period){
 	for(size_t i=0; i<timeVector.size(); i++){
 		delete timeVector[i];
 	}
@@ -612,7 +612,7 @@ void RSTFrame::InitTimer(string title, double period){
  * @brief 
  * @date 2011-10-13
  */
-void RSTFrame::OnTimeEnter(wxCommandEvent& WXUNUSED(event)){
+void GRIPFrame::OnTimeEnter(wxCommandEvent& WXUNUSED(event)){
 	double p;
 	timeText->GetValue().ToDouble(&p);
 	if(p < 0) p = 0;
@@ -626,7 +626,7 @@ void RSTFrame::OnTimeEnter(wxCommandEvent& WXUNUSED(event)){
  * @brief Set scene background to white 
  * @date 2011-10-13
  */
-void RSTFrame::OnWhite(wxCommandEvent& WXUNUSED(event)){
+void GRIPFrame::OnWhite(wxCommandEvent& WXUNUSED(event)){
 	viewer->backColor = Vector3d(1,1,1);
 	viewer->gridColor = Vector3d(.8,.8,1);
 	viewer->setClearColor();
@@ -638,7 +638,7 @@ void RSTFrame::OnWhite(wxCommandEvent& WXUNUSED(event)){
  * @brief Set scene background to black
  * @date 2011-10-13
  */
-void RSTFrame::OnBlack(wxCommandEvent& WXUNUSED(event)){
+void GRIPFrame::OnBlack(wxCommandEvent& WXUNUSED(event)){
 	viewer->backColor = Vector3d(0,0,0);
 	viewer->gridColor = Vector3d(.5,.5,0);
 	viewer->setClearColor();
@@ -650,39 +650,39 @@ void RSTFrame::OnBlack(wxCommandEvent& WXUNUSED(event)){
  * @brief 
  * @date 2011-10-13
  */
-void RSTFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)){
+void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)){
 	viewer->ResetGL();
 }
 
-BEGIN_EVENT_TABLE(RSTFrame, wxFrame)
-EVT_COMMAND_SCROLL(1009, RSTFrame::OnTimeScroll)
-EVT_TEXT_ENTER(1008, RSTFrame::OnTimeEnter)
+BEGIN_EVENT_TABLE(GRIPFrame, wxFrame)
+EVT_COMMAND_SCROLL(1009, GRIPFrame::OnTimeScroll)
+EVT_TEXT_ENTER(1008, GRIPFrame::OnTimeEnter)
 
-EVT_MENU(MenuSaveScene,  RSTFrame::OnSaveScene)
-EVT_MENU(MenuSaveRobot,  RSTFrame::OnSaveRobot)
-EVT_MENU(MenuLoad,  RSTFrame::OnLoad)
-EVT_MENU(MenuQuickLoad,  RSTFrame::OnQuickLoad)
-EVT_MENU(wxID_CLOSE,  RSTFrame::OnClose)
-EVT_MENU(MenuClose,  RSTFrame::OnClose)
-EVT_MENU(MenuQuit,  RSTFrame::OnQuit)
-EVT_MENU(MenuAbout, RSTFrame::OnAbout)
+EVT_MENU(MenuSaveScene,  GRIPFrame::OnSaveScene)
+EVT_MENU(MenuSaveRobot,  GRIPFrame::OnSaveRobot)
+EVT_MENU(MenuLoad,  GRIPFrame::OnLoad)
+EVT_MENU(MenuQuickLoad,  GRIPFrame::OnQuickLoad)
+EVT_MENU(wxID_CLOSE,  GRIPFrame::OnClose)
+EVT_MENU(MenuClose,  GRIPFrame::OnClose)
+EVT_MENU(MenuQuit,  GRIPFrame::OnQuit)
+EVT_MENU(MenuAbout, GRIPFrame::OnAbout)
 
-EVT_MENU(MenuBgWhite,  RSTFrame::OnWhite)
-EVT_MENU(MenuBgBlack, RSTFrame::OnBlack)
-EVT_MENU(MenuCameraReset, RSTFrame::OnCameraReset)
+EVT_MENU(MenuBgWhite,  GRIPFrame::OnWhite)
+EVT_MENU(MenuBgBlack, GRIPFrame::OnBlack)
+EVT_MENU(MenuCameraReset, GRIPFrame::OnCameraReset)
 
-EVT_MENU(wxID_OPEN, RSTFrame::OnLoad)
-EVT_MENU(Tool_quickload, RSTFrame::OnQuickLoad)
-EVT_MENU(wxID_SAVE, RSTFrame::OnSaveScene)
+EVT_MENU(wxID_OPEN, GRIPFrame::OnLoad)
+EVT_MENU(Tool_quickload, GRIPFrame::OnQuickLoad)
+EVT_MENU(wxID_SAVE, GRIPFrame::OnSaveScene)
 
-EVT_MENU(Tool_linkorder, RSTFrame::OnToolOrder)
-EVT_MENU(Tool_checkcollisions, RSTFrame::OnToolCheckColl)
-EVT_MENU(Tool_screenshot, RSTFrame::OnToolScreenshot)
-EVT_MENU(Tool_movie, RSTFrame::OnToolMovie)
+EVT_MENU(Tool_linkorder, GRIPFrame::OnToolOrder)
+EVT_MENU(Tool_checkcollisions, GRIPFrame::OnToolCheckColl)
+EVT_MENU(Tool_screenshot, GRIPFrame::OnToolScreenshot)
+EVT_MENU(Tool_movie, GRIPFrame::OnToolMovie)
 
-EVT_TREE_SEL_CHANGED(TreeViewHandle,RSTFrame::onTVChange)
+EVT_TREE_SEL_CHANGED(TreeViewHandle,GRIPFrame::onTVChange)
 
-//	EVT_BUTTON (BUTTON_Hello, RSTFrame::OnQuit )
+//	EVT_BUTTON (BUTTON_Hello, GRIPFrame::OnQuit )
 END_EVENT_TABLE()
 
 

@@ -36,65 +36,59 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GRIP_GUI_H
-#define GRIP_GUI_H
+#ifndef GRIP_GRIPSLIDER_H
+#define GRIP_GRIPSLIDER_H
 
-//--------------------------------------------------------------------
-//   GLOBAL VARIABLES: Keep track of the user's current
-//   loaded files, robot, planners, and other intentions w.r.t. the GUI
-//---------------------------------------------------------------------
+#include <wx/wx.h>
+#include <string>
 
-// First some declarations of variable types
+using namespace std;
 
-#include <wx/notebook.h>
-#include <planning/World.h>
+DECLARE_EVENT_TYPE(wxEVT_GRIP_SLIDER_CHANGE, -1)
 
-class RSTFrame;
-class Viewer;
-class TreeView;
-class TreeViewReturn;
-class InspectorTab;
-class TemplateTab;
+class GRIPSlider : public wxPanel
+{
+public:
+	GRIPSlider(){}
+	GRIPSlider(wxBitmap bmp, double left, double right, int precision, double initialpos,
+						int lineSize, int pageSize,
+						wxWindow *parent, const wxWindowID id = -1, bool vertical = false,
+                       const wxPoint& pos = wxDefaultPosition, 
+					   const wxSize& size = wxDefaultSize,
+                       long style = wxTAB_TRAVERSAL);
+	GRIPSlider(const char* name, double left, double right, int precision, double initialpos,
+						int lineSize, int pageSize,
+						wxWindow *parent, const wxWindowID id = -1, bool vertical = false,
+                       const wxPoint& pos = wxDefaultPosition, 
+					   const wxSize& size = wxDefaultSize,
+                       long style = wxTAB_TRAVERSAL);
+	virtual ~GRIPSlider(){}
 
-// The actual variables that are global to GUI elements
+	wxBoxSizer *sizer;
 
-extern planning::World  *mWorld;
+	wxSlider *track;
+	wxStaticText *lText;
+	wxTextCtrl *rText;
+	wxStaticBitmap *bmpButton;
 
-extern RSTFrame*	frame;
-extern Viewer*		viewer;
-extern TreeView*	treeView;
-extern wxNotebook*	tabView;
+	//string name;
+	double pos;
+	double leftBound;
+	double rightBound;
+	double tickfrequency;
+	int prec;
 
-extern TreeViewReturn* selectedTreeNode;
+	void setRange(double left, double right);
+	void setValue(double value, bool sendSignal = true);
+	void updateValue(double value, bool sendSignal = true);
+	void setPrecision(int precision);
 
-extern bool reverseLinkOrder;
-extern bool check_for_collisions;
-
-// Camera position
-extern Eigen::Matrix3d mCamRotT;
-extern Eigen::Vector3d mWorldV;
-extern double mCamRadius;
-// World colors
-extern Eigen::Vector3d mGridColor;
-extern Eigen::Vector3d mBackColor;
-
-
-// Please don't change these constants - they are important to GUI functionality
-static const int toolBarHeight = 30;
-
-//#ifdef __APPLE__
-//static const int prefViewerWidth = 644;
-//#else
-static const int prefViewerWidth = 644;
-//#endif
-static const int prefViewerHeight = 484;
-static const int prefTreeViewWidth = 210;
-static const int prefTabsHeight = 200;
-static const int statusBarHeight = 22;
-static const double defaultCamRadius = 10.f;
-static const double CAMERASPEED = 0.003f;
+	void OnScroll(wxScrollEvent &evt);
+	void OnEnter(wxCommandEvent &evt);
 
 
-DECLARE_EVENT_TYPE(wxEVT_RST_STATE_CHANGE, -1)
+	DECLARE_DYNAMIC_CLASS(GRIPSlider)
+	DECLARE_EVENT_TABLE()
+};
 
 #endif

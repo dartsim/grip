@@ -36,53 +36,30 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "RSTimeSlice.h"
-#include <iostream>
+#ifndef GRIP_TAB_H
+#define GRIP_TAB_H
 
-//RSTimeSlice::RSTimeSlice(World *w) {
-RSTimeSlice::RSTimeSlice() {
-/*	
-	oPose.clear();
-	rPose.clear();
-	rJoints.clear();
+#include <wx/wx.h>
 
-	for(unsigned int i = 0; i < w->objects.size(); i++) {
-		oPose.push_back(w->objects[i]->absPose);
-	}
-	for(unsigned int i = 0; i < w->robots.size(); i++) {
-		Robot* r = w->robots[i];
-		rPose.push_back(r->baseLink->absPose);
-		Eigen::VectorXd RJointVec(r->links.size());
-		for(unsigned int j = 0; j < r->links.size(); j++) {
-			RJointVec[j] = r->links[j]->jVal;
-		}
-		rJoints.push_back(RJointVec);
-	}
-*/
-}
+#include <GUI/GRIPSlider.h>
+#include <GUI/TreeView.h>
 
-/**
- * @function RSTimeSlice
- */
-RSTimeSlice::~RSTimeSlice() {
-}
+class GRIPTab : public wxPanel
+{
+public:
+	GRIPTab(){};
+    GRIPTab(wxWindow * parent, wxWindowID id = -1,
+             const wxPoint & pos = wxDefaultPosition,
+             const wxSize & size = wxDefaultSize,
+			 long style = wxTAB_TRAVERSAL) : wxPanel(parent, id, pos, size, style) {};
+	virtual ~GRIPTab(){}
 
-/**
- * @function SetToWorld
- */
-/*
-void RSTimeSlice::SetToWorld(World* w) {
-	
-	for(unsigned int i = 0; i < w->objects.size(); i++) {
-		w->objects[i]->absPose = oPose[i];
-	}
-	for(unsigned int i = 0; i < w->robots.size(); i++) {
-		Robot* r = w->robots[i];
-		r->baseLink->absPose = rPose[i];
-		for(unsigned int j = 0; j < r->links.size(); j++) {
-			r->links[j]->jVal = (rJoints[i])[j];
-		}
-		r->baseLink->updateAbsPose();
-	}
-}
-*/
+	virtual void GRIPStateChange(){};
+
+	// call GRIPThread::CheckPoint() regularly
+	virtual void Thread() {};
+	virtual void onThreadComplete() {};
+
+};
+
+#endif

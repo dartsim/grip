@@ -39,10 +39,10 @@
 #ifndef EMPTY_TAB
 #define EMPTY_TAB
 
-#include <Tabs/RSTTab.h>
+#include <Tabs/GRIPTab.h>
 #include <Tools/Constants.h>
 
-class EmptyTab : public RSTTab
+class EmptyTab : public GRIPTab
 {
 public:
 	EmptyTab(){};
@@ -52,7 +52,7 @@ public:
              long style = wxTAB_TRAVERSAL);
 	virtual ~EmptyTab(){}
 
-	void RSTStateChange();
+	void GRIPStateChange();
 
 	DECLARE_DYNAMIC_CLASS(EmptyTab)
 	DECLARE_EVENT_TABLE()

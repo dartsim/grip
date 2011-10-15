@@ -35,34 +35,46 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "GUI.h"
-//--------------------------------------------------------------------
-//   GLOBAL VARIABLES: Keep track of the user's current
-//   loaded files, robot, planners, and other intentions w.r.t. the GUI
-//---------------------------------------------------------------------
 
-planning::World* mWorld = 0;
+#ifndef INSPECTOR_TAB
+#define INSPECTOR_TAB
 
-RSTFrame*	frame = 0;
-Viewer*		viewer = 0;
-TreeView*	treeView = 0;
-wxNotebook*	tabView = 0;
+#include <Tabs/GRIPTab.h>
+#include <Tools/Constants.h>
 
-TreeViewReturn* selectedTreeNode = 0;
+/**
+ * @class InspectorTab
+ * @brief
+ * @date 2011-10-13
+ */
+class InspectorTab : public GRIPTab
+{
+public:
+	InspectorTab(){};
+    InspectorTab(wxWindow * parent, wxWindowID id = -1,
+             const wxPoint & pos = wxDefaultPosition,
+             const wxSize & size = wxDefaultSize,
+             long style = wxTAB_TRAVERSAL);
+	virtual ~InspectorTab(){}
 
-bool reverseLinkOrder = false;
-bool check_for_collisions = false;
-int stateChangeType = 0;
+	wxStaticText* itemName;
+	wxStaticText* parentName;
+/* 	wxSlider* jointSlider; */
 
-// Camera position
-Eigen::Matrix3d mCamRotT;
-Eigen::Vector3d mWorldV = Eigen::Vector3d(1, 0, 0);
-double mCamRadius = 0;
-// World colors
-extern Eigen::Vector3d mGridColor = Eigen::Vector3d(1, 0, 0);
-extern Eigen::Vector3d mBackColor = Eigen::Vector3d(1, 0, 0);
+	wxSizer* sizerFull;
+	GRIPSlider* jSlider;
+	GRIPSlider* xSlider;
+	GRIPSlider* ySlider;
+	GRIPSlider* zSlider;
+	GRIPSlider* rollSlider;
+	GRIPSlider* pitchSlider;
+	GRIPSlider* yawSlider;
 
+	void OnSlider(wxCommandEvent &evt);
+	void GRIPStateChange();
 
+	DECLARE_DYNAMIC_CLASS(InspectorTab)
+	DECLARE_EVENT_TABLE()
+};
 
-DEFINE_EVENT_TYPE(wxEVT_RST_STATE_CHANGE)
-
+#endif

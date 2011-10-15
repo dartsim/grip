@@ -35,31 +35,34 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "GUI.h"
+//--------------------------------------------------------------------
+//   GLOBAL VARIABLES: Keep track of the user's current
+//   loaded files, robot, planners, and other intentions w.r.t. the GUI
+//---------------------------------------------------------------------
 
-#ifndef RST_TAB_H
-#define RST_TAB_H
+planning::World* mWorld = 0;
 
-#include <wx/wx.h>
+GRIPFrame*	frame = 0;
+Viewer*		viewer = 0;
+TreeView*	treeView = 0;
+wxNotebook*	tabView = 0;
 
-#include <GUI/RSTSlider.h>
-#include <GUI/TreeView.h>
+TreeViewReturn* selectedTreeNode = 0;
 
-class RSTTab : public wxPanel
-{
-public:
-	RSTTab(){};
-    RSTTab(wxWindow * parent, wxWindowID id = -1,
-             const wxPoint & pos = wxDefaultPosition,
-             const wxSize & size = wxDefaultSize,
-			 long style = wxTAB_TRAVERSAL) : wxPanel(parent, id, pos, size, style) {};
-	virtual ~RSTTab(){}
+bool reverseLinkOrder = false;
+bool check_for_collisions = false;
+int stateChangeType = 0;
 
-	virtual void RSTStateChange(){};
+// Camera position
+Eigen::Matrix3d mCamRotT;
+Eigen::Vector3d mWorldV = Eigen::Vector3d(1, 0, 0);
+double mCamRadius = 0;
+// World colors
+Eigen::Vector3d mGridColor = Eigen::Vector3d(1, 0, 0);
+Eigen::Vector3d mBackColor = Eigen::Vector3d(1, 0, 0);
 
-	// call RSTThread::CheckPoint() regularly
-	virtual void Thread() {};
-	virtual void onThreadComplete() {};
 
-};
 
-#endif
+DEFINE_EVENT_TYPE(wxEVT_GRIP_STATE_CHANGE)
+

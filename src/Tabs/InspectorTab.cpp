@@ -43,8 +43,8 @@
 
 #include <GUI/Viewer.h>
 #include <GUI/GUI.h>
-#include <GUI/RSTSlider.h>
-#include <GUI/RSTFrame.h>
+#include <GUI/GRIPSlider.h>
+#include <GUI/GRIPFrame.h>
 
 #include <kinematics/BodyNode.h>
 #include <planning/Robot.h>
@@ -66,15 +66,15 @@ enum sliderNames{
 
 //Add a handler for slider changes
 BEGIN_EVENT_TABLE(InspectorTab, wxPanel)
-EVT_COMMAND (wxID_ANY, wxEVT_RST_SLIDER_CHANGE, InspectorTab::OnSlider)
+EVT_COMMAND (wxID_ANY, wxEVT_GRIP_SLIDER_CHANGE, InspectorTab::OnSlider)
 END_EVENT_TABLE()
 
 // Class constructor for the tab: Each tab will be a subclass of wxPanel
-IMPLEMENT_DYNAMIC_CLASS(InspectorTab, RSTTab)
+IMPLEMENT_DYNAMIC_CLASS(InspectorTab, GRIPTab)
 InspectorTab::InspectorTab(wxWindow *parent, const wxWindowID id,
                        const wxPoint& pos, const wxSize& size,
                        long style)
-					   : RSTTab(parent, id, pos, size, style)
+					   : GRIPTab(parent, id, pos, size, style)
  {
       sizerFull = new wxBoxSizer(wxHORIZONTAL);
 
@@ -95,22 +95,22 @@ InspectorTab::InspectorTab(wxWindow *parent, const wxWindowID id,
       itemName = new wxStaticText(this,-1,wxT("Item: (none)"),wxDefaultPosition,wxDefaultSize,wxALIGN_CENTRE);
       parentName = new wxStaticText(this,-1,wxT("Parent: (none)"),wxDefaultPosition,wxDefaultSize,wxALIGN_CENTRE);
 
-      jSlider = new RSTSlider("Joint",-180,180,2000,0,1000,2000,this,J_SLIDER);
+      jSlider = new GRIPSlider("Joint",-180,180,2000,0,1000,2000,this,J_SLIDER);
       jointBoxS->Add( parentName, 1, wxEXPAND | wxALL, 6 );
       jointBoxS->Add(itemName,1,wxEXPAND | wxALL, 6);
       jointBoxS->Add(jSlider,1,wxEXPAND | wxALL, 6);
 
-      xSlider = new RSTSlider("X",-10,10,500,0,100,500,this,X_SLIDER);
-      ySlider = new RSTSlider("Y",-10,10,500,0,100,500,this,Y_SLIDER);
-      zSlider = new RSTSlider("Z",-10,10,500,0,100,500,this,Z_SLIDER);
+      xSlider = new GRIPSlider("X",-10,10,500,0,100,500,this,X_SLIDER);
+      ySlider = new GRIPSlider("Y",-10,10,500,0,100,500,this,Y_SLIDER);
+      zSlider = new GRIPSlider("Z",-10,10,500,0,100,500,this,Z_SLIDER);
       posBoxS->Add( xSlider,1,wxEXPAND | wxALL, 6 );
       posBoxS->Add( ySlider,1,wxEXPAND | wxALL, 6 );
       posBoxS->Add( zSlider,1,wxEXPAND | wxALL, 6 );
 
 
-      rollSlider = new RSTSlider("R",-180,180,500,0,100,500,this,ROLL_SLIDER);
-      pitchSlider = new RSTSlider("P",-180,180,500,0,100,500,this,PITCH_SLIDER);
-      yawSlider = new RSTSlider("Y",-180,180,500,0,100,500,this,YAW_SLIDER);
+      rollSlider = new GRIPSlider("R",-180,180,500,0,100,500,this,ROLL_SLIDER);
+      pitchSlider = new GRIPSlider("P",-180,180,500,0,100,500,this,PITCH_SLIDER);
+      yawSlider = new GRIPSlider("Y",-180,180,500,0,100,500,this,YAW_SLIDER);
       rotBoxS->Add(rollSlider,1,wxEXPAND | wxALL, 6);
       rotBoxS->Add(pitchSlider,1,wxEXPAND | wxALL, 6);
       rotBoxS->Add(yawSlider,1,wxEXPAND | wxALL, 6);
@@ -209,13 +209,13 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
 }
 
 /**
- * @function RSTStateChange
+ * @function GRIPStateChange
  * @brief  This function is called when an object is selected in the Tree View
  * the sliders are shown / hidden and set according to the type of object
  * that is selected and its properties
  * @date 2011-10-13
  */
-void InspectorTab::RSTStateChange() {
+void InspectorTab::GRIPStateChange() {
 
     if(selectedTreeNode==NULL){
         itemName->SetLabel(wxString("Item: None",wxConvUTF8));

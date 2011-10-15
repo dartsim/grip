@@ -36,12 +36,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GRIP_RSTFRAME_H
-#define GRIP_RSTFRAME_H
+#ifndef GRIP_GRIPFRAME_H
+#define GRIP_GRIPFRAME_H
 
-class RSTSlider;
+class GRIPSlider;
 class Viewer;
-class RSTimeSlice;
+class GRIPTimeSlice;
 #include <vector>
 
 #include "TreeView.h"
@@ -60,14 +60,14 @@ using namespace std;
 
 
 // ----------------------------------------------------------------------------
-class RSTFrame : public wxFrame
+class GRIPFrame : public wxFrame
 {
 public:
-    RSTFrame(const wxString& title);
+    GRIPFrame(const wxString& title);
 
 	wxPanel *backPanel;
 
-	RSTSlider *timeSlider;
+	GRIPSlider *timeSlider;
 
 	wxSlider *timeTrack;
 	wxTextCtrl *timeText;
@@ -100,7 +100,7 @@ public:
 	void InitTimer(string title, double period);
 	//void AddWorld(World* world);
 
-	vector<RSTimeSlice*> timeVector;
+	vector<GRIPTimeSlice*> timeVector;
 	double tCurrent;
 	double tMax;
 	double tIncrement;

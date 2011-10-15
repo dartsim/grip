@@ -41,31 +41,31 @@
 #include <wx/wx.h>
 #include <GUI/Viewer.h>
 #include <GUI/GUI.h>
-#include <GUI/RSTSlider.h>
-#include <GUI/RSTFrame.h>
+#include <GUI/GRIPSlider.h>
+#include <GUI/GRIPFrame.h>
 #include <iostream>
 using namespace std;
 
 #include <Tabs/AllTabs.h>
-#include <RSTApp.h>
+#include <GRIPApp.h>
 
 
 //Give each slider a number so we recognize them (also indicates order of select on tabbing)
 enum sliderNames {
-	SAMPLE_RST_SLIDER1 = 1000, SAMPLE_RST_SLIDER2 = 1001
+	SAMPLE_GRIP_SLIDER1 = 1000, SAMPLE_GRIP_SLIDER2 = 1001
 };
 
 //Add a handler for slider changes
 BEGIN_EVENT_TABLE(TemplateTab, wxPanel)
-EVT_COMMAND (wxID_ANY, wxEVT_RST_SLIDER_CHANGE, TemplateTab::OnSlider)
+EVT_COMMAND (wxID_ANY, wxEVT_GRIP_SLIDER_CHANGE, TemplateTab::OnSlider)
 END_EVENT_TABLE ()
 
-// Class constructor for the tab: Each tab will be a subclass of RSTTab
-IMPLEMENT_DYNAMIC_CLASS(TemplateTab, RSTTab)
+// Class constructor for the tab: Each tab will be a subclass of GRIPTab
+IMPLEMENT_DYNAMIC_CLASS(TemplateTab, GRIPTab)
 
 TemplateTab::TemplateTab(wxWindow *parent, const wxWindowID id,
 		const wxPoint& pos, const wxSize& size, long style) :
-	RSTTab(parent, id, pos, size, style) {
+	GRIPTab(parent, id, pos, size, style) {
 	sizerFull = new wxBoxSizer(wxHORIZONTAL);
 
 	// Create Static boxes - these are the outlines you see on the inspector tab - a nice way to organize things
@@ -82,11 +82,11 @@ TemplateTab::TemplateTab(wxWindow *parent, const wxWindowID id,
 	sampleText2 = new wxStaticText(this, -1, wxT("Sample text 2"),
 			wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
 
-	// Create RST-style sliders
-	sampleRSTSlider1 = new RSTSlider("SS1", -180, 180, 2000, 0, 1000, 2000,
-			this, SAMPLE_RST_SLIDER1);
-	sampleRSTSlider2 = new RSTSlider("SS2", -180, 180, 2000, 0, 1000, 2000,
-			this, SAMPLE_RST_SLIDER2);
+	// Create GRIP-style sliders
+	sampleGRIPSlider1 = new GRIPSlider("SS1", -180, 180, 2000, 0, 1000, 2000,
+			this, SAMPLE_GRIP_SLIDER1);
+	sampleGRIPSlider2 = new GRIPSlider("SS2", -180, 180, 2000, 0, 1000, 2000,
+			this, SAMPLE_GRIP_SLIDER2);
 
 	// Add the boxes to their respective sizers
 	sizerFull->Add(ss1BoxS, 1, wxEXPAND | wxALL, 6);
@@ -95,10 +95,10 @@ TemplateTab::TemplateTab(wxWindow *parent, const wxWindowID id,
 
 	// Add content to box1 (1st sample text and slider)
 	ss1BoxS->Add(sampleText1, 1, wxEXPAND | wxALL, 6);
-	ss1BoxS->Add(sampleRSTSlider1, 1, wxEXPAND | wxALL, 6);
+	ss1BoxS->Add(sampleGRIPSlider1, 1, wxEXPAND | wxALL, 6);
 
 	// Add content to box2 (2nd sample text and slider)
-	ss2BoxS->Add(sampleRSTSlider2, 1, wxEXPAND | wxALL, 6);
+	ss2BoxS->Add(sampleGRIPSlider2, 1, wxEXPAND | wxALL, 6);
 	ss2BoxS->Add(sampleText2, 1, wxEXPAND | wxALL, 6);
 
 }
@@ -116,11 +116,11 @@ void TemplateTab::OnSlider(wxCommandEvent &evt) {
 	//sprintf(numBuf, "");
 
 	switch (slnum) {
-	case SAMPLE_RST_SLIDER1:
+	case SAMPLE_GRIP_SLIDER1:
 		cout << "Changing slider 1" << endl;
 		sprintf(numBuf, "X Change: %7.4f", pos);
 		break;
-	case SAMPLE_RST_SLIDER2:
+	case SAMPLE_GRIP_SLIDER2:
 		cout << "Changing slider 2" << endl;
 		sprintf(numBuf, "Y Change: %7.4f", pos);
 		break;
@@ -138,8 +138,8 @@ void TemplateTab::OnSlider(wxCommandEvent &evt) {
 
 
 // This function is called when an object is selected in the Tree View or other
-// global changes to the RST world. Use this to capture events from outside the tab.
-void TemplateTab::RSTStateChange() {
+// global changes to the GRIP world. Use this to capture events from outside the tab.
+void TemplateTab::GRIPStateChange() {
 	if(selectedTreeNode==NULL){
 		return;
 	}

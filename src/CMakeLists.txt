@@ -1,9 +1,5 @@
-# The name of our project is "librst"
-# root source directory = ${LIBRST_SOURCE_DIR}
-# root binary directory = ${LIBRST_BINARY_DIR}
-
 cmake_minimum_required (VERSION 2.6)
-project (librst)
+project (libgrip)
 
 # Global Variables
 if(MSVC)
@@ -26,9 +22,9 @@ set( SRC_WX
 Tabs/AllTabs
 Tabs/InspectorTab
 GUI/GUI
-GUI/RSTFrame
-GUI/RSTimeSlice
-GUI/RSTSlider
+GUI/GRIPFrame
+GUI/GRIPTimeSlice
+GUI/GRIPSlider
 GUI/TreeView
 GUI/Viewer
 GUI/DrawWorld
@@ -38,7 +34,7 @@ set ( SRC_FILES
 Tools/GLTools
 Tools/GL/GLTexture.cpp
 Tools/Parser
-RST
+GRIP
 )
 
 set ( SRC 
@@ -62,9 +58,9 @@ if (wxWidgets_FOUND)
   include_directories (${HEADERS})
   include_directories (${INCLUDE_DIR_PREFIX}/include/dart)
   include_directories (${INCLUDE_DIR_PREFIX}/include/eigen3)
-  add_library (rst STATIC ${SRC})
-  #add_executable (rst_exe ${SRC})
-  #target_link_libraries (rst_exe ${wxWidgets_LIBRARIES} dart)
+  add_library (grip STATIC ${SRC})
+  #add_executable (grip_exe ${SRC})
+  #target_link_libraries (grip_exe ${wxWidgets_LIBRARIES} dart)
 else (wxWidgets_FOUND)
   message ("wxWidgets not found!")
 endif (wxWidgets_FOUND)

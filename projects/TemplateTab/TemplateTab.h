@@ -39,11 +39,11 @@
 #ifndef TEMPLATE_TAB
 #define TEMPLATE_TAB
 
-#include <Tabs/RSTTab.h>
-#include <Tabs/RSTThread.h>
+#include <Tabs/GRIPTab.h>
+#include <Tabs/GRIPThread.h>
 #include <Tools/Constants.h>
 
-class TemplateTab : public RSTTab
+class TemplateTab : public GRIPTab
 {
 public:
 	TemplateTab(){};
@@ -57,17 +57,17 @@ public:
 	wxStaticText* sampleText2;
 
 	wxSizer* sizerFull;
-	RSTSlider* sampleRSTSlider1;
-	RSTSlider* sampleRSTSlider2;
+	GRIPSlider* sampleGRIPSlider1;
+	GRIPSlider* sampleGRIPSlider2;
 
 	void OnSlider(wxCommandEvent &evt);
-	void RSTStateChange();
+	void GRIPStateChange();
 
 	// Thread specific
-	// RSTThread* thread;
+	// GRIPThread* thread;
 
 	// Your Thread routine
-	// call RSTThread::CheckPoint() regularly
+	// call GRIPThread::CheckPoint() regularly
 	// void Thread();
 	// void onCompleteThread();
 
