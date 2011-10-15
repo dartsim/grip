@@ -36,8 +36,8 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef INSPECTOR_TAB
-#define INSPECTOR_TAB
+#ifndef GRIP_INSPECTOR_TAB
+#define GRIP_INSPECTOR_TAB
 
 #include <Tabs/RSTTab.h>
 #include <Tools/Constants.h>

@@ -47,6 +47,8 @@
 #include <GUI/RSTFrame.h>
 
 #include <kinematics/BodyNode.h>
+#include <kinematics/Joint.h>
+#include <kinematics/Dof.h>
 #include <planning/Robot.h>
 #include <planning/Object.h>
 
@@ -128,15 +130,13 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
     kinematics::BodyNode* pBodyNode;
     planning::Robot* pRobot;
 
-    Matrix3d rot;
-    Vector3d tempTrans;
     int slnum = evt.GetId();
     double pos = *(double*)evt.GetClientData();
     char numBuf[1000];
     numBuf[0] = '\0';
     //sprintf(numBuf,"");
 
-	if(selectedTreeNode==NULL){ return; }
+	if(selectedTreeNode == NULL){ return; }
 
 	int selected = selectedTreeNode->dType;
 	if(selected == Return_Type_Object){
@@ -148,61 +148,47 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
 	else if(selected == Return_Type_Robot){
             pRobot = (planning::Robot*)(selectedTreeNode->data);
 	}
-
-	//TODO ask mike if the logic for fromJoints is legit wrt reverseLinkORder
+  
+        /// 
 	if(slnum == J_SLIDER && selected == Return_Type_Node){
-/*
+
 		if( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_HINGE )
-			l->jVal = DEG2RAD(pos);
+		{    pBodyNode->getParentJoint()->getDof(0)->setValue( DEG2RAD(pos) ); }
 		else if ( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_TRANS )
-			l->jVal = pos;
-		if(reverseLinkOrder){
-			l->updateRelPose();
-			l->updateParentPoseRecursive(true, check_for_collisions);
-		}else{
-			l->updateRelPose();
-			l->updateAbsPose();
-			//l->updateRecursive(true, check_for_collisions);
-			//world->updateRobot(l->robot); // was commented in 2.1 for some reason
-		}
+		{    pBodyNode->getParentJoint()->getDof(0)->setValue( pos ); 
+                     /// Update the robot or object (both Skeletons)
+                     pBodyNode->getSkel()->initSkel();
+ 		}
 		sprintf(numBuf,"Joint Change: %7.4f", pos);
-	}else{
+
+	} else{
 		switch(slnum){
 			case X_SLIDER:
-				o->absPose(0,3) = pos;
+				pObject->setPositionX( pos );
 				sprintf(numBuf,"X Change: %7.4f", pos);
 				break;
 			case Y_SLIDER:
-				o->absPose(1,3) = pos;
+				pObject->setPositionY( pos );
 				sprintf(numBuf,"Y Change: %7.4f", pos);
 				break;
 			case Z_SLIDER:
-				o->absPose(2,3) = pos;
+				pObject->setPositionZ( pos );
 				sprintf(numBuf,"Z Change: %7.4f", pos);
 				break;
 			case ROLL_SLIDER:
 			case PITCH_SLIDER:
 			case YAW_SLIDER:
-				rot = AngleAxisd(DEG2RAD(yawSlider->pos),Vector3d::UnitZ()) * AngleAxisd(DEG2RAD(pitchSlider->pos), Vector3d::UnitY()) * AngleAxisd(DEG2RAD(rollSlider->pos), Vector3d::UnitX());
-				tempTrans = o->absPose.translation();
-				o->absPose = rot;
-				o->absPose.translation() = tempTrans;
+                                pObject->setRotationRPY( rollSlider->pos, pitchSlider->pos, yawSlider->pos );
 				sprintf(numBuf,"Angle Change: %7.4f", pos);
 				break;
 			default:
 				return;
 		}
 
-		if(selected == Return_Type_Robot){
-			l = (Link*)o;
-			//l->updateRecursive(false, check_for_collisions);
+		if(selected == Return_Type_Robot) {
+                    pObject->initSkel();
 		}
-
-		if(selected == Return_Type_Object && check_for_collisions){
-			world->updateCollisionModel(o);
-		} */
-	}
-
+        }
 
 	if(frame!=NULL)	frame->SetStatusText(wxString(numBuf,wxConvUTF8));
 	viewer->UpdateCamera();
@@ -228,79 +214,88 @@ void InspectorTab::RSTStateChange() {
     kinematics::BodyNode* pBodyNode;
     planning::Robot* pRobot;
 
+    double x; double y; double z; 
+    double roll; double pitch; double yaw;
+
     string statusBuf;
     string buf,buf2;
 
-    // Get the absPose data from each type of element
-
     int selected = selectedTreeNode->dType;
+
+    //-- Return type Object
     if(selected == Return_Type_Object){
         pObject = (planning::Object*)(selectedTreeNode->data);
+
+	statusBuf = " Selected Object: " + pObject->getName();
+	buf = "Object: " + pObject->getName();
+	itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
+	parentName->Show();
+	parentName->SetLabel(wxString("",wxConvUTF8));
+	jSlider->Hide();
+
+        //-- Get XYZ and RPY
+        pObject->getRotationRPY( roll, pitch, yaw);
+        pObject->getPositionX( x );
+        pObject->getPositionY( y );
+        pObject->getPositionZ( z );
     }
+
+   //-- Return type Node
     else if(selected == Return_Type_Node){
         pBodyNode = (kinematics::BodyNode*)(selectedTreeNode->data);
+
+	statusBuf = " Selected Node: " + string( pBodyNode->getName() ) + " of Robot: " + string( ((planning::Robot*) pBodyNode->getSkel())->getName() );
+	buf = "Body Node: " + string( pBodyNode->getName() );
+	itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
+
+	if( pBodyNode->getParentNode() != NULL ) {
+	    buf2 = "Parent Link: " + string( pBodyNode->getParentNode()->getName() ) + "   Robot: " + string( ((planning::Robot*) pBodyNode->getSkel())->getName() );
+        
+	    jSlider->setRange( RAD2DEG(pBodyNode->getParentJoint()->getDof(0)->getMin() ),
+                               RAD2DEG(pBodyNode->getParentJoint()->getDof(0)->getMax() ) );
+	    if( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_HINGE ) {
+	        jSlider->setValue(RAD2DEG(pBodyNode->getParentJoint()->getDof(0)->getValue() ) );
+	    } else {
+		jSlider->setValue(pBodyNode->getParentJoint()->getDof(0)->getValue());
+	    }
+	    jSlider->Show();
+        } else {
+	    buf2 = " (Root Link) ";
+	    jSlider->Hide();
+	}
+
+       x =3; y = 3; z = 3; roll = 8; pitch = 8; yaw = 8;
+
     }
-    else if(selected == Return_Type_Robot){
+ 
+    //-- Return type Robot
+    else if(selected == Return_Type_Robot) {
+
         pRobot = (planning::Robot*)(selectedTreeNode->data);
+
+	statusBuf = " Selected Robot: " + pRobot->getName();
+	buf = "Robot: " + pRobot->getName();
+	itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
+	parentName->Show();
+	parentName->SetLabel(wxString("",wxConvUTF8));
+	jSlider->Hide();
+
+        //-- Get XYZ and RPY
+        pRobot->getRotationRPY( roll, pitch, yaw);
+        pRobot->getPositionX( x );
+        pRobot->getPositionY( y );
+        pRobot->getPositionZ( z );
     }
 
-/*
-	// Everything can be treated as an object now
-	double roll=atan2(o->absPose(2,1), o->absPose(2,2));
-	double pitch=-asin(o->absPose(2,0));
-	double yaw=atan2(o->absPose(1,0), o->absPose(0,0));
+    frame->SetStatusText(wxString(statusBuf.c_str(),wxConvUTF8));
+    sizerFull->Layout(); 
 
-	xSlider->setValue(o->absPose(0,3),false);
-	ySlider->setValue(o->absPose(1,3),false);
-	zSlider->setValue(o->absPose(2,3),false);
+    xSlider->setValue( x, false);
+    ySlider->setValue( y, false);
+    zSlider->setValue( z, false);
 
-	rollSlider->setValue(RAD2DEG(roll),false);
-	pitchSlider->setValue(RAD2DEG(pitch),false);
-	yawSlider->setValue(RAD2DEG(yaw),false);
-*/
-
-	if(selected == Return_Type_Object){
-		statusBuf = " Selected Object: " + pObject->getName();
-		buf = "Object: " + pObject->getName();
-		itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
-		parentName->Show();
-		parentName->SetLabel(wxString("",wxConvUTF8));
-		jSlider->Hide();
-	}
-
-	if(selected == Return_Type_Robot) {
-		statusBuf = " Selected Robot: " + pRobot->getName();
-		buf = "Robot: " + pRobot->getName();
-		itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
-		parentName->Show();
-		parentName->SetLabel(wxString("",wxConvUTF8));
-		jSlider->Hide();
-	}
-
-	if(selected == Return_Type_Node) {
-		statusBuf = " Selected Node: " + string( pBodyNode->getName() ) + " of Robot: " + string( ((planning::Robot*) pBodyNode->getSkel())->getName() );
-		buf = "Body Node: " + string( pBodyNode->getName() );
-		itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
-/*
-		if(l->parent != NULL){
-			buf2 = "Parent Link: " + l->parent->name + "   Robot: " + l->robot->name;
-			jSlider->setRange(RAD2DEG(l->jMin),RAD2DEG(l->jMax));
-			if(l->jType == Link::REVOL){
-				jSlider->setValue(RAD2DEG(l->jVal));
-			}else{
-				jSlider->setValue(l->jVal);
-			}
-			jSlider->Show();
-		}else{
-			buf2 = " (Root Link) ";
-			jSlider->Hide();
-		}
-*/
-		parentName->SetLabel(wxString(buf2.c_str(),wxConvUTF8));
-		parentName->Show();
-	}
-
-	frame->SetStatusText(wxString(statusBuf.c_str(),wxConvUTF8));
-	sizerFull->Layout();
+    rollSlider->setValue( RAD2DEG(roll), false );
+    pitchSlider->setValue( RAD2DEG(pitch), false );
+    yawSlider->setValue( RAD2DEG(yaw), false );
 
 }
