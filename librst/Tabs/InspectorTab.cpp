@@ -46,6 +46,9 @@
 #include <GUI/RSTSlider.h>
 #include <GUI/RSTFrame.h>
 
+#include <kinematics/BodyNode.h>
+#include <planning/Robot.h>
+#include <planning/Object.h>
 
 using namespace std;
 using namespace Eigen;
@@ -121,6 +124,10 @@ InspectorTab::InspectorTab(wxWindow *parent, const wxWindowID id,
  */
 void InspectorTab::OnSlider(wxCommandEvent &evt) {
 
+    planning::Object* pObject;
+    kinematics::BodyNode* pBodyNode;
+    planning::Robot* pRobot;
+
     Matrix3d rot;
     Vector3d tempTrans;
     int slnum = evt.GetId();
@@ -128,25 +135,26 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
     char numBuf[1000];
     numBuf[0] = '\0';
     //sprintf(numBuf,"");
-/*
+
 	if(selectedTreeNode==NULL){ return; }
 
 	int selected = selectedTreeNode->dType;
 	if(selected == Return_Type_Object){
-
+            pObject = (planning::Object*)(selectedTreeNode->data);
 	}
-	else if(selected == Return_Type_Link){
-
+	else if(selected == Return_Type_Node){
+            pBodyNode = (kinematics::BodyNode*)(selectedTreeNode->data);
 	}
 	else if(selected == Return_Type_Robot){
-
+            pRobot = (planning::Robot*)(selectedTreeNode->data);
 	}
 
 	//TODO ask mike if the logic for fromJoints is legit wrt reverseLinkORder
-	if(slnum == J_SLIDER && selected == Return_Type_Link){
-		if(l->jType == Link::REVOL)
+	if(slnum == J_SLIDER && selected == Return_Type_Node){
+/*
+		if( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_HINGE )
 			l->jVal = DEG2RAD(pos);
-		else
+		else if ( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_TRANS )
 			l->jVal = pos;
 		if(reverseLinkOrder){
 			l->updateRelPose();
@@ -184,10 +192,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
 			default:
 				return;
 		}
-		if(selected == Return_Type_Link){
-			l = (Link*)o;
-			l->updateParentPoseRecursive(false, check_for_collisions);
-		}
+
 		if(selected == Return_Type_Robot){
 			l = (Link*)o;
 			//l->updateRecursive(false, check_for_collisions);
@@ -195,19 +200,10 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
 
 		if(selected == Return_Type_Object && check_for_collisions){
 			world->updateCollisionModel(o);
-		}
+		} */
 	}
 
-	world->updateAllCollisionModels(); // added because the collision updates above weren't catching everything
-//	static int cdCount = 0;
-//	if (cdCount % 5 == 0) { //  && check_for_collisions
-	world->clearCollisions();
-	if(check_for_collisions){
-		world->detectCollisions(); // should be calling this periodically in a thread somewhere, rather than this dumb hack
-	}
-//	}
-//	cdCount++;
-*/
+
 	if(frame!=NULL)	frame->SetStatusText(wxString(numBuf,wxConvUTF8));
 	viewer->UpdateCamera();
 }
@@ -220,35 +216,35 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
  * @date 2011-10-13
  */
 void InspectorTab::RSTStateChange() {
+
+    if(selectedTreeNode==NULL){
+        itemName->SetLabel(wxString("Item: None",wxConvUTF8));
+	parentName->Hide();
+	jSlider->Hide();
+	return;
+    }
+
+    planning::Object* pObject;
+    kinematics::BodyNode* pBodyNode;
+    planning::Robot* pRobot;
+
+    string statusBuf;
+    string buf,buf2;
+
+    // Get the absPose data from each type of element
+
+    int selected = selectedTreeNode->dType;
+    if(selected == Return_Type_Object){
+        pObject = (planning::Object*)(selectedTreeNode->data);
+    }
+    else if(selected == Return_Type_Node){
+        pBodyNode = (kinematics::BodyNode*)(selectedTreeNode->data);
+    }
+    else if(selected == Return_Type_Robot){
+        pRobot = (planning::Robot*)(selectedTreeNode->data);
+    }
+
 /*
-	if(selectedTreeNode==NULL){
-		itemName->SetLabel(wxString("Item: None",wxConvUTF8));
-		parentName->Hide();
-		jSlider->Hide();
-		return;
-	}
-
-	Object* o;
-	Robot* r;
-	Link* l;
-	string statusBuf;
-	string buf,buf2;
-	int selected = selectedTreeNode->dType;
-
-	// Get the absPose data from each type of element
-
-	if(selected == Return_Type_Object){
-		o = (Object*)(selectedTreeNode->data);
-	}
-	else if(selected == Return_Type_Link){
-		l = (Link*)(selectedTreeNode->data);
-		o = (Object*)l;
-	}
-	else if(selected == Return_Type_Robot){
-		r = (Robot*)(selectedTreeNode->data);
-		o = (Object*)r->baseLink;
-	}
-
 	// Everything can be treated as an object now
 	double roll=atan2(o->absPose(2,1), o->absPose(2,2));
 	double pitch=-asin(o->absPose(2,0));
@@ -261,33 +257,31 @@ void InspectorTab::RSTStateChange() {
 	rollSlider->setValue(RAD2DEG(roll),false);
 	pitchSlider->setValue(RAD2DEG(pitch),false);
 	yawSlider->setValue(RAD2DEG(yaw),false);
-
+*/
 
 	if(selected == Return_Type_Object){
-		statusBuf = " Selected Object: " + o->name;
-		buf = "Object: " + o->name;
+		statusBuf = " Selected Object: " + pObject->getName();
+		buf = "Object: " + pObject->getName();
 		itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
 		parentName->Show();
 		parentName->SetLabel(wxString("",wxConvUTF8));
 		jSlider->Hide();
 	}
 
-	if(selected == Return_Type_Robot){
-		statusBuf = " Selected Robot: " + r->name;
-		buf = "Robot: " + r->name;
+	if(selected == Return_Type_Robot) {
+		statusBuf = " Selected Robot: " + pRobot->getName();
+		buf = "Robot: " + pRobot->getName();
 		itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
 		parentName->Show();
 		parentName->SetLabel(wxString("",wxConvUTF8));
 		jSlider->Hide();
 	}
 
-	if(selected == Return_Type_Link){
-		//cout << world->robots[0]->links[4] << " " << world->robots[0]->links[4]->name << " " << world->robots[0]->links[4]->parent << endl;
-		//cout << l << " " << l->name << " " << l->parent << endl;
-
-		statusBuf = " Selected Link: " + l->name + " of Robot: " + l->robot->name;
-		buf = "Link: " + l->name;
+	if(selected == Return_Type_Node) {
+		statusBuf = " Selected Node: " + string( pBodyNode->getName() ) + " of Robot: " + string( ((planning::Robot*) pBodyNode->getSkel())->getName() );
+		buf = "Body Node: " + string( pBodyNode->getName() );
 		itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
+/*
 		if(l->parent != NULL){
 			buf2 = "Parent Link: " + l->parent->name + "   Robot: " + l->robot->name;
 			jSlider->setRange(RAD2DEG(l->jMin),RAD2DEG(l->jMax));
@@ -301,11 +295,12 @@ void InspectorTab::RSTStateChange() {
 			buf2 = " (Root Link) ";
 			jSlider->Hide();
 		}
+*/
 		parentName->SetLabel(wxString(buf2.c_str(),wxConvUTF8));
 		parentName->Show();
 	}
 
-	//frame->SetStatusText(wxString(statusBuf.c_str(),wxConvUTF8));
-	//sizerFull->Layout();
-*/
+	frame->SetStatusText(wxString(statusBuf.c_str(),wxConvUTF8));
+	sizerFull->Layout();
+
 }

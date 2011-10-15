@@ -36,6 +36,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <kinematics/Joint.h>
+#include <kinematics/Dof.h>
+#include <kinematics/Transformation.h>
+
 #include "TreeView.h"
 #include "RSTFrame.h"
 #include "../Tabs/InspectorTab.h"
@@ -155,30 +159,25 @@ wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hP
 {
 
 	TreeViewReturn* ret;
-	int iconIndex;
-        /*
-	switch (l->jType)
-	{
-	case (Link::PRISM):
-		iconIndex = Tree_Icon_Prismatic;
-		break;
-	case (Link::FIXED):
-		iconIndex = Tree_Icon_Fixed;
-		break;
-	case (Link::FREE):
-		iconIndex = Tree_Icon_Free;
-		break;
-	case (Link::REVOL):
-		iconIndex = Tree_Icon_Revolute;
-		break;
-	default:
-		iconIndex = Tree_Icon_Object;
-		break;
-	} 
-        */
-        ///////REMOVE!!! JUST TO TRY BY NOW
-        iconIndex = Tree_Icon_Revolute;
-        ///-----------------!!!!!!!!!!
+	int iconIndex = Tree_Icon_Object;
+        
+        int type = _node->getParentJoint()->getJointType();
+	switch (type)
+	    {
+	        case ( kinematics::Joint::J_TRANS ):
+		    iconIndex = Tree_Icon_Prismatic;
+		    break;
+	        case (kinematics::Joint::J_HINGE ):
+		    iconIndex = Tree_Icon_Revolute; 
+		    break;
+	        case (kinematics::Joint::J_UNKNOWN ):
+		    iconIndex = Tree_Icon_Fixed;
+		    break;
+	        default:
+		    iconIndex = Tree_Icon_Object;
+		    break;
+	    } 
+        
 
 	wxTreeItemId newParent = hParent;
 
@@ -226,11 +225,10 @@ wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hP
  * @brief
  */
 void TreeView::OnSelChanged(wxTreeEvent& evt) {
-/*
+
 	TreeViewReturn* ret = (TreeViewReturn*)GetItemData(evt.GetItem());
 	selectedTreeNode = ret;
 	evt.Skip();
-*/
 }
 
 
@@ -239,14 +237,14 @@ void TreeView::OnSelChanged(wxTreeEvent& evt) {
  * @brief
  */
 void TreeView::ExpandAll() {
-/*
+
 	size_t total = GetCount();
 	wxTreeItemId curItem = GetFirstVisibleItem();
 	for(size_t i=0; i<total; i++){
 		Expand(curItem);
 		curItem = GetNextVisible(curItem);
 	}
-*/
+
 }
 
 
