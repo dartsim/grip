@@ -14,10 +14,10 @@
 #ifndef PLANNING_TAB
 #define PLANNING_TAB
 
-#include "RSTTab.h"
+#include "GRIPTab.h"
 #include <Eigen/Core>
 
-class PlanningTab : public RSTTab
+class PlanningTab : public GRIPTab
 {
 public:
 	PlanningTab(){};
@@ -45,7 +45,7 @@ public:
 	void OnButton(wxCommandEvent &evt);
 	void OnCheckBox(wxCommandEvent &evt);
 	void SetTimeline(int robot, std::vector<int> links, std::list<Eigen::VectorXd> path);
-	void RSTStateChange();
+	void GRIPStateChange();
 
 	DECLARE_DYNAMIC_CLASS(PlanningTab)
 	DECLARE_EVENT_TABLE()

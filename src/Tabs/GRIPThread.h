@@ -36,52 +36,82 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <GUI/RSTFrame.h>
-#include <Tabs/AllTabs.h>
-#include <GUI/GUI.h>
-#include <wx/icon.h>
-
-#include "GUI/icons/robot.xpm"
-#include "RSTApp.h"
-
-/**
- * @function OnInit
- * @brief Initialize RST window
- * @date 2011-10-13
+/*
+ * GRIPThread.h
+ *
+ *  Desc: GRIPThreads to provide 1 worker thread for each GRIPTab.
+ *  Usage: Create an GRIPThread Object and call CreateThread().
+ *         Thread() in GRIPTab is called implicitly.
+ *         onThreadComplete() in GRIPTab is called implicitly.
+ *      Author: pushkar
  */
-bool RSTApp::OnInit()
+
+#ifndef GRIPTHREAD_H_
+#define GRIPTHREAD_H_
+
+#include <iostream>
+#include <wx/thread.h>
+#include <Tabs/GRIPTab.h>
+
+enum GRIPThreadError
 {
-#ifdef WIN32
-	// --- Console ---
-	FILE* pFile;
-    AllocConsole();
-    SetConsoleTitle(L"RST Console");
-    freopen_s( &pFile, "conin$", "r", stdin );
-    freopen_s( &pFile, "conout$", "w", stdout );
-    freopen_s( &pFile, "conout$", "w", stderr );
-#endif
-	// --- Console ---
+	GRIPTHREAD_NO_ERROR = 0,      // No error
+	GRIPTHREAD_RUNNING,           // The thread is already running
+	GRIPTHREAD_NOT_RUNNING,       // The thread isn't running
+	GRIPTHREAD_MISC_ERROR         // Some other error
+};
 
-    if ( !wxApp::OnInit() )
-        return false;
-    frame = new RSTFrame(wxT("RST"));
-	frame->SetFocus();
-
-	AddTabs();
-
-	wxInitAllImageHandlers();
-	wxImage rstimg = wxImage(robot_xpm);
-	char r,g,b;
-	rstimg.InitAlpha();
-	for(int i=0; i<16; i++)for(int j=0; j<16; j++){
-			r=rstimg.GetRed(i,j);g=rstimg.GetBlue(i,j);b=rstimg.GetGreen(i,j);
-			if(r == g && g == b) rstimg.SetAlpha(i,j,255-r);
+class GRIPThread: public wxThread {
+	GRIPTab* tab;
+	GRIPThreadError state;
+public:
+	GRIPThread(GRIPTab* _tab) : wxThread (wxTHREAD_JOINABLE) {
+		this->tab = _tab;
+		state = GRIPTHREAD_NOT_RUNNING;
 	}
-	wxIcon ico;
-	ico.CopyFromBitmap(wxBitmap(rstimg));
-	frame->SetIcon(ico);
-    frame->Show(true);
 
-    return true;
-}
+	~GRIPThread() {
+		if(tab != NULL) free(tab);
+	};
 
+	GRIPThreadError getThreadState() {
+		return state;
+	}
+
+	GRIPThreadError CreateThread() {
+		if(wxThread::Create() != wxTHREAD_NO_ERROR) {
+			cout << "Error creating GRIP Thread" << endl;
+			return GRIPTHREAD_MISC_ERROR;
+		}
+
+		if(wxThread::Run() != wxTHREAD_NO_ERROR) {
+			cout<< "Error starting GRIP Thread" << endl;
+			return GRIPTHREAD_MISC_ERROR;
+		}
+
+		return GRIPTHREAD_NO_ERROR;
+	}
+
+	void StopThread() {
+		if(state == GRIPTHREAD_RUNNING) {
+			wxThread::Delete();
+			state = GRIPTHREAD_NOT_RUNNING;
+		}
+		// Even though this is a Joinable Thread, cannot call Wait(). Use Delete() or Wait().
+	}
+
+	bool CheckPoint() {
+		return wxThread::TestDestroy();
+	}
+
+	virtual wxThread::ExitCode Entry()
+	{
+		state = GRIPTHREAD_RUNNING;
+		tab->Thread();
+		state = GRIPTHREAD_NOT_RUNNING;
+		tab->onThreadComplete();
+		return (wxThread::ExitCode)0;
+	}
+};
+
+#endif /* GRIPTHREAD_H_ */

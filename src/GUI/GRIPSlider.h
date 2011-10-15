@@ -35,34 +35,60 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "GUI.h"
-//--------------------------------------------------------------------
-//   GLOBAL VARIABLES: Keep track of the user's current
-//   loaded files, robot, planners, and other intentions w.r.t. the GUI
-//---------------------------------------------------------------------
 
-planning::World* mWorld = 0;
+#ifndef GRIP_GRIPSLIDER_H
+#define GRIP_GRIPSLIDER_H
 
-RSTFrame*	frame = 0;
-Viewer*		viewer = 0;
-TreeView*	treeView = 0;
-wxNotebook*	tabView = 0;
+#include <wx/wx.h>
+#include <string>
 
-TreeViewReturn* selectedTreeNode = 0;
+using namespace std;
 
-bool reverseLinkOrder = false;
-bool check_for_collisions = false;
-int stateChangeType = 0;
+DECLARE_EVENT_TYPE(wxEVT_GRIP_SLIDER_CHANGE, -1)
 
-// Camera position
-Eigen::Matrix3d mCamRotT;
-Eigen::Vector3d mWorldV = Eigen::Vector3d(1, 0, 0);
-double mCamRadius = 0;
-// World colors
-extern Eigen::Vector3d mGridColor = Eigen::Vector3d(1, 0, 0);
-extern Eigen::Vector3d mBackColor = Eigen::Vector3d(1, 0, 0);
+class GRIPSlider : public wxPanel
+{
+public:
+	GRIPSlider(){}
+	GRIPSlider(wxBitmap bmp, double left, double right, int precision, double initialpos,
+						int lineSize, int pageSize,
+						wxWindow *parent, const wxWindowID id = -1, bool vertical = false,
+                       const wxPoint& pos = wxDefaultPosition, 
+					   const wxSize& size = wxDefaultSize,
+                       long style = wxTAB_TRAVERSAL);
+	GRIPSlider(const char* name, double left, double right, int precision, double initialpos,
+						int lineSize, int pageSize,
+						wxWindow *parent, const wxWindowID id = -1, bool vertical = false,
+                       const wxPoint& pos = wxDefaultPosition, 
+					   const wxSize& size = wxDefaultSize,
+                       long style = wxTAB_TRAVERSAL);
+	virtual ~GRIPSlider(){}
+
+	wxBoxSizer *sizer;
+
+	wxSlider *track;
+	wxStaticText *lText;
+	wxTextCtrl *rText;
+	wxStaticBitmap *bmpButton;
+
+	//string name;
+	double pos;
+	double leftBound;
+	double rightBound;
+	double tickfrequency;
+	int prec;
+
+	void setRange(double left, double right);
+	void setValue(double value, bool sendSignal = true);
+	void updateValue(double value, bool sendSignal = true);
+	void setPrecision(int precision);
+
+	void OnScroll(wxScrollEvent &evt);
+	void OnEnter(wxCommandEvent &evt);
 
 
+	DECLARE_DYNAMIC_CLASS(GRIPSlider)
+	DECLARE_EVENT_TABLE()
+};
 
-DEFINE_EVENT_TYPE(wxEVT_RST_STATE_CHANGE)
-
+#endif

@@ -39,10 +39,10 @@ Dependencies:
    Install CMake Win32 Installer from http://www.cmake.org/cmake/resources/software.html (> Ver. 2.6.4)
    Open cmake-gui and open the source directory in the gui
    Show a suitable build path in the cmake-gui
-   (Example source path: RST/trunk
-    Example build path: RST/trunk/build)
+   (Example source path: GRIP/trunk
+    Example build path: GRIP/trunk/build)
    Click Configure and then Generate
-   Find the Visual Studio Project File created in RST/trunk/build
+   Find the Visual Studio Project File created in GRIP/trunk/build
    
 3. In MacOS X:
 
@@ -51,7 +51,7 @@ Dependencies:
    Go in source folder
    cmake -G Xcode . 
    This will generate the Xcode project files. Open the Xcode project.
-   Known Bugs: Project compiles, but cannot interact with RST.  
+   Known Bugs: Project compiles, but cannot interact with GRIP.  
 
 3.2 For Eclipse:
 
@@ -64,7 +64,7 @@ Dependencies:
 	make
 	sudo make install
 	
-	Go to rst folder
+	Go to GRIP folder
 	
 	cmake -G"Eclipse CDT4 - Unix Makefiles" -D CMAKE_BUILD_TYPE=Debug .
 	make

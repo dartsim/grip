@@ -42,8 +42,8 @@
 #include <wx/wx.h>
 #include <GUI/Viewer.h>
 #include <GUI/GUI.h>
-#include <GUI/RSTSlider.h>
-#include <GUI/RSTFrame.h>
+#include <GUI/GRIPSlider.h>
+#include <GUI/GRIPFrame.h>
 using namespace std;
 
 // Control IDs (used for event handling - be sure to start with a non-conflicted id)
@@ -52,12 +52,12 @@ enum EmptyTabEvents {
 //Add a handlers for UI changes
 BEGIN_EVENT_TABLE(EmptyTab, wxPanel)
 END_EVENT_TABLE ()
-// Class constructor for the tab: Each tab will be a subclass of RSTTab
-IMPLEMENT_DYNAMIC_CLASS(EmptyTab, RSTTab)
+// Class constructor for the tab: Each tab will be a subclass of GRIPTab
+IMPLEMENT_DYNAMIC_CLASS(EmptyTab, GRIPTab)
 EmptyTab::EmptyTab(wxWindow *parent, const wxWindowID id,
-		const wxPoint& pos, const wxSize& size, long style) : RSTTab(parent, id, pos, size, style) {
+		const wxPoint& pos, const wxSize& size, long style) : GRIPTab(parent, id, pos, size, style) {
 }
 
-// All tabs get a message for certain changes in RST (in case they want to do something)
-void EmptyTab::RSTStateChange() {
+// All tabs get a message for certain changes in GRIP (in case they want to do something)
+void EmptyTab::GRIPStateChange() {
 }

@@ -36,45 +36,30 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GRIP_INSPECTOR_TAB
-#define GRIP_INSPECTOR_TAB
+#ifndef GRIP_TAB_H
+#define GRIP_TAB_H
 
-#include <Tabs/RSTTab.h>
-#include <Tools/Constants.h>
+#include <wx/wx.h>
 
-/**
- * @class InspectorTab
- * @brief
- * @date 2011-10-13
- */
-class InspectorTab : public RSTTab
+#include <GUI/GRIPSlider.h>
+#include <GUI/TreeView.h>
+
+class GRIPTab : public wxPanel
 {
 public:
-	InspectorTab(){};
-    InspectorTab(wxWindow * parent, wxWindowID id = -1,
+	GRIPTab(){};
+    GRIPTab(wxWindow * parent, wxWindowID id = -1,
              const wxPoint & pos = wxDefaultPosition,
              const wxSize & size = wxDefaultSize,
-             long style = wxTAB_TRAVERSAL);
-	virtual ~InspectorTab(){}
+			 long style = wxTAB_TRAVERSAL) : wxPanel(parent, id, pos, size, style) {};
+	virtual ~GRIPTab(){}
 
-	wxStaticText* itemName;
-	wxStaticText* parentName;
-/* 	wxSlider* jointSlider; */
+	virtual void GRIPStateChange(){};
 
-	wxSizer* sizerFull;
-	RSTSlider* jSlider;
-	RSTSlider* xSlider;
-	RSTSlider* ySlider;
-	RSTSlider* zSlider;
-	RSTSlider* rollSlider;
-	RSTSlider* pitchSlider;
-	RSTSlider* yawSlider;
+	// call GRIPThread::CheckPoint() regularly
+	virtual void Thread() {};
+	virtual void onThreadComplete() {};
 
-	void OnSlider(wxCommandEvent &evt);
-	void RSTStateChange();
-
-	DECLARE_DYNAMIC_CLASS(InspectorTab)
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

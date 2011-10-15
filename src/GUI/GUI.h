@@ -36,53 +36,65 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "RSTimeSlice.h"
-#include <iostream>
+#ifndef GRIP_GUI_H
+#define GRIP_GUI_H
 
-//RSTimeSlice::RSTimeSlice(World *w) {
-RSTimeSlice::RSTimeSlice() {
-/*	
-	oPose.clear();
-	rPose.clear();
-	rJoints.clear();
+//--------------------------------------------------------------------
+//   GLOBAL VARIABLES: Keep track of the user's current
+//   loaded files, robot, planners, and other intentions w.r.t. the GUI
+//---------------------------------------------------------------------
 
-	for(unsigned int i = 0; i < w->objects.size(); i++) {
-		oPose.push_back(w->objects[i]->absPose);
-	}
-	for(unsigned int i = 0; i < w->robots.size(); i++) {
-		Robot* r = w->robots[i];
-		rPose.push_back(r->baseLink->absPose);
-		Eigen::VectorXd RJointVec(r->links.size());
-		for(unsigned int j = 0; j < r->links.size(); j++) {
-			RJointVec[j] = r->links[j]->jVal;
-		}
-		rJoints.push_back(RJointVec);
-	}
-*/
-}
+// FiGRIP some declarations of variable types
 
-/**
- * @function RSTimeSlice
- */
-RSTimeSlice::~RSTimeSlice() {
-}
+#include <wx/notebook.h>
+#include <planning/World.h>
 
-/**
- * @function SetToWorld
- */
-/*
-void RSTimeSlice::SetToWorld(World* w) {
-	
-	for(unsigned int i = 0; i < w->objects.size(); i++) {
-		w->objects[i]->absPose = oPose[i];
-	}
-	for(unsigned int i = 0; i < w->robots.size(); i++) {
-		Robot* r = w->robots[i];
-		r->baseLink->absPose = rPose[i];
-		for(unsigned int j = 0; j < r->links.size(); j++) {
-			r->links[j]->jVal = (rJoints[i])[j];
-		}
-		r->baseLink->updateAbsPose();
-	}
-}
-*/
+class GRIPFrame;
+class Viewer;
+class TreeView;
+class TreeViewReturn;
+class InspectorTab;
+class TemplateTab;
+
+// The actual variables that are global to GUI elements
+
+extern planning::World  *mWorld;
+
+extern GRIPFrame*	frame;
+extern Viewer*		viewer;
+extern TreeView*	treeView;
+extern wxNotebook*	tabView;
+
+extern TreeViewReturn* selectedTreeNode;
+
+extern bool reverseLinkOrder;
+extern bool check_for_collisions;
+
+// Camera position
+extern Eigen::Matrix3d mCamRotT;
+extern Eigen::Vector3d mWorldV;
+extern double mCamRadius;
+// World colors
+extern Eigen::Vector3d mGridColor;
+extern Eigen::Vector3d mBackColor;
+
+
+// Please don't change these constants - they are important to GUI functionality
+static const int toolBarHeight = 30;
+
+//#ifdef __APPLE__
+//static const int prefViewerWidth = 644;
+//#else
+static const int prefViewerWidth = 644;
+//#endif
+static const int prefViewerHeight = 484;
+static const int prefTreeViewWidth = 210;
+static const int prefTabsHeight = 200;
+static const int statusBarHeight = 22;
+static const double defaultCamRadius = 10.f;
+static const double CAMERASPEED = 0.003f;
+
+
+DECLARE_EVENT_TYPE(wxEVT_GRIP_STATE_CHANGE, -1)
+
+#endif

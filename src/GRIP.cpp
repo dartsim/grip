@@ -36,26 +36,52 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef RSTAPP_H_
-#define RSTAPP_H_
+#include <GUI/GRIPFrame.h>
+#include <Tabs/AllTabs.h>
+#include <GUI/GUI.h>
+#include <wx/icon.h>
 
-#include "wx/wxprec.h"
-#ifndef WX_PRECOMP
-	#include "wx/wx.h"
-#endif
-#include <wx/notebook.h>
-#include "Tabs/RSTTab.h"
+#include "GUI/icons/robot.xpm"
+#include "GRIPApp.h"
 
 /**
- * @class RSTApp
- * @brief
+ * @function OnInit
+ * @brief Initialize GRIP window
  * @date 2011-10-13
  */
-class RSTApp : public wxApp
+bool GRIPApp::OnInit()
 {
-public:
-    virtual bool OnInit();
-	virtual void AddTabs() {}
-};
+#ifdef WIN32
+	// --- Console ---
+	FILE* pFile;
+    AllocConsole();
+    SetConsoleTitle(L"GRIP Console");
+    freopen_s( &pFile, "conin$", "r", stdin );
+    freopen_s( &pFile, "conout$", "w", stdout );
+    freopen_s( &pFile, "conout$", "w", stderr );
+#endif
+	// --- Console ---
 
-#endif /* RSTAPP_H_ */
+    if ( !wxApp::OnInit() )
+        return false;
+    frame = new GRIPFrame(wxT("GRIP"));
+	frame->SetFocus();
+
+	AddTabs();
+
+	wxInitAllImageHandlers();
+	wxImage gripimg = wxImage(robot_xpm);
+	char r,g,b;
+	gripimg.InitAlpha();
+	for(int i=0; i<16; i++)for(int j=0; j<16; j++){
+			r=gripimg.GetRed(i,j);g=gripimg.GetBlue(i,j);b=gripimg.GetGreen(i,j);
+			if(r == g && g == b) gripimg.SetAlpha(i,j,255-r);
+	}
+	wxIcon ico;
+	ico.CopyFromBitmap(wxBitmap(gripimg));
+	frame->SetIcon(ico);
+    frame->Show(true);
+
+    return true;
+}
+

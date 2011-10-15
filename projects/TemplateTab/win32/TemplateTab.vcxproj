@@ -52,7 +52,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\wxWidgets\include;C:\wxWidgets\lib\msw;..\..\librst;..\..\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\wxWidgets\include;C:\wxWidgets\lib\msw;..\..\libGRIP;..\..\;$(IncludePath)</IncludePath>
     <LibraryPath>C:\wxWidgets\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -62,13 +62,13 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\;..\..\..\librst\;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\;..\..\..\libGRIP\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\..\win32\Debug;.\Debug;.\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>librst.lib;wxmsw28d_gl.lib;wxmsw28d_core.lib;wxbase28d.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;comctl32.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libGRIP.lib;wxmsw28d_gl.lib;wxmsw28d_core.lib;wxbase28d.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;comctl32.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -80,14 +80,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\;..\..\..\librst\;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\;..\..\..\libGRIP\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>librst.lib;wxmsw28_gl.lib;wxmsw28_core.lib;wxbase28.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;comctl32.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libGRIP.lib;wxmsw28_gl.lib;wxmsw28_core.lib;wxbase28.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;comctl32.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\win32\Release;.\Release;.\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

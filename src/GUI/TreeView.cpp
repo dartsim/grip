@@ -41,7 +41,7 @@
 #include <kinematics/Transformation.h>
 
 #include "TreeView.h"
-#include "RSTFrame.h"
+#include "GRIPFrame.h"
 #include "../Tabs/InspectorTab.h"
 #include "GUI.h"
 

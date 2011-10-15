@@ -36,18 +36,18 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef RSTIME_SLICE_H
-#define RSTIME_SLICE_H
+#ifndef GRIPIME_SLICE_H
+#define GRIPIME_SLICE_H
 
 //#include <Eigen/StdVector>  // http://eigen.tuxfamily.org/dox/StlContainers.html
 #include <Eigen/Core>
 #include <vector>
 
-class RSTimeSlice
+class GRIPTimeSlice
 {
 public:
-	RSTimeSlice();
-	~RSTimeSlice();
+	GRIPTimeSlice();
+	~GRIPTimeSlice();
 
 	//void SetToWorld(World*);
 /*

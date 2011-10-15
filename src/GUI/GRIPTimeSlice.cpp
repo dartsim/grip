@@ -36,59 +36,53 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GRIP_RSTSLIDER_H
-#define GRIP_RSTSLIDER_H
+#include "GRIPTimeSlice.h"
+#include <iostream>
 
-#include <wx/wx.h>
-#include <string>
+//GRIPTimeSlice::GRIPTimeSlice(World *w) {
+GRIPTimeSlice::GRIPTimeSlice() {
+/*	
+	oPose.clear();
+	rPose.clear();
+	rJoints.clear();
 
-using namespace std;
+	for(unsigned int i = 0; i < w->objects.size(); i++) {
+		oPose.push_back(w->objects[i]->absPose);
+	}
+	for(unsigned int i = 0; i < w->robots.size(); i++) {
+		Robot* r = w->robots[i];
+		rPose.push_back(r->baseLink->absPose);
+		Eigen::VectorXd RJointVec(r->links.size());
+		for(unsigned int j = 0; j < r->links.size(); j++) {
+			RJointVec[j] = r->links[j]->jVal;
+		}
+		rJoints.push_back(RJointVec);
+	}
+*/
+}
 
-DECLARE_EVENT_TYPE(wxEVT_RST_SLIDER_CHANGE, -1)
+/**
+ * @function GRIPTimeSlice
+ */
+GRIPTimeSlice::~GRIPTimeSlice() {
+}
 
-class RSTSlider : public wxPanel
-{
-public:
-	RSTSlider(){}
-	RSTSlider(wxBitmap bmp, double left, double right, int precision, double initialpos,
-						int lineSize, int pageSize,
-						wxWindow *parent, const wxWindowID id = -1, bool vertical = false,
-                       const wxPoint& pos = wxDefaultPosition, 
-					   const wxSize& size = wxDefaultSize,
-                       long style = wxTAB_TRAVERSAL);
-	RSTSlider(const char* name, double left, double right, int precision, double initialpos,
-						int lineSize, int pageSize,
-						wxWindow *parent, const wxWindowID id = -1, bool vertical = false,
-                       const wxPoint& pos = wxDefaultPosition, 
-					   const wxSize& size = wxDefaultSize,
-                       long style = wxTAB_TRAVERSAL);
-	virtual ~RSTSlider(){}
-
-	wxBoxSizer *sizer;
-
-	wxSlider *track;
-	wxStaticText *lText;
-	wxTextCtrl *rText;
-	wxStaticBitmap *bmpButton;
-
-	//string name;
-	double pos;
-	double leftBound;
-	double rightBound;
-	double tickfrequency;
-	int prec;
-
-	void setRange(double left, double right);
-	void setValue(double value, bool sendSignal = true);
-	void updateValue(double value, bool sendSignal = true);
-	void setPrecision(int precision);
-
-	void OnScroll(wxScrollEvent &evt);
-	void OnEnter(wxCommandEvent &evt);
-
-
-	DECLARE_DYNAMIC_CLASS(RSTSlider)
-	DECLARE_EVENT_TABLE()
-};
-
-#endif
+/**
+ * @function SetToWorld
+ */
+/*
+void GRIPTimeSlice::SetToWorld(World* w) {
+	
+	for(unsigned int i = 0; i < w->objects.size(); i++) {
+		w->objects[i]->absPose = oPose[i];
+	}
+	for(unsigned int i = 0; i < w->robots.size(); i++) {
+		Robot* r = w->robots[i];
+		r->baseLink->absPose = rPose[i];
+		for(unsigned int j = 0; j < r->links.size(); j++) {
+			r->links[j]->jVal = (rJoints[i])[j];
+		}
+		r->baseLink->updateAbsPose();
+	}
+}
+*/
