@@ -73,73 +73,73 @@ InspectorTab::InspectorTab(wxWindow *parent, const wxWindowID id,
                        long style)
 					   : RSTTab(parent, id, pos, size, style)
  {
-		sizerFull = new wxBoxSizer(wxHORIZONTAL);
+      sizerFull = new wxBoxSizer(wxHORIZONTAL);
 
-		wxStaticBox* jointBox = new wxStaticBox(this,-1,wxT("Item Information"));
-		wxStaticBox* posBox = new wxStaticBox(this,-1,wxT("Position"));
-		wxStaticBox* rotBox = new wxStaticBox(this,-1,wxT("Orientation"));
+      wxStaticBox* jointBox = new wxStaticBox(this,-1,wxT("Item Information"));
+      wxStaticBox* posBox = new wxStaticBox(this,-1,wxT("Position"));
+      wxStaticBox* rotBox = new wxStaticBox(this,-1,wxT("Orientation"));
 
-		wxStaticBoxSizer* jointBoxS = new wxStaticBoxSizer(jointBox, wxVERTICAL);
-		wxStaticBoxSizer* posBoxS = new wxStaticBoxSizer(posBox, wxVERTICAL);
-		wxStaticBoxSizer* rotBoxS = new wxStaticBoxSizer(rotBox, wxVERTICAL);
+      wxStaticBoxSizer* jointBoxS = new wxStaticBoxSizer(jointBox, wxVERTICAL);
+      wxStaticBoxSizer* posBoxS = new wxStaticBoxSizer(posBox, wxVERTICAL);
+      wxStaticBoxSizer* rotBoxS = new wxStaticBoxSizer(rotBox, wxVERTICAL);
 
-		sizerFull->Add(jointBoxS, 1, wxEXPAND | wxALL, 6);
-		sizerFull->Add(posBoxS, 1, wxEXPAND | wxALL, 6);
-		sizerFull->Add(rotBoxS, 1, wxEXPAND | wxALL, 6);
-		SetSizer(sizerFull);
+      sizerFull->Add(jointBoxS, 1, wxEXPAND | wxALL, 6);
+      sizerFull->Add(posBoxS, 1, wxEXPAND | wxALL, 6);
+      sizerFull->Add(rotBoxS, 1, wxEXPAND | wxALL, 6);
+      SetSizer(sizerFull);
 
-		// Add the Joint Information and Joint Slider
-		itemName = new wxStaticText(this,-1,wxT("Item: (none)"),wxDefaultPosition,wxDefaultSize,wxALIGN_CENTRE);
-		parentName = new wxStaticText(this,-1,wxT("Parent: (none)"),wxDefaultPosition,wxDefaultSize,wxALIGN_CENTRE);
+      // Add the Joint Information and Joint Slider
+      itemName = new wxStaticText(this,-1,wxT("Item: (none)"),wxDefaultPosition,wxDefaultSize,wxALIGN_CENTRE);
+      parentName = new wxStaticText(this,-1,wxT("Parent: (none)"),wxDefaultPosition,wxDefaultSize,wxALIGN_CENTRE);
 
-		jSlider = new RSTSlider("Joint",-180,180,2000,0,1000,2000,this,J_SLIDER);
-		jointBoxS->Add(parentName,1,wxEXPAND | wxALL, 6);
-		jointBoxS->Add(itemName,1,wxEXPAND | wxALL, 6);
-		jointBoxS->Add(jSlider,1,wxEXPAND | wxALL, 6);
+      jSlider = new RSTSlider("Joint",-180,180,2000,0,1000,2000,this,J_SLIDER);
+      jointBoxS->Add( parentName, 1, wxEXPAND | wxALL, 6 );
+      jointBoxS->Add(itemName,1,wxEXPAND | wxALL, 6);
+      jointBoxS->Add(jSlider,1,wxEXPAND | wxALL, 6);
+
+      xSlider = new RSTSlider("X",-10,10,500,0,100,500,this,X_SLIDER);
+      ySlider = new RSTSlider("Y",-10,10,500,0,100,500,this,Y_SLIDER);
+      zSlider = new RSTSlider("Z",-10,10,500,0,100,500,this,Z_SLIDER);
+      posBoxS->Add( xSlider,1,wxEXPAND | wxALL, 6 );
+      posBoxS->Add( ySlider,1,wxEXPAND | wxALL, 6 );
+      posBoxS->Add( zSlider,1,wxEXPAND | wxALL, 6 );
 
 
-		xSlider = new RSTSlider("X",-10,10,500,0,100,500,this,X_SLIDER);
-		ySlider = new RSTSlider("Y",-10,10,500,0,100,500,this,Y_SLIDER);
-		zSlider = new RSTSlider("Z",-10,10,500,0,100,500,this,Z_SLIDER);
-		posBoxS->Add(xSlider,1,wxEXPAND | wxALL, 6);
-		posBoxS->Add(ySlider,1,wxEXPAND | wxALL, 6);
-		posBoxS->Add(zSlider,1,wxEXPAND | wxALL, 6);
+      rollSlider = new RSTSlider("R",-180,180,500,0,100,500,this,ROLL_SLIDER);
+      pitchSlider = new RSTSlider("P",-180,180,500,0,100,500,this,PITCH_SLIDER);
+      yawSlider = new RSTSlider("Y",-180,180,500,0,100,500,this,YAW_SLIDER);
+      rotBoxS->Add(rollSlider,1,wxEXPAND | wxALL, 6);
+      rotBoxS->Add(pitchSlider,1,wxEXPAND | wxALL, 6);
+      rotBoxS->Add(yawSlider,1,wxEXPAND | wxALL, 6);
 
-
-		rollSlider = new RSTSlider("R",-180,180,500,0,100,500,this,ROLL_SLIDER);
-		pitchSlider = new RSTSlider("P",-180,180,500,0,100,500,this,PITCH_SLIDER);
-		yawSlider = new RSTSlider("Y",-180,180,500,0,100,500,this,YAW_SLIDER);
-		rotBoxS->Add(rollSlider,1,wxEXPAND | wxALL, 6);
-		rotBoxS->Add(pitchSlider,1,wxEXPAND | wxALL, 6);
-		rotBoxS->Add(yawSlider,1,wxEXPAND | wxALL, 6);
  }
 
-//Handle slider changes
-void InspectorTab::OnSlider(wxCommandEvent &evt){
-	Robot *r;
-	Object* o;
-	Link* l;
-	Matrix3d rot;
-	Vector3d tempTrans;
-	int slnum = evt.GetId();
-	double pos = *(double*)evt.GetClientData();
-	char numBuf[1000];
+/**
+ * @function OnSlider
+ * @brief Handle slider changes
+ * @date 2011-10-13
+ */
+void InspectorTab::OnSlider(wxCommandEvent &evt) {
+
+    Matrix3d rot;
+    Vector3d tempTrans;
+    int slnum = evt.GetId();
+    double pos = *(double*)evt.GetClientData();
+    char numBuf[1000];
     numBuf[0] = '\0';
     //sprintf(numBuf,"");
-
+/*
 	if(selectedTreeNode==NULL){ return; }
 
 	int selected = selectedTreeNode->dType;
 	if(selected == Return_Type_Object){
-		o = (Object*)(selectedTreeNode->data);
+
 	}
 	else if(selected == Return_Type_Link){
-		l = (Link*)(selectedTreeNode->data);
-		o = (Object*)(selectedTreeNode->data);
+
 	}
 	else if(selected == Return_Type_Robot){
-		r = (Robot*)(selectedTreeNode->data);
-		o = (Object*)r->baseLink;
+
 	}
 
 	//TODO ask mike if the logic for fromJoints is legit wrt reverseLinkORder
@@ -207,16 +207,20 @@ void InspectorTab::OnSlider(wxCommandEvent &evt){
 	}
 //	}
 //	cdCount++;
-
+*/
 	if(frame!=NULL)	frame->SetStatusText(wxString(numBuf,wxConvUTF8));
 	viewer->UpdateCamera();
 }
 
-
-// This function is called when an object is selected in the Tree View
-// the sliders are shown / hidden and set according to the type of object
-// that is selected and its properties
+/**
+ * @function RSTStateChange
+ * @brief  This function is called when an object is selected in the Tree View
+ * the sliders are shown / hidden and set according to the type of object
+ * that is selected and its properties
+ * @date 2011-10-13
+ */
 void InspectorTab::RSTStateChange() {
+/*
 	if(selectedTreeNode==NULL){
 		itemName->SetLabel(wxString("Item: None",wxConvUTF8));
 		parentName->Hide();
@@ -303,4 +307,5 @@ void InspectorTab::RSTStateChange() {
 
 	//frame->SetStatusText(wxString(statusBuf.c_str(),wxConvUTF8));
 	//sizerFull->Layout();
+*/
 }

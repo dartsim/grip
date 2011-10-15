@@ -10,6 +10,27 @@ if(NOT MSVC)
   set (CMAKE_CXX_FLAGS "-g -O0 -Wall -Wextra -Wpointer-arith -fno-default-inline -fno-implicit-inline-templates -DwxUSE_THREADS")
 endif(NOT MSVC)
 
+# ------------------------
+# Added 2011-11-06 achq
+set ( DART_PATH "/home/ana/Research/Grip/dart" )
+
+set( DART_HEADERS "${DART_PATH}/src" )
+
+set ( DART_LIBS collision
+                dynamics
+                geometry
+                integration
+                kinematics
+                lcpsolver
+                optimizer
+                renderer
+                utils
+                yui )
+
+link_directories( ${DART_PATH}/lib )
+
+# ------------------------
+
 set( SRC_GUI 
 GUI/Viewer
 )
@@ -22,32 +43,14 @@ GUI/RSTFrame
 GUI/RSTimeSlice
 GUI/RSTSlider
 GUI/TreeView
+GUI/Viewer
+GUI/DrawWorld
 )
 
 set ( SRC_FILES 
 Tools/GLTools
-Tools/Link
-Tools/Model3DS
-Tools/Object
-Tools/Robot
-Tools/World
-Tools/IK
-Tools/Path
-Tools/PathPlanner
-Tools/Shortener
-Tools/Trajectory
-Tools/RRT
-Tools/kdtree/kdtree
 Tools/GL/GLTexture.cpp
-Tools/Collision/build
-Tools/Collision/collide
-Tools/Collision/NBody
-Tools/Collision/overlap
-Tools/Collision/PairData
-Tools/Collision/RAPID
-Tools/Collision/sample_client
-Tools/Collision/VCollide
-Tools/Collision/VInternal
+Tools/Parser
 RST
 )
 
@@ -59,13 +62,12 @@ ${SRC_FILES}
 
 set ( HEADERS
 ./Tabs
-./Tools/ANN
-./Tools/Collision
 ./Tools/GL
 ./Tools
 ./GUI
 ./
 ../
+${DART_HEADERS}
 )
 
 set (wxWidgets_USE_LIBS base core gl)

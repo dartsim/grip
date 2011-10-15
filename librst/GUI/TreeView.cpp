@@ -38,10 +38,6 @@
 
 #include "TreeView.h"
 #include "RSTFrame.h"
-#include "../Tools/World.h"
-#include "../Tools/Robot.h"
-#include "../Tools/Link.h"
-#include "../Tools/Object.h"
 #include "../Tabs/InspectorTab.h"
 #include "GUI.h"
 
@@ -60,10 +56,15 @@ BEGIN_EVENT_TABLE(TreeView, wxTreeCtrl)
 	EVT_TREE_SEL_CHANGED(TreeViewHandle,TreeView::OnSelChanged)
 END_EVENT_TABLE()
 
+/**
+ * @function TreeView
+ * @brief Constructor
+ * @date 2011-10-13
+ */
 TreeView::TreeView(wxWindow *parent, const wxWindowID id,
                        const wxPoint& pos, const wxSize& size,
                        long style)
-					   : wxTreeCtrl(parent, id, pos, size, style | wxTR_FULL_ROW_HIGHLIGHT | wxTR_NO_LINES)
+		   : wxTreeCtrl(parent, id, pos, size, style | wxTR_FULL_ROW_HIGHLIGHT | wxTR_NO_LINES)
 {
 	imageList = new wxImageList(16,16,true,0);
 
@@ -94,41 +95,68 @@ TreeView::TreeView(wxWindow *parent, const wxWindowID id,
 }
 
 
-
+/**
+ * @function CreateFromWorld
+ * @brief Create a Tree View from the planning::World object (DART)
+ * @date 2011-10-13
+ */
 void TreeView::CreateFromWorld()
 {
-	if(world == NULL) return;
 
-	DeleteAllItems();
-	rootId = AddRoot(wxT("Root"),-1, -1);
-	TreeViewReturn* ret;
+    if( mWorld == NULL) return;
 
-	wxTreeItemId hPrev = rootId;
+    DeleteAllItems();
 
-	for (unsigned int i = 0; i < world->objects.size(); i++)
-	{
-		ret = new TreeViewReturn;
-		ret->data = world->objects[i];
-		ret->dType = Return_Type_Object;
-		world->objects[i]->idNum = hPrev = AppendItem(rootId,wxString(world->objects[i]->name.c_str(),wxConvUTF8),Tree_Icon_Object,-1,ret);
-	}
-	for (unsigned int i = 0; i < world->robots.size(); i++)
-	{
-		ret = new TreeViewReturn;
-		ret->data = world->robots[i];
-		ret->dType = Return_Type_Robot;
-		world->robots[i]->idNum = hPrev = AppendItem(rootId,wxString(world->robots[i]->name.c_str(),wxConvUTF8),Tree_Icon_Robot,-1,ret);
-		for (unsigned int j = 0; j < world->robots[i]->links.size(); j++)
-			if (world->robots[i]->links[j]->parent == 0){
-				hPrev = AddLinkTree(world->robots[i]->links[j], hPrev, hPrev,false);
-			}
-	}
+    rootId = AddRoot( wxT("Root"), -1, -1 );
+    TreeViewReturn* ret;
+
+    wxTreeItemId hPrev = rootId;
+
+    ///-- Add objects to the tree
+    for ( unsigned int i = 0; i < mWorld->mObjects.size(); i++ )
+    {
+        ret = new TreeViewReturn;
+	ret->data = mWorld->mObjects[i];
+	ret->dType = Return_Type_Object;
+	mWorld->mObjects[i]->mGripID = hPrev = AppendItem( rootId, 
+                                                         wxString( mWorld->mObjects[i]->mName.c_str(), wxConvUTF8), 
+                                                         Tree_Icon_Object, 
+                                                         -1, 
+                                                         ret );
+    }
+
+    ///-- Add robot(s) to the tree
+    for ( unsigned int i = 0; i < mWorld->mRobots.size(); i++ )
+    {
+        ret = new TreeViewReturn;
+	ret->data = mWorld->mRobots[i];
+	ret->dType = Return_Type_Robot;
+	mWorld->mRobots[i]->mGripID = hPrev = AppendItem( rootId,
+                                                          wxString( mWorld->mRobots[i]->mName.c_str(),wxConvUTF8),
+                                                          Tree_Icon_Robot,
+                                                          -1,
+                                                          ret );
+        ///-- Add body nodes ( AKA Links ) as sub-trees 
+	for (unsigned int j = 0; j < mWorld->mRobots[i]->getNumNodes(); j++ )
+	{    
+            if ( mWorld->mRobots[i]->getNode(j)->getParentNode() == NULL ) {
+	        hPrev = AddNodeTree( mWorld->mRobots[i]->getNode(j), hPrev, hPrev, false );
+	    } 
+        }
+    }
 }
 
-wxTreeItemId TreeView::AddLinkTree(Link* l, wxTreeItemId hPrev, wxTreeItemId hParent, bool inChain)
+/**
+ * @function AddNodeTree
+ * @brief Add sub-tree from node of Robot
+ * @date 2011-10-13
+ */
+wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hPrev, wxTreeItemId hParent, bool inChain )
 {
+
 	TreeViewReturn* ret;
 	int iconIndex;
+        /*
 	switch (l->jType)
 	{
 	case (Link::PRISM):
@@ -146,42 +174,79 @@ wxTreeItemId TreeView::AddLinkTree(Link* l, wxTreeItemId hPrev, wxTreeItemId hPa
 	default:
 		iconIndex = Tree_Icon_Object;
 		break;
-	}
+	} 
+        */
+        ///////REMOVE!!! JUST TO TRY BY NOW
+        iconIndex = Tree_Icon_Revolute;
+        ///-----------------!!!!!!!!!!
 
-	wxTreeItemId newParent=hParent;
-	if (l->children.size() == 1){
-		ret = new TreeViewReturn;
-		ret->data = l;
-		ret->dType = Return_Type_Link;
-		if (l->children[0]->children.size() == 1 && !inChain)
-			l->idNum = hPrev = newParent = AppendItem(hParent,wxString(l->name.c_str(),wxConvUTF8),iconIndex,-1,ret);
-		else
-			l->idNum = hPrev = AppendItem(hParent,wxString(l->name.c_str(),wxConvUTF8),iconIndex,-1,ret);
-		hPrev=AddLinkTree(l->children[0], hPrev, newParent, true);
-	}else{
-		ret = new TreeViewReturn;
-		ret->data = l;
-		ret->dType = Return_Type_Link;
-		hPrev = newParent = AppendItem(hParent,wxString(l->name.c_str(),wxConvUTF8),iconIndex,-1,ret);
-		for (unsigned int i = 0; i < l->children.size(); i++)
-			l->idNum = hPrev=AddLinkTree(l->children[i], hPrev, newParent, false);
+	wxTreeItemId newParent = hParent;
+
+	if ( _node->getNumChildJoints() == 1) {
+	    ret = new TreeViewReturn;
+	    ret->data = _node;
+	    ret->dType = Return_Type_Node;
+	    if ( _node->getChildNode(0)->getNumChildJoints() == 1 && !inChain )
+	    {    /*_node->idNum = */hPrev = newParent = AppendItem( hParent,
+                                                               wxString( string(_node->getName() ).c_str(),wxConvUTF8),
+                                                               iconIndex,
+                                                               -1,
+                                                               ret );
+	    }else {
+	       	/*_node->idNum = */hPrev = AppendItem( hParent,
+                                                   wxString( string( _node->getName() ).c_str(),wxConvUTF8),
+                                                   iconIndex, 
+                                                   -1,
+                                                   ret );
+            }
+	    hPrev=AddNodeTree( _node->getChildNode(0), hPrev, newParent, true );
+
+	}else {
+	    ret = new TreeViewReturn;
+	    ret->data = _node;
+	    ret->dType = Return_Type_Node;
+	    hPrev = newParent = AppendItem( hParent, 
+                                            wxString( string( _node->getName() ).c_str(),wxConvUTF8 ),
+                                            iconIndex,
+                                            -1,
+                                            ret );
+	    for (unsigned int i = 0; i < _node->getNumChildJoints(); i++)
+      	    {    /*_node->idNum = */hPrev=AddNodeTree( _node->getChildNode(i), 
+                                                  hPrev, 
+                                                  newParent, 
+                                                  false );
+            }
 	}
 	return hPrev;
 }
 
+
+/**
+ * @function OnSelChanged
+ * @brief
+ */
 void TreeView::OnSelChanged(wxTreeEvent& evt) {
+/*
 	TreeViewReturn* ret = (TreeViewReturn*)GetItemData(evt.GetItem());
 	selectedTreeNode = ret;
 	evt.Skip();
+*/
 }
 
+
+/**
+ * @function ExpandAll
+ * @brief
+ */
 void TreeView::ExpandAll() {
+/*
 	size_t total = GetCount();
 	wxTreeItemId curItem = GetFirstVisibleItem();
 	for(size_t i=0; i<total; i++){
 		Expand(curItem);
 		curItem = GetNextVisible(curItem);
 	}
+*/
 }
 
 

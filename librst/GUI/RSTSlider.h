@@ -36,8 +36,8 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef RSTSLIDER_H
-#define RSTSLIDER_H
+#ifndef GRIP_RSTSLIDER_H
+#define GRIP_RSTSLIDER_H
 
 #include <wx/wx.h>
 #include <string>

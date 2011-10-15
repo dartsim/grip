@@ -144,33 +144,26 @@ void TemplateTab::RSTStateChange() {
 		return;
 	}
 
-	Object* o;
-	Robot* r;
-	Link* l;
 	string statusBuf;
 	string buf, buf2;
 	switch (selectedTreeNode->dType) {
 	case Return_Type_Object:
-		o = (Object*) (selectedTreeNode->data);
-		statusBuf = " Selected Object: " + o->name;
-		buf = "You clicked on object: " + o->name;
+		statusBuf = " Selected Object: ";
+		buf = "You clicked on object: ";
 		sampleText1->SetLabel(wxString(buf.c_str(), wxConvUTF8));
 		sampleText2->Hide();
 
 		break;
 	case Return_Type_Robot:
-		r = (Robot*) (selectedTreeNode->data);
-		statusBuf = " Selected Robot: " + r->name;
-		buf = "You clicked on robot: " + r->name;
+		statusBuf = " Selected Robot: ";
+		buf = "You clicked on robot: ";
 		sampleText2->SetLabel(wxString(buf.c_str(), wxConvUTF8));
 		sampleText1->Hide();
 
 		break;
 	case Return_Type_Link:
-		l = (Link*) (selectedTreeNode->data);
-		statusBuf = " Selected Link: " + l->name + " of Robot: "
-				+ l->robot->name;
-		buf = " Link: " + l->name + " of Robot: " + l->robot->name;
+		statusBuf = " Selected Link:  of Robot: ";
+		buf = " Link:  of Robot: ";
 		// Do something here if you want to.  you get the idea...
 
 		break;

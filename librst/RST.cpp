@@ -44,7 +44,11 @@
 #include "GUI/icons/robot.xpm"
 #include "RSTApp.h"
 
-
+/**
+ * @function OnInit
+ * @brief Initialize RST window
+ * @date 2011-10-13
+ */
 bool RSTApp::OnInit()
 {
 #ifdef WIN32
@@ -52,9 +56,9 @@ bool RSTApp::OnInit()
 	FILE* pFile;
     AllocConsole();
     SetConsoleTitle(L"RST Console");
-    freopen_s(&pFile,"conin$", "r", stdin);
-    freopen_s(&pFile,"conout$", "w", stdout);
-    freopen_s(&pFile,"conout$", "w", stderr);
+    freopen_s( &pFile, "conin$", "r", stdin );
+    freopen_s( &pFile, "conout$", "w", stdout );
+    freopen_s( &pFile, "conout$", "w", stderr );
 #endif
 	// --- Console ---
 

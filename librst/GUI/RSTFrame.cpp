@@ -77,13 +77,18 @@ extern bool check_for_collisions;
 
 //wxSTD_MDIPARENTFRAME ICON wxICON(ROBOT_xpm)
 
+/**
+ * @function RSTFrame
+ * @brief Constructor 
+ * @date 2011-10-13
+ */
 RSTFrame::RSTFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
 {
 	tPrecision = 1000;
 	tMax = 5;
 	tMax = 0;
 	InitTimer("",0);
-
+    std::cout << "RSTFrame 1" << std::endl;
     wxMenu *fileMenu = new wxMenu;
     wxMenu *helpMenu = new wxMenu;
 	wxMenu *settingsMenu = new wxMenu;
@@ -172,6 +177,7 @@ RSTFrame::RSTFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
 	treeView = new TreeView(this, TreeViewHandle, wxPoint(0, 0), wxSize(prefTreeViewWidth, prefViewerHeight-2*toolBarHeight),
                             wxTR_LINES_AT_ROOT | wxTR_HAS_BUTTONS | wxTR_HIDE_ROOT | wxSUNKEN_BORDER);
 
+
 	// Adding a backPanel to the lower half of the window covers the generic "inner grey"
 	// with a forms-like control color. The tabView is added to the backPanel
 	backPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, 0);
@@ -179,12 +185,12 @@ RSTFrame::RSTFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
 
 	addAllTabs();
 
-
 	// Start OpenGL and do various hacks to make it work cross platform
 	#ifndef WIN32 // Weird hack to make wxWidgets work in Linux
 	Show();
 	#endif
 	viewer = new Viewer(this, -1, wxPoint(0, 0), wxSize(prefViewerWidth, prefViewerHeight), wxFULL_REPAINT_ON_RESIZE | wxSUNKEN_BORDER);
+
 	#ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
 	viewer->MSWSetOldWndProc((WXFARPROC)DefWindowProc);
 	#endif
@@ -225,41 +231,48 @@ RSTFrame::RSTFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
 	viewer->Thaw();
 }
 
-// Checks if the input file is a .rscene file or not and then writes the scene to it.
+/**
+ * @function OnSaveScene
+ * @brief Checks if the input file is a .rscene file or not and then writes the scene to it.
+ */
 void RSTFrame::OnSaveScene(wxCommandEvent& WXUNUSED(event)) {
-	wxString filepath;
-	string filename;
-	size_t endpath;
-	wxFileDialog *SaveDialog = new wxFileDialog(this, _("Save File As"), wxT("../scene/"), wxT(""),
+    wxString filepath;
+    string filename;
+    size_t endpath;
+    wxFileDialog *SaveDialog = new wxFileDialog(this, _("Save File As"), wxT("../scene/"), wxT(""),
 			_("*.rscene"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
 
-	if (SaveDialog->ShowModal() == wxID_OK) {
-			world->camRadius = viewer->camRadius;
-			world->camRotT = viewer->camRotT;
-			world->worldV = viewer->worldV;
-			world->backColor = viewer->backColor;
-			world->gridColor = viewer->gridColor;
+    if (SaveDialog->ShowModal() == wxID_OK) {
+			//world->camRadius = viewer->camRadius;
+			//world->camRotT = viewer->camRotT;
+			//world->worldV = viewer->worldV;
+			//world->backColor = viewer->backColor;
+			//world->gridColor = viewer->gridColor;
 
 
 			filepath = SaveDialog->GetPath();
 			filename = string(filepath.mb_str());
 			endpath = filename.find(".rscene");
 			if(endpath == (unsigned int)-1) filename += ".rscene";
-			world->Save(filename);
+			//world->Save(filename);
 			wxString filename_string(filename.c_str(), wxConvUTF8);
 			saveText(filename_string,".lastload");
 	}
 }
 
 
-
+/**
+ * @function OnSaveRobot
+ */
 void RSTFrame::OnSaveRobot(wxCommandEvent& WXUNUSED(event)) {
 
 }
 
 
-
-void RSTFrame::OnLoad(wxCommandEvent& WXUNUSED(event)){
+/**
+ * @function OnLoad
+ */
+void RSTFrame::OnLoad(wxCommandEvent& event){
 	viewer->loading=true;
 	wxString filename = wxFileSelector(wxT("Choose a file to open"),wxT("../scene/"),wxT(""),wxT(""), // -- default extension
                                        wxT("*.rscene"), 0);
@@ -267,12 +280,15 @@ void RSTFrame::OnLoad(wxCommandEvent& WXUNUSED(event)){
 		DoLoad(string(filename.mb_str()));
 }
 
-void RSTFrame::OnQuickLoad(wxCommandEvent& WXUNUSED(event)){
+/**
+ * @function OnQuickLoad
+ */
+void RSTFrame::OnQuickLoad(wxCommandEvent& event){
 	viewer->loading=true;
 	ifstream lastloadFile;
 	lastloadFile.open(".lastload", ios::in);
 	if(lastloadFile.fail()){
-		cout << "No previously loaded files" << endl;
+		cout << "--(!) No previously loaded files (!)--" << endl;
 		return;
 	}
 	string line;
@@ -281,21 +297,25 @@ void RSTFrame::OnQuickLoad(wxCommandEvent& WXUNUSED(event)){
 	DoLoad(line);
 }
 
+/**
+ * @function DoLoad
+ * @brief Load world from RSDH file
+ */
 void RSTFrame::DoLoad(string filename){
 	DeleteWorld();
-	world = new World();
-	world->Load(string(filename));
+  
+        mWorld = parseWorld( string(filename) );
+        mWorld->printInfo();
 
-	//UpdateTreeView();
-	cout << "Done Loading." << endl;
+	cout << "--(v)Done Loading." << endl;
 	treeView->CreateFromWorld();
 	cout << "Done Updating TreeView." << endl;
-	//viewer->ResetGL();
+	viewer->ResetGL();
 	SetStatusText(wxT("Done Loading"));
 
 	//Extract path to executable & save "lastload" there
 	cout << "Saving " << filename << " to .lastload file" << endl;
-    wxString filename_string(filename.c_str(), wxConvUTF8);
+        wxString filename_string(filename.c_str(), wxConvUTF8);
 	saveText(filename_string,".lastload");
 
 	selectedTreeNode = 0;
@@ -305,6 +325,11 @@ void RSTFrame::DoLoad(string filename){
 	viewer->ResetGL();
 }
 
+/**
+ * @function DeleteWorld
+ * @brief 
+ * @date 2011-10-13
+ */
 void RSTFrame::DeleteWorld(){
 	InitTimer("",0);
 	for(size_t i=0; i<timeVector.size(); i++){
@@ -312,6 +337,7 @@ void RSTFrame::DeleteWorld(){
 			delete timeVector[i];
 	}
 	timeVector.clear();
+/*
 	if(world !=NULL){
 		World* w = world;
 		world = 0;
@@ -320,18 +346,30 @@ void RSTFrame::DeleteWorld(){
 		w->DeleteModels();
 		delete w;
 	}
+*/
 }
 
-
+/**
+ * @function OnToolOrder
+ */
 void RSTFrame::OnToolOrder(wxCommandEvent& WXUNUSED(event)){
 	reverseLinkOrder = !reverseLinkOrder;
 }
 
+/**
+ * @function OnToolCheckColl
+ * @brief 
+ */
 void RSTFrame::OnToolCheckColl(wxCommandEvent& ){
 	// toggle collision detection
 	check_for_collisions = !check_for_collisions;
 }
 
+/**
+ * @function OnToolMovie
+ * @brief
+ * @date 2011-10-13
+ */
 void RSTFrame::OnToolMovie(wxCommandEvent& event){
 	wxString dirname = wxDirSelector(wxT("Choose output directory for movie pictures:")); // , "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST
 
@@ -354,7 +392,7 @@ void RSTFrame::OnToolMovie(wxCommandEvent& event){
 	for(double s=0; s<timeVector.size(); s+= step){
 		int i = (int)s;
 
-		timeVector[i]->SetToWorld(world);
+		//timeVector[i]->SetToWorld(world);
 		viewer->UpdateCamera();
 		wxYield();
 
@@ -376,7 +414,12 @@ void RSTFrame::OnToolMovie(wxCommandEvent& event){
 	event.Skip();
 }
 
-void RSTFrame::OnToolScreenshot(wxCommandEvent& WXUNUSED(event)){
+/**
+ * @function OnToolScreenshot
+ * @brief
+ * @date 2011-10-13
+ */
+void RSTFrame::OnToolScreenshot(wxCommandEvent& event){
 	wxYield();
 
 	int w,h;
@@ -403,6 +446,11 @@ void RSTFrame::OnToolScreenshot(wxCommandEvent& WXUNUSED(event)){
 	SetStatusText(wxT("Screenshots saved in: Screen.png and ScreenGL.png"));
 }
 
+/**
+ * @function saveText
+ * @brief
+ * @date 2011-10-13
+ */
 int RSTFrame::saveText(wxString scenepath, const char* llfile)
 {
      try {
@@ -423,7 +471,11 @@ int RSTFrame::saveText(wxString scenepath, const char* llfile)
 	 return 1;
 }
 
-
+/**
+ * @function OnClose
+ * @brief
+ * @date 2011-10-13
+ */
 void RSTFrame::OnClose(wxCommandEvent& WXUNUSED(event)){
 	DeleteWorld();
 	//viewer->UpdateCamera();
@@ -431,13 +483,22 @@ void RSTFrame::OnClose(wxCommandEvent& WXUNUSED(event)){
 	//DeleteWorld();
 }
 
-
+/**
+ * @function OnQuit
+ * @brief
+ * @date 2011-10-13
+ */
 void RSTFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 {
 	exit(0);
     //Close(true);
 }
 
+/**
+ * @function OnAbout
+ * @brief
+ * @date 2011-10-13
+ */
 void RSTFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
 	wxMessageBox(wxString::Format(wxT("RST: Humanoid Robotics Lab. Georgia Tech. \
@@ -448,11 +509,20 @@ void RSTFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
                                   ),wxT("Info"), wxOK | wxICON_INFORMATION,this);
 }
 
+/**
+ * @function OnTvChange
+ * @brief
+ * @date 2011-10-13
+ */
 void RSTFrame::onTVChange(wxTreeEvent& WXUNUSED(event)){
 	updateAllTabs();
 }
 
-// Go through all the tabs and indicate a state change
+/**
+ * @function updateAllTabs
+ * @brief Go through all the tabs and indicate a state change
+ * @date 2011-10-13
+ */
 void RSTFrame::updateAllTabs(){
 	int type = 0;
 	wxCommandEvent evt(wxEVT_RST_STATE_CHANGE,GetId());
@@ -466,14 +536,23 @@ void RSTFrame::updateAllTabs(){
 }
 
 
-
+/**
+ * @function setTimeValue
+ * @brief 
+ * @date 2011-10-13
+ */
 void RSTFrame::setTimeValue(double value, bool sendSignal){
 	tCurrent = value;
 	timeTrack->SetValue(value * tPrecision);
 	updateTimeValue(value, sendSignal);
 }
 
-void RSTFrame::updateTimeValue(double /* value */, bool sendSignal){
+/**
+ * @function updateTimeValue
+ * @brief 
+ * @date 2011-10-13
+ */
+void RSTFrame::updateTimeValue(double value, bool sendSignal){
 	if(tIncrement == 0) return;
 	char buf[100];
 	sprintf(buf, "%6.2f", tCurrent);
@@ -483,26 +562,43 @@ void RSTFrame::updateTimeValue(double /* value */, bool sendSignal){
 
 	unsigned int timeIndex = (int)((tCurrent/tMax)*((double)timeVector.size()));
 	if(timeIndex > timeVector.size()-1) timeIndex = timeVector.size()-1;
-	timeVector[timeIndex]->SetToWorld(world);
+	//timeVector[timeIndex]->SetToWorld(world);
 	viewer->UpdateCamera();
 
 	if(sendSignal) updateAllTabs();
 }
 
+/**
+ * @function OnTimeScroll
+ * @brief 
+ * @date 2011-10-13
+ */
 void RSTFrame::OnTimeScroll(wxScrollEvent& event){
 	tCurrent = (double)(event.GetPosition())/(double)tPrecision;
 	//updateTimeValue(tCurrent);
 	updateTimeValue(tCurrent,true);
 }
 
+/**
+ * @function AddWorld
+ * @brief 
+ * @date 2011-10-13
+ */
+/*
 void RSTFrame::AddWorld(World* world){
 	RSTimeSlice* tsnew = new RSTimeSlice(world);
 	timeVector.push_back(tsnew);
 	tMax += tIncrement;
 	timeTrack->SetRange(0, tMax * tPrecision);
 }
+*/
 
-void RSTFrame::InitTimer(string /* title */, double period){
+/**
+ * @function InitTimer
+ * @brief 
+ * @date 2011-10-13
+ */
+void RSTFrame::InitTimer(string title, double period){
 	for(size_t i=0; i<timeVector.size(); i++){
 		delete timeVector[i];
 	}
@@ -511,6 +607,11 @@ void RSTFrame::InitTimer(string /* title */, double period){
 	tIncrement = period;
 }
 
+/**
+ * @function OnTimeEnter 
+ * @brief 
+ * @date 2011-10-13
+ */
 void RSTFrame::OnTimeEnter(wxCommandEvent& WXUNUSED(event)){
 	double p;
 	timeText->GetValue().ToDouble(&p);
@@ -520,6 +621,11 @@ void RSTFrame::OnTimeEnter(wxCommandEvent& WXUNUSED(event)){
 	setTimeValue(p,true);
 }
 
+/**
+ * @function OnWhite
+ * @brief Set scene background to white 
+ * @date 2011-10-13
+ */
 void RSTFrame::OnWhite(wxCommandEvent& WXUNUSED(event)){
 	viewer->backColor = Vector3d(1,1,1);
 	viewer->gridColor = Vector3d(.8,.8,1);
@@ -527,6 +633,11 @@ void RSTFrame::OnWhite(wxCommandEvent& WXUNUSED(event)){
 	viewer->UpdateCamera();
 }
 
+/**
+ * @function OnBlack
+ * @brief Set scene background to black
+ * @date 2011-10-13
+ */
 void RSTFrame::OnBlack(wxCommandEvent& WXUNUSED(event)){
 	viewer->backColor = Vector3d(0,0,0);
 	viewer->gridColor = Vector3d(.5,.5,0);
@@ -534,6 +645,11 @@ void RSTFrame::OnBlack(wxCommandEvent& WXUNUSED(event)){
 	viewer->UpdateCamera();
 }
 
+/**
+ * @function OnCameraReset 
+ * @brief 
+ * @date 2011-10-13
+ */
 void RSTFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)){
 	viewer->ResetGL();
 }

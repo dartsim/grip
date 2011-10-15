@@ -36,18 +36,17 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef RSTFRAME_H
-#define RSTFRAME_H
+#ifndef GRIP_RSTFRAME_H
+#define GRIP_RSTFRAME_H
 
 class RSTSlider;
 class Viewer;
-class World;
 class RSTimeSlice;
 #include <vector>
+
 #include "TreeView.h"
-#include <Tools/Robot.h>
-#include <Tools/Link.h>
-#include <Tools/World.h>
+#include <Tools/Parser.h>
+#include <planning/World.h>
 
 #include <string>
 using namespace std;
@@ -99,7 +98,7 @@ public:
 	void OnCameraReset(wxCommandEvent& event);
 
 	void InitTimer(string title, double period);
-	void AddWorld(World* world);
+	//void AddWorld(World* world);
 
 	vector<RSTimeSlice*> timeVector;
 	double tCurrent;

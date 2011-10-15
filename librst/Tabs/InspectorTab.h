@@ -40,13 +40,13 @@
 #define INSPECTOR_TAB
 
 #include <Tabs/RSTTab.h>
-#include <Tools/Robot.h>
-#include <Tools/World.h>
-#include <Tools/Link.h>
-#include <Tools/Object.h>
 #include <Tools/Constants.h>
 
-
+/**
+ * @class InspectorTab
+ * @brief
+ * @date 2011-10-13
+ */
 class InspectorTab : public RSTTab
 {
 public:

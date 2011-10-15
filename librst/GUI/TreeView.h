@@ -48,8 +48,10 @@
 #include "wx/imaglist.h"
 #include "wx/treectrl.h"
 
-class Robot;
-class Link;
+////
+#include <kinematics/BodyNode.h> 
+///
+
 
 #define TreeViewHandle 1001
 
@@ -58,6 +60,7 @@ enum DataType
 	Return_Type_Object,
 	Return_Type_Robot,
 	Return_Type_Link,
+        Return_Type_Node,
 	Return_Type_Tree_Root,
 	Return_Type_Other
 };
@@ -81,6 +84,11 @@ public:
 	DataType dType;
 };
 
+/**
+ * @function TreeView
+ * @brief The tree view that you see at the right side of GRIP GUI
+ * @date 2011-10-13
+ */
 class TreeView : public wxTreeCtrl
 {
 public:
@@ -91,7 +99,7 @@ public:
 	virtual ~TreeView(){}
 
 	void CreateFromWorld();
-	wxTreeItemId AddLinkTree(Link*, wxTreeItemId hPrev, wxTreeItemId hParent, bool inChain);
+	wxTreeItemId AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hPrev, wxTreeItemId hParent, bool inChain);
 
 	void OnSelChanged(wxTreeEvent& event);
 	void ExpandAll();

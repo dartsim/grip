@@ -37,15 +37,18 @@
  */
 
 #include "Viewer.h"
-#include "../Tools/World.h"
 #include "wx/sizer.h"
 #include "GUI.h"
+#include "DrawWorld.h"
 #include <wx/glcanvas.h>
 
-#include <Tools/Robot.h>
-#include <Tools/Link.h>
 #include <iostream>
 
+using namespace std;
+
+/**
+ * @function shown
+ */
 void Viewer::shown(wxShowEvent& WXUNUSED(evt)){
     int w, h;
     GetClientSize(&w, &h);
@@ -59,6 +62,9 @@ void Viewer::shown(wxShowEvent& WXUNUSED(evt)){
 	UpdateCamera();
 }
 
+/**
+ * @function UpdateCamera
+ */
 void Viewer::UpdateCamera(void){
 	SetCurrent();
 	camT = camRotT;
@@ -66,6 +72,9 @@ void Viewer::UpdateCamera(void){
 	DrawGLScene();
 }
 
+/**
+ * @function DrawGLScene
+ */
 int Viewer::DrawGLScene()
 {
 	redrawFlag = true;
@@ -133,7 +142,10 @@ int Viewer::DrawGLScene()
 	glDisable(GL_FOG);
 
 	glPushMatrix();
-	if(world!=NULL) world->Draw();
+	if( mWorld != NULL ) { 
+            std::cout << "Draw World \n" << std::endl;
+            drawWorld(); 
+        }
 	glPopMatrix();
 
 	glPopMatrix();
@@ -143,7 +155,10 @@ int Viewer::DrawGLScene()
 	return TRUE;
 }
 
-
+/**
+ * @function resized
+ * @brief 
+ */
 void Viewer::resized(wxSizeEvent& evt){
 	if(!IsShown() || !GetParent()->IsShown()) return;
 	wxGLCanvas::OnSize(evt);
@@ -165,6 +180,10 @@ void Viewer::resized(wxSizeEvent& evt){
 	DrawGLScene();
 }
 
+/**
+ * @function mouseWheelMoved
+ * @brief Update the radius of the camera (rotation) according to the mouse's wheel
+ */
 void Viewer::mouseWheelMoved(wxMouseEvent& evt){
 	SetFocus();
 	int wheelRot = evt.GetWheelRotation();
@@ -176,12 +195,19 @@ void Viewer::mouseWheelMoved(wxMouseEvent& evt){
 	}
 }
 
+/**
+ * @function OnCaptureLost
+ */
 void Viewer::OnCaptureLost(wxMouseCaptureLostEvent& WXUNUSED(evt)){
 	mouseCaptured = false;
 }
 
+/**
+ * @function OnMouse
+ */
 void Viewer::OnMouse(wxMouseEvent& evt){
 	evt.GetPosition(&x,&y);
+
 	if(evt.ButtonUp() && mouseCaptured){
 		ReleaseMouse();
 		mouseCaptured = false;
@@ -235,6 +261,10 @@ void Viewer::OnMouse(wxMouseEvent& evt){
 	if(loading){ loading=false; ResetGL(); }
 }
 
+/**
+ * @function render
+ * @brief Render image
+ */
 void Viewer::render(wxPaintEvent& WXUNUSED(evt)){
     if(!IsShown()) return;
     wxGLCanvas::SetCurrent();
@@ -242,6 +272,10 @@ void Viewer::render(wxPaintEvent& WXUNUSED(evt)){
 	DrawGLScene();
 }
 
+/**
+ * @function InitGL
+ * @brief Init 
+ */
 void Viewer::InitGL(){
 	loading=false;
 	existsUpdate=false;
@@ -294,62 +328,77 @@ void Viewer::InitGL(){
 	UpdateCamera();
 }
 
-void Viewer::ResetGL(){
+/**
+ * @function ResetGL
+ * @brief Reset the Viewer
+ */
+void Viewer::ResetGL() {
+
     GetClientSize(&w, &h);
-	SetCurrent();
+    SetCurrent();
     glViewport(0, 0, (GLint) w, (GLint) h);
 
-	glFlush();
-	glFinish();
+    glFlush();
+    glFinish();
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glPolygonMode (GL_FRONT, GL_FILL);
-	gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,15.0f);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glPolygonMode (GL_FRONT, GL_FILL);
+    gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,15.0f);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+        
+    //-- If we loaded the values
+    if( mCamRadius != 0 ) {    
+        camRadius = mCamRadius;
+	camRotT = mCamRotT;
+	camT = mCamRotT;
+	camT.translate(Vector3d(mCamRadius, 0, 0));
+	worldV = mWorldV;
 
-	if(world != 0 && world->camRadius != 0){
-		camRadius = world->camRadius;
-		camRotT = world->camRotT;
-		camT = camRotT;
-		camT.translate(Vector3d(camRadius, 0, 0));
-		worldV = world->worldV;
+	prevCamT = camT;
+	prevWorldV = worldV;
 
-		prevCamT = camT;
-		prevWorldV = worldV;
+	gridColor = mGridColor;
+	backColor = mBackColor;
 
-		gridColor = world->gridColor;
-		backColor = world->backColor;
+	cout << "Viewer: " << worldV[0] << " " << worldV[1] << " " << worldV[2] << endl;
+    
+    }else {
+        camRotT = AngleAxis<double> (DEG2RAD(-30), Vector3d(0, 1, 0));
+	prevCamT = camRotT;
+	worldV = Vector3d(0, 0, 0);
+	prevWorldV = worldV;
+	camRadius = defaultCamRadius;
 
-		cout << "Viewer: " << worldV[0] << " " << worldV[1] << " " << worldV[2] << endl;
-	}else{
-		camRotT = AngleAxis<double> (DEG2RAD(-30), Vector3d(0, 1, 0));
-		prevCamT = camRotT;
-		worldV = Vector3d(0, 0, 0);
-		prevWorldV = worldV;
-		camRadius = defaultCamRadius;
-
-		backColor = Vector3d(0,0,0);
-		gridColor = Vector3d(.5,.5,.0);
-	}
-
-	setClearColor();
-	UpdateCamera();
+	backColor = Vector3d(0,0,0);
+	gridColor = Vector3d(.5,.5,.0);
+    }
+        
+    setClearColor();
+    UpdateCamera();
 }
 
+/**
+ * @function setClearColor
+ * @brief No idea
+ */
 void Viewer::setClearColor(){
 	glClearColor((float)backColor[0],(float)backColor[1],(float)backColor[2],1.0f);
 	float FogCol[3]={(float)backColor[0],(float)backColor[1],(float)backColor[2]};
 	glFogfv(GL_FOG_COLOR,FogCol);
 }
 
+/**
+ * @function addGrid
+ * @brief Add a grid in the scene
+ */
 void Viewer::addGrid(){
 	glEnable(GL_FOG);
 	double sizeX=100.0f;
 	double sizeY=100.0f;
-	//double inc=.5f;
-	//double d = .005;
+	double inc=.5f;
+	double d = .005;
 
 	double startX=-sizeX/2.f;
 	double endX  =sizeX/2.f;

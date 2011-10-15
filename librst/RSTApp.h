@@ -46,6 +46,11 @@
 #include <wx/notebook.h>
 #include "Tabs/RSTTab.h"
 
+/**
+ * @class RSTApp
+ * @brief
+ * @date 2011-10-13
+ */
 class RSTApp : public wxApp
 {
 public:

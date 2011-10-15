@@ -46,7 +46,8 @@
 #include <wx/wx.h>
 #include <wx/glcanvas.h>
 #include <Tools/GL/glcommon.h>
-#include <Tools/Model3DS.h>
+#include <Tools/Constants.h>
+//#include <Tools/Model3DS.h>
 
 using namespace Eigen;
 
@@ -57,7 +58,7 @@ public:
 	Matrix3d camRotT;
 	Vector3d worldV, prevWorldV;
 
-	Model3DS* model;
+	//Model3DS* model;
 
 	Viewer(wxWindow * parent, wxWindowID id, const wxPoint & pos,
 			const wxSize& size, long style = 0, const wxString & name =
@@ -105,8 +106,8 @@ public:
 	int redrawCount;
 	bool loading;
 
-	Vector3d gridColor;
-	Vector3d backColor;
+	Vector3d gridColor;     /**< Grid color*/
+	Vector3d backColor;	/**< Background color */
 
 	bool mouseCaptured;
 

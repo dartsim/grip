@@ -16,8 +16,6 @@
 
 #include "RSTTab.h"
 #include <Eigen/Core>
-#include "../Tools/Robot.h"
-#include "../Tools/PathPlanner.h"
 
 class PlanningTab : public RSTTab
 {
@@ -33,7 +31,6 @@ public:
 	bool greedyMode;
 	bool connectMode;
 	bool showProg;
-	PathPlanner<> *planner;
 
 	int robotID;
 
@@ -42,10 +39,6 @@ public:
 	Eigen::VectorXd startConf;
 	Eigen::VectorXd goalConf;
 
-	// public vars to capture external selection stuff (should move these higher somethime)
-	Object* selectedObject;
-	Robot* selectedRobot;
-	Link* selectedLink;
 
 	void OnSlider(wxCommandEvent &evt);
 	void OnRadio(wxCommandEvent &evt);

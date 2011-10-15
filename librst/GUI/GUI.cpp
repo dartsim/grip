@@ -41,19 +41,28 @@
 //   loaded files, robot, planners, and other intentions w.r.t. the GUI
 //---------------------------------------------------------------------
 
-World*		world=0;
-Robot*		robot=0;
+planning::World* mWorld = 0;
 
-RSTFrame*	frame=0;
-Viewer*		viewer=0;
-TreeView*	treeView=0;
-wxNotebook*	tabView=0;
+RSTFrame*	frame = 0;
+Viewer*		viewer = 0;
+TreeView*	treeView = 0;
+wxNotebook*	tabView = 0;
 
-TreeViewReturn* selectedTreeNode=0;
+TreeViewReturn* selectedTreeNode = 0;
 
 bool reverseLinkOrder = false;
 bool check_for_collisions = false;
 int stateChangeType = 0;
+
+// Camera position
+Eigen::Matrix3d mCamRotT;
+Eigen::Vector3d mWorldV = Eigen::Vector3d(1, 0, 0);
+double mCamRadius = 0;
+// World colors
+extern Eigen::Vector3d mGridColor = Eigen::Vector3d(1, 0, 0);
+extern Eigen::Vector3d mBackColor = Eigen::Vector3d(1, 0, 0);
+
+
 
 DEFINE_EVENT_TYPE(wxEVT_RST_STATE_CHANGE)
 

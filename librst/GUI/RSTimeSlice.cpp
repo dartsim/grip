@@ -36,18 +36,16 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "../Tools/World.h"
-#include "../Tools/Robot.h"
-#include "../Tools/Link.h"
-#include "../Tools/Object.h"
 #include "RSTimeSlice.h"
 #include <iostream>
 
-RSTimeSlice::RSTimeSlice(World *w) {
-	
+//RSTimeSlice::RSTimeSlice(World *w) {
+RSTimeSlice::RSTimeSlice() {
+/*	
 	oPose.clear();
 	rPose.clear();
 	rJoints.clear();
+
 	for(unsigned int i = 0; i < w->objects.size(); i++) {
 		oPose.push_back(w->objects[i]->absPose);
 	}
@@ -60,11 +58,19 @@ RSTimeSlice::RSTimeSlice(World *w) {
 		}
 		rJoints.push_back(RJointVec);
 	}
+*/
 }
 
+/**
+ * @function RSTimeSlice
+ */
 RSTimeSlice::~RSTimeSlice() {
 }
 
+/**
+ * @function SetToWorld
+ */
+/*
 void RSTimeSlice::SetToWorld(World* w) {
 	
 	for(unsigned int i = 0; i < w->objects.size(); i++) {
@@ -79,3 +85,4 @@ void RSTimeSlice::SetToWorld(World* w) {
 		r->baseLink->updateAbsPose();
 	}
 }
+*/

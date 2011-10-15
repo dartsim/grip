@@ -36,8 +36,8 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GUI_H
-#define GUI_H
+#ifndef GRIP_GUI_H
+#define GRIP_GUI_H
 
 //--------------------------------------------------------------------
 //   GLOBAL VARIABLES: Keep track of the user's current
@@ -47,11 +47,7 @@
 // First some declarations of variable types
 
 #include <wx/notebook.h>
-
-//class Planner;
-//class Trajectory;
-class Robot;
-class World;
+#include <planning/World.h>
 
 class RSTFrame;
 class Viewer;
@@ -62,8 +58,7 @@ class TemplateTab;
 
 // The actual variables that are global to GUI elements
 
-extern World*		world;
-extern Robot*		robot;
+extern planning::World  *mWorld;
 
 extern RSTFrame*	frame;
 extern Viewer*		viewer;
@@ -74,6 +69,15 @@ extern TreeViewReturn* selectedTreeNode;
 
 extern bool reverseLinkOrder;
 extern bool check_for_collisions;
+
+// Camera position
+extern Eigen::Matrix3d mCamRotT;
+extern Eigen::Vector3d mWorldV;
+extern double mCamRadius;
+// World colors
+extern Eigen::Vector3d mGridColor;
+extern Eigen::Vector3d mBackColor;
+
 
 // Please don't change these constants - they are important to GUI functionality
 static const int toolBarHeight = 30;

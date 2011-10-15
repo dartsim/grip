@@ -39,23 +39,22 @@
 #ifndef RSTIME_SLICE_H
 #define RSTIME_SLICE_H
 
-#include <Eigen/StdVector>  // http://eigen.tuxfamily.org/dox/StlContainers.html
-
-class World;
-class Object;
-class Link;
+//#include <Eigen/StdVector>  // http://eigen.tuxfamily.org/dox/StlContainers.html
+#include <Eigen/Core>
+#include <vector>
 
 class RSTimeSlice
 {
 public:
-	RSTimeSlice(World*);
+	RSTimeSlice();
 	~RSTimeSlice();
 
-	void SetToWorld(World*);
-
+	//void SetToWorld(World*);
+/*
 	std::vector<Eigen::Transform<double, 3, Eigen::Affine>, Eigen::aligned_allocator<Eigen::Transform<double, 3, Eigen::Affine> > > oPose;
 	std::vector<Eigen::Transform<double, 3, Eigen::Affine>, Eigen::aligned_allocator<Eigen::Transform<double, 3, Eigen::Affine> > > rPose;
 	std::vector<Eigen::VectorXd> rJoints;
+*/
 };
 
 #endif

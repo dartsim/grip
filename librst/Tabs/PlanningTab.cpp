@@ -18,10 +18,6 @@
 #include "../GUI/RSTSlider.h"
 #include "../GUI/RSTFrame.h"
 
-#include "../Tools/World.h"
-#include "../Tools/Link.h"
-#include "../Tools/Object.h"
-#include "../Tools/Constants.h"
 
 #include "PlanningTab.h"
 
@@ -196,7 +192,7 @@ PlanningTab::PlanningTab(wxWindow *parent, const wxWindowID id,
 	greedyMode = false;
 	connectMode = false;
 	showProg = false;
-	planner = NULL;
+
 }
 
 // Handle Radio toggle
@@ -210,71 +206,23 @@ void PlanningTab::OnRadio(wxCommandEvent &evt) {
 // Handle Button Events
 void PlanningTab::OnButton(wxCommandEvent &evt) {
 
-	std::vector<int> linkIds;
-	for(int i = 0; i < world->robots[robotID]->links.size(); i++) {
-		if(world->robots[robotID]->links[i]->jType == Link::REVOL
-				|| world->robots[robotID]->links[i]->jType == Link::PRISM) {
-			linkIds.push_back(i);
-		}
-	}
 
 	int button_num = evt.GetId();
 	switch (button_num) {
 	case button_SetStart:
-		if ( world != NULL ) {
-			if(world->robots.size() < 1){
-				cout << "Must have a world with a robot to set a Start state." << endl;
-				break;
-			}
-			cout << "Setting Start state for " << world->robots[robotID]->name << ":" << endl;
-			int numlinks = linkIds.size();
-			startConf.resize(numlinks);
-			for(int i=0; i<numlinks; i++){
-				startConf[i] = world->robots[robotID]->links[linkIds[i]]->jVal;
-				cout << startConf[i] << " ";
-			}
-			cout << endl;
-		} else {
-			cout << "Must have a world loaded to set a Start state." << endl;
-		}
+
 		break;
 
 	case button_SetGoal:
-			if ( world != NULL ) {
-				if(world->robots.size() < 1){
-					cout << "Must have a world with a robot to set a Goal state." << endl;
-					break;
-				}
-				cout << "Setting Goal state for " << world->robots[robotID]->name << ":" << endl;
-				int numlinks = linkIds.size();
-				goalConf.resize(numlinks);
-				for(int i=0; i<numlinks; i++){
-					goalConf[i] = world->robots[robotID]->links[linkIds[i]]->jVal;
-					cout << goalConf[i] << " ";
-				}
-				cout << endl;
-			} else {
-				cout << "must have a world loaded to set a Goal state" << endl;
-			}
+
 		break;
 
 	case button_showStart:
-			if(startConf.size() < 1){
-				cout << "First, set a start config." << endl;
-				break;
-			}
-			world->robots[robotID]->setConf(linkIds, startConf);
-			viewer->UpdateCamera();
+
 		break;
 
 	case button_showGoal:
-			if(goalConf.size() < 1){
-				cout << "First, set a goal config." << endl;
-				break;
-			}
 
-			world->robots[robotID]->setConf(linkIds, goalConf);
-			viewer->UpdateCamera();
 		break;
 
 /*
@@ -301,55 +249,17 @@ void PlanningTab::OnButton(wxCommandEvent &evt) {
 		break;
 
 	case button_Plan:
-			if(goalConf.size() < 0){ cout << "Must set a goal." << endl; break; }
-			if(startConf.size() < 0){ cout << "Must set a start." << endl; break; }
-			if(world == NULL){ cout << "Must load a world." << endl; break; }
-			if(world->robots.size() < 1){ cout << "Must load a world with a robot." << endl; break; }
 
-			planner = new PathPlanner<>(*world);
-
-
-			//wxThread planThread;
-			//planThread.Create();
-			{
-				list<Eigen::VectorXd> path;
-				bool success = planner->planPath(robotID, linkIds, startConf, goalConf, path, rrtStyle, connectMode);
-				
-				if(success) {
-					SetTimeline(robotID, linkIds, path);
-				}
-			}
 		break;
 
 	case button_ShowPath:
-		if(world == NULL || planner == NULL){
-			cout << "Must create a valid plan before printing." << endl;
-			return;
-		}
+
 		break;
 	}
 }
 
 void PlanningTab::SetTimeline(int robot, vector<int> links, list<Eigen::VectorXd> path){
-		if(world == NULL || planner == NULL || path.size() == 0){
-			cout << "Must create a valid plan before updating its duration." << endl;
-			return;
-		}
 
-		double T;
-		timeText->GetValue().ToDouble(&T);
-
-		int numsteps = path.size();
-		double increment = T/(double)numsteps;
-
-		cout << "Updating Timeline - Increment: " << increment << " Total T: " << T << " Steps: " << numsteps << endl;
-
-		frame->InitTimer(string("RRT_Plan"),increment);
-
-		for(list<VectorXd>::iterator it = path.begin(); it != path.end(); it++) {
-			world->robots[robot]->setConf(links, *it);
-            frame->AddWorld(world);
-		}
 }
 
 // Handle CheckBox Events
@@ -411,28 +321,17 @@ void PlanningTab::RSTStateChange() {
 	string buf, buf2;
 	switch (selectedTreeNode->dType) {
 	case Return_Type_Object:
-		selectedObject = (Object*) (selectedTreeNode->data);
-		statusBuf = " Selected Object: " + selectedObject->name;
-		buf = "You clicked on object: " + selectedObject->name;
 
 		// Enter action for object select events here:
 
 		break;
 	case Return_Type_Robot:
-		selectedRobot = (Robot*) (selectedTreeNode->data);
-		statusBuf = " Selected Robot: " + selectedRobot->name;
-		buf = "You clicked on robot: " + selectedRobot->name;
+
 
 		// Enter action for Robot select events here:
 
 		break;
 	case Return_Type_Link:
-		selectedLink = (Link*) (selectedTreeNode->data);
-		statusBuf = " Selected Link: " + selectedLink->name + " of Robot: "
-				+ selectedLink->robot->name;
-		buf = " Link: " + selectedLink->name + " of Robot: " + selectedLink->robot->name;
-
-		// Enter action for link select events here:
 
 		break;
     default:
