@@ -161,7 +161,7 @@ void TemplateTab::RSTStateChange() {
 		sampleText1->Hide();
 
 		break;
-	case Return_Type_Link:
+	case Return_Type_Node:
 		statusBuf = " Selected Link:  of Robot: ";
 		buf = " Link:  of Robot: ";
 		// Do something here if you want to.  you get the idea...
