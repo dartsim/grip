@@ -107,47 +107,47 @@ TreeView::TreeView(wxWindow *parent, const wxWindowID id,
 void TreeView::CreateFromWorld()
 {
 
-//    if( mWorld == NULL) return;
-//
-//    DeleteAllItems();
-//
-//    rootId = AddRoot( wxT("Root"), -1, -1 );
-//    TreeViewReturn* ret;
-//
-//    wxTreeItemId hPrev = rootId;
-//
-//    ///-- Add objects to the tree
-//    for ( unsigned int i = 0; i < mWorld->mObjects.size(); i++ )
-//    {
-//        ret = new TreeViewReturn;
-//	ret->data = mWorld->mObjects[i];
-//	ret->dType = Return_Type_Object;
-//	mWorld->mObjects[i]->mGripID = hPrev = AppendItem( rootId,
-//                                                         wxString( mWorld->mObjects[i]->mName.c_str(), wxConvUTF8),
-//                                                         Tree_Icon_Object,
-//                                                         -1,
-//                                                         ret );
-//    }
-//
+    if( mWorld == NULL) return;
+
+    DeleteAllItems();
+
+    rootId = AddRoot( wxT("Root"), -1, -1 );
+    TreeViewReturn* ret;
+
+    wxTreeItemId hPrev = rootId;
+
+    ///-- Add objects to the tree
+    for ( unsigned int i = 0; i < mWorld->mObjects.size(); i++ )
+    {
+        ret = new TreeViewReturn;
+	ret->data = mWorld->mObjects[i];
+	ret->dType = Return_Type_Object;
+	mWorld->mObjects[i]->mGripID = hPrev = AppendItem( rootId,
+                                                         wxString( mWorld->mObjects[i]->mName.c_str(), wxConvUTF8),
+                                                         Tree_Icon_Object,
+                                                         -1,
+                                                         ret );
+    }
+
 //    ///-- Add robot(s) to the tree
-//    for ( unsigned int i = 0; i < mWorld->mRobots.size(); i++ )
-//    {
-//        ret = new TreeViewReturn;
-//	ret->data = mWorld->mRobots[i];
-//	ret->dType = Return_Type_Robot;
-//	mWorld->mRobots[i]->mGripID = hPrev = AppendItem( rootId,
-//                                                          wxString( mWorld->mRobots[i]->mName.c_str(),wxConvUTF8),
-//                                                          Tree_Icon_Robot,
-//                                                          -1,
-//                                                          ret );
-//        ///-- Add body nodes ( AKA Links ) as sub-trees
-//	for (unsigned int j = 0; j < mWorld->mRobots[i]->getNumNodes(); j++ )
-//	{
-//            if ( mWorld->mRobots[i]->getNode(j)->getParentNode() == NULL ) {
-//	        hPrev = AddNodeTree( mWorld->mRobots[i]->getNode(j), hPrev, hPrev, false );
-//	    }
-//        }
-//    }
+    for ( unsigned int i = 0; i < mWorld->mRobots.size(); i++ )
+    {
+        ret = new TreeViewReturn;
+	ret->data = mWorld->mRobots[i];
+	ret->dType = Return_Type_Robot;
+	mWorld->mRobots[i]->mGripID = hPrev = AppendItem( rootId,
+                                                          wxString( mWorld->mRobots[i]->mName.c_str(),wxConvUTF8),
+                                                          Tree_Icon_Robot,
+                                                          -1,
+                                                          ret );
+        ///-- Add body nodes ( AKA Links ) as sub-trees
+	for (unsigned int j = 0; j < mWorld->mRobots[i]->getNumNodes(); j++ )
+	{
+            if ( mWorld->mRobots[i]->getNode(j)->getParentNode() == NULL ) {
+	        hPrev = AddNodeTree( mWorld->mRobots[i]->getNode(j), hPrev, hPrev, false );
+	    }
+        }
+    }
 }
 
 /**
