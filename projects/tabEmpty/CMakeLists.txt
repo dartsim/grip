@@ -16,7 +16,8 @@ find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
   include_directories(${WXWIDGETS_SHARED_INCLUDE_DIRS})
-  link_directories(${WXWIDGETS_SHARED_LIBRARY_DIRS})
+  link_directories(${WXWIDGETS_SHARED_LIBRARY_DIRS}
+                   ${INCLUDE_DIR_PREFIX}/lib )
   include_directories (../../src)
   include_directories (${INCLUDE_DIR_PREFIX}/include/dart)
   include_directories (${INCLUDE_DIR_PREFIX}/include/eigen3)
@@ -29,7 +30,7 @@ if (wxWidgets_FOUND)
     add_executable (tabEmpty  ${SRC_TAB_SIMULATION})
    endif()
    
-   target_link_libraries (tabEmpty grip ${INCLUDE_DIR_PREFIX}/lib/dart ${wxWidgets_LIBRARIES} )
+   target_link_libraries (tabEmpty grip dart ${wxWidgets_LIBRARIES} )
   
 else (wxWidgets_FOUND)
   message ("wxWidgets not found!")
