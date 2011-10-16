@@ -12,7 +12,6 @@ set (CMAKE_VERBOSE_MAKEFILE OFF)
 if(NOT MSVC)
   set (CMAKE_CXX_FLAGS "-g -O0 -Wall -Wextra -Wpointer-arith -fno-default-inline -fno-implicit-inline-templates -DwxUSE_THREADS")
 endif(NOT MSVC)
-set (CMAKE_CXX_FLAGS -L{INCLUDE_DIR_PREFIX}/lib )
 
 set( SRC_GUI 
 GUI/Viewer
@@ -55,6 +54,8 @@ set (wxWidgets_USE_LIBS base core gl)
 find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
+  include_directories(${WXWIDGETS_SHARED_INCLUDE_DIRS})
+  link_directories(${WXWIDGETS_SHARED_LIBRARY_DIRS})
   include_directories (${HEADERS})
   include_directories (${INCLUDE_DIR_PREFIX}/include/dart)
   include_directories (${INCLUDE_DIR_PREFIX}/include/eigen3)
