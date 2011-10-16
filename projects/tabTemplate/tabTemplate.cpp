@@ -36,7 +36,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "TemplateTab.h"
+#include "tabTemplate.h"
 
 #include <wx/wx.h>
 #include <GUI/Viewer.h>

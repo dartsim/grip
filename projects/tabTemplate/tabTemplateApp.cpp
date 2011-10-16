@@ -1,5 +1,5 @@
 #include "GRIPApp.h"
-#include "TemplateTab.h"
+#include "tabTemplate.h"
 
 extern wxNotebook* tabView;
 

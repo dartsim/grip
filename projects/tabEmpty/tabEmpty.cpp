@@ -37,7 +37,7 @@
  */
 
 
-#include "EmptyTab.h"
+#include "tabEmpty.h"
 
 #include <wx/wx.h>
 #include <GUI/Viewer.h>

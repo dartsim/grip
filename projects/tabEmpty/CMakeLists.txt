@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (EmptyTab)
+project (tabEmpty)
 
 # Global Variables
 if(MSVC)
@@ -8,7 +8,7 @@ else ()
     set(INCLUDE_DIR_PREFIX /usr/local )
 endif()
 
-set ( SRC_TAB_SIMULATION EmptyTab EmptyTabApp )
+set ( SRC_TAB_SIMULATION tabEmpty tabEmptyApp )
 
 
 set (wxWidgets_USE_LIBS base core gl)
@@ -22,14 +22,14 @@ if (wxWidgets_FOUND)
   include_directories (${INCLUDE_DIR_PREFIX}/include/eigen3)
 
   if(MSVC)
-	add_executable (EmptyTab WIN32 ${SRC_TAB_SIMULATION})
-	SET_TARGET_PROPERTIES(EmptyTab PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
-	#SET_TARGET_PROPERTIES(EmptyTab PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
+	add_executable (tabEmpty WIN32 ${SRC_TAB_SIMULATION})
+	SET_TARGET_PROPERTIES(tabEmpty PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
+	#SET_TARGET_PROPERTIES(tabEmpty PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
    else()
-    add_executable (EmptyTab  ${SRC_TAB_SIMULATION})
+    add_executable (tabEmpty  ${SRC_TAB_SIMULATION})
    endif()
    
-   target_link_libraries (EmptyTab grip ${INCLUDE_DIR_PREFIX}/lib/dart ${wxWidgets_LIBRARIES} )
+   target_link_libraries (tabEmpty grip ${INCLUDE_DIR_PREFIX}/lib/dart ${wxWidgets_LIBRARIES} )
   
 else (wxWidgets_FOUND)
   message ("wxWidgets not found!")

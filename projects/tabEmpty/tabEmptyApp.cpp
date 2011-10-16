@@ -1,5 +1,5 @@
 #include "GRIPApp.h"
-#include "EmptyTab.h"
+#include "tabEmpty.h"
 /* To include Planning Tab, ensure that Tab/PlanningTab is present in SRC_WX for
  * libGRIP/CMakeLists.txt. Then uncomment the two lines below */
 
