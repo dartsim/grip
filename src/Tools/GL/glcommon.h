@@ -4,7 +4,7 @@
 // Cross-platform GL libraries
 
 // Windows
-#ifdef WIN32
+#ifdef _WIN32 || _WIN64
 #include <windows.h>
 #include <gl/gl.h>
 #include <gl/glu.h>
