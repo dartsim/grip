@@ -124,11 +124,11 @@ planning::World* parseWorld( std::string _fullname )
 		wstream >> pos(0) >> pos(1) >> pos(2);
 
                 joint = robot->getNode(0)->getParentJoint();
-                for( unsigned int i = 0; i < joint->getNumTransforms(); i++ )
+                for( int i = 0; i < joint->getNumTransforms(); i++ )
                 {
                     if( string( joint->getTransform(i)->getName() ) == "RootPos" )
                     {
-                        for( unsigned int j = 0; j < joint->getTransform(i)->getNumDofs(); j++ )
+                        for( int j = 0; j < joint->getTransform(i)->getNumDofs(); j++ )
                         {
                             if( string( joint->getTransform(i)->getDof(j)->getName() ) =="RootX" )
                             { joint->getTransform(i)->getDof(j)->setValue( pos(0) ); } 
@@ -151,7 +151,7 @@ planning::World* parseWorld( std::string _fullname )
 		wstream >> roll >> pitch >> yaw;
 
                 joint = robot->getNode(0)->getParentJoint();
-                for( unsigned int i = 0; i < joint->getNumTransforms(); i++ )
+                for( int i = 0; i < joint->getNumTransforms(); i++ )
                 {
                     if( string( joint->getTransform(i)->getName() ) == "RootRoll" )
                     {  joint->getTransform(i)->getDof(0)->setValue( roll ); } 
@@ -199,11 +199,11 @@ planning::World* parseWorld( std::string _fullname )
 		wstream >> pos(2);
 
                 joint = object->getNode(0)->getParentJoint();
-                for( unsigned int i = 0; i < joint->getNumTransforms(); i++ )
+                for( int i = 0; i < joint->getNumTransforms(); i++ )
                 {
                     if( string( joint->getTransform(i)->getName() ) == "RootPos" )
                     {
-                        for( unsigned int j = 0; j < joint->getTransform(i)->getNumDofs(); j++ )
+                        for( int j = 0; j < joint->getTransform(i)->getNumDofs(); j++ )
                         {
                             if( string( joint->getTransform(i)->getDof(j)->getName() ) =="RootX" )
                             { joint->getTransform(i)->getDof(j)->setValue( pos(0) ); } 
@@ -226,7 +226,7 @@ planning::World* parseWorld( std::string _fullname )
 		wstream >> yaw;
 
                 joint = object->getNode(0)->getParentJoint();
-                for( unsigned int i = 0; i < joint->getNumTransforms(); i++ )
+                for( int i = 0; i < joint->getNumTransforms(); i++ )
                 {
                     if( string( joint->getTransform(i)->getName() ) == "RootRoll" )
                     {  joint->getTransform(i)->getDof(0)->setValue( roll ); } 
@@ -285,7 +285,7 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
 
     fstream rstream( _fullname.c_str(),ios::in );
 
-    int fpos;
+    //int fpos;
     int lnum = 0;
 
     //-- Set the containers for the bodyNodes and joints for the robot
@@ -342,9 +342,9 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
 	    if(filename != "NOMODEL") {
 	        string fullpath( path );
 		fullpath.append( filename );
-                //-- TODO Create a PrimitiveMesh from the 3DS Model 
-                kinematics::PrimitiveMesh *p = new kinematics::PrimitiveMesh( Vector3d(0, 0, 0), 0 );
-		node->setPrimitive( p );
+                //-- TODO Create a ShapeMesh from the 3DS Model
+                kinematics::ShapeMesh *p = new kinematics::ShapeMesh( Vector3d(0, 0, 0), 0 );
+		node->setShape( p );
 	    }
 
 	    bodyNodes.push_back( node );
@@ -365,7 +365,7 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
 	        double mass;
 	        rstream >> mass;
                 
-	        kinematics::Primitive* p = bodyNodes[cnum]->getPrimitive(); 
+	        kinematics::Shape* p = bodyNodes[cnum]->getShape();
                 p->setMass( mass );
 
 	        Vector3d pos;
@@ -529,7 +529,7 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
  * @function parseObject
  * @brief Load object
  */
-int parseObject( string _fullpath, planning::Object *_object )
+int parseObject( string /*_fullpath*/, planning::Object *_object )
 {
     _object->mMovable = false;
 

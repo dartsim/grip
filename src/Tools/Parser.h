@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <string>
 #include <Tools/Constants.h>
-#include <kinematics/PrimitiveMesh.h>
+#include <kinematics/ShapeMesh.h>
 #include <planning/Robot.h>
 #include <planning/Object.h>
 #include <planning/World.h>

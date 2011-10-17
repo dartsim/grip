@@ -1,9 +1,9 @@
 /**
  * @file DrawWorld.cpp
  */
-#include <kinematics/Primitive.h>
+#include <kinematics/Shape.h>
 #include <kinematics/BodyNode.h>
-#include <kinematics/PrimitiveMesh.h>
+#include <kinematics/ShapeMesh.h>
 //#include <planning/>
 #include "DrawWorld.h"
 
