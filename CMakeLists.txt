@@ -3,6 +3,13 @@ project (grip_all)
 
 message (STATUS "Creating Makefile for the GRIP project")
 
+SET(CPACK_PACKAGE_VERSION_MAJOR "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "1")
+SET(CPACK_PACKAGE_VERSION_PATCH "1")
+SET(CPACK_PACKAGE_NAME "grip")
+SET(CPACK_SYSTEM_NAME "i386")
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "dart (>= 0.1), libwxgtk2.8-dev (>= 3.7)")
+
 #####################################
 # Global Variables
 set (CMAKE_VERBOSE_MAKEFILE OFF)
@@ -60,3 +67,17 @@ set (GRIP_LIBRARIES grip ggui gtabs gtools)
 set (GRIP_LIBDIR ${CMAKE_SOURCE_DIR}/lib)
 add_subdirectory (projects/tabEmpty)
 add_subdirectory (projects/tabTemplate)
+
+#####################################
+# Package Installer
+
+SET(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}")
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Golems (http://github.com/golems/)")
+
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "GRIP is a robotics simulator based on the DART physics engine.")
+SET(CPACK_PACKAGE_VENDOR "Humanoid Robotics Lab at GT")
+
+INCLUDE(CPack)
+
+
