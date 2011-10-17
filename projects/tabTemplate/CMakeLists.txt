@@ -1,38 +1,31 @@
 cmake_minimum_required (VERSION 2.6)
 project (tabTemplate)
 
-# Global Variables
-if(MSVC)
-    set(INCLUDE_DIR_PREFIX "C:/Golems" )
-else ()
-    set(INCLUDE_DIR_PREFIX /usr/local )
-endif()
+include (${CMAKE_INSTALL_PREFIX}/share/dart/DART_config.cmake)
+# include (${CMAKE_INSTALL_PREFIX}/share/grip/GRIP_config.cmake)
+# This include is used only if you have installed Grip
 
-set ( SRC_TAB_SIMULATION tabTemplate tabTemplateApp )
+# Search all header and source files
+file (GLOB srcs "*.cpp")
+file (GLOB hdrs "*.h")
 
 set (wxWidgets_USE_LIBS base core gl)
 find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
-  include_directories(${WXWIDGETS_SHARED_INCLUDE_DIRS})
-  link_directories(${WXWIDGETS_SHARED_LIBRARY_DIRS}
-                   ${INCLUDE_DIR_PREFIX}/lib )
-  include_directories (../../src)
-  include_directories (${INCLUDE_DIR_PREFIX}/include/dart)
-  include_directories (${INCLUDE_DIR_PREFIX}/include/eigen3)
+  include_directories(${DART_HEADERS} ${GRIP_HEADERS} ${WXWIDGETS_SHARED_INCLUDE_DIRS})
+  link_directories(${CMAKE_SOURCE_DIR}/lib ${GRIP_LIBDIR} ${WXWIDGETS_SHARED_LIBRARY_DIRS})
 
   if(MSVC)
-	add_executable (tabTemplate WIN32 ${SRC_TAB_SIMULATION})
-	SET_TARGET_PROPERTIES(tabTemplate PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
-	#SET_TARGET_PROPERTIES(tabTemplate PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
+	add_executable (tabTemplate WIN32 ${srcs} ${hdrs})
+	set_target_properties (tabTemplate PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
+	#set_target_properties (tabTemplate PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
    else()
-    add_executable (tabTemplate  ${SRC_TAB_SIMULATION})
+    add_executable (tabTemplate ${srcs} ${hdrs})
    endif()
    
-   target_link_libraries (tabTemplate grip dart ${wxWidgets_LIBRARIES})
+   target_link_libraries (tabTemplate ${GRIP_LIBRARIES} ${DART_LIBRARIES} ${wxWidgets_LIBRARIES} )
+  
 else (wxWidgets_FOUND)
   message ("wxWidgets not found!")
 endif (wxWidgets_FOUND)
-
-
-

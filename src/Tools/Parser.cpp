@@ -11,7 +11,7 @@
 #include "kinematics/TrfmRotateEuler.h"
 #include "kinematics/TrfmTranslate.h"
 
-#include "GUI.h"
+#include "GUI/GUI.h"
 #include "Parser.h"
 
 #define BSTATE 0
