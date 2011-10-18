@@ -13,7 +13,6 @@ SET(CPACK_DEBIAN_PACKAGE_DEPENDS "dart (>= 0.1), libwxgtk2.8-dev (>= 3.7)")
 #####################################
 # Global Variables
 set (CMAKE_VERBOSE_MAKEFILE OFF)
-include (${CMAKE_INSTALL_PREFIX}/share/dart/DART_config.cmake)
 
 if(WIN32)
 	set (CMAKE_INSTALL_PREFIX "C:/Golems" )
@@ -24,6 +23,8 @@ else ()
    set (CMAKE_INSTALL_PREFIX /usr/local )
    set (CMAKE_CXX_FLAGS "-g -O0 -Wall -Wextra -Wpointer-arith -fno-default-inline -fno-implicit-inline-templates -DwxUSE_THREADS")
 endif()
+
+include (${CMAKE_INSTALL_PREFIX}/share/dart/DART_config.cmake)
 
 #####################################
 include_directories (src)
