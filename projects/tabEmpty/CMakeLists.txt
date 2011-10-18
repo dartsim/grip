@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (tabEmpty)
 
-include (${CMAKE_INSTALL_PREFIX}/share/dart/DART_config.cmake)
+# include (${CMAKE_INSTALL_PREFIX}/share/dart/DART_config.cmake)
 # include (${CMAKE_INSTALL_PREFIX}/share/grip/GRIP_config.cmake)
 # This include is used only if you have installed Grip
 
@@ -20,7 +20,6 @@ if (wxWidgets_FOUND)
   if(MSVC)
 	add_executable (tabEmpty WIN32 ${srcs} ${hdrs})
 	set_target_properties (tabEmpty PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
-	#set_target_properties (tabEmpty PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
    else()
     add_executable (tabEmpty ${srcs} ${hdrs})
    endif()
