@@ -17,6 +17,7 @@
 #include <planning/Robot.h>
 #include <planning/Object.h>
 #include <planning/World.h>
+#include <planning/Model3DS.h>
 
 
 planning::World* parseWorld( std::string filename );

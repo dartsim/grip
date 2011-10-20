@@ -154,13 +154,13 @@ planning::World* parseWorld( std::string _fullname )
                 for( int i = 0; i < joint->getNumTransforms(); i++ )
                 {
                     if( string( joint->getTransform(i)->getName() ) == "RootRoll" )
-                    {  joint->getTransform(i)->getDof(0)->setValue( roll ); } 
+                    {  joint->getTransform(i)->getDof(0)->setValue( DEG2RAD(roll) ); } 
 
                     if( string( joint->getTransform(i)->getName() ) == "RootPitch" )
-                    {  joint->getTransform(i)->getDof(0)->setValue( pitch ); } 
+                    {  joint->getTransform(i)->getDof(0)->setValue( DEG2RAD(pitch) ); } 
 
                     if( string( joint->getTransform(i)->getName() ) == "RootYaw" )
-                    {  joint->getTransform(i)->getDof(0)->setValue( yaw ); } 
+                    {  joint->getTransform(i)->getDof(0)->setValue( DEG2RAD(yaw) ); } 
                 } 
 
 	    } else if (str == "INIT") {
@@ -229,13 +229,13 @@ planning::World* parseWorld( std::string _fullname )
                 for( int i = 0; i < joint->getNumTransforms(); i++ )
                 {
                     if( string( joint->getTransform(i)->getName() ) == "RootRoll" )
-                    {  joint->getTransform(i)->getDof(0)->setValue( roll ); } 
+                    {  joint->getTransform(i)->getDof(0)->setValue( DEG2RAD(roll) ); } 
 
                     if( string( joint->getTransform(i)->getName() ) == "RootPitch" )
-                    {  joint->getTransform(i)->getDof(0)->setValue( pitch ); } 
+                    {  joint->getTransform(i)->getDof(0)->setValue( DEG2RAD(pitch) ); } 
 
                     if( string( joint->getTransform(i)->getName() ) == "RootYaw" )
-                    {  joint->getTransform(i)->getDof(0)->setValue( yaw ); } 
+                    {  joint->getTransform(i)->getDof(0)->setValue( DEG2RAD(yaw) ); } 
                 } 
 
 	    } else if (str == "TYPE") {
@@ -278,6 +278,10 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
     kinematics::BodyNode *node;
     kinematics::Transformation* trans;
 
+    std::vector<Model3DS*> models;
+    std::vector<int> modelsInd;
+    Model3DS* model;
+
     std::cout<< "--> Parsing robot "<< _robot->mName << std::endl;
 
     std::string path, line, str, filename;    
@@ -304,7 +308,7 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
     joint->addTransform( trans, true );
     _robot->addTransform( trans );
 
-    trans = new kinematics::TrfmRotateEulerX( new kinematics::Dof(0), "RootRoll" );
+    trans = new kinematics::TrfmRotateEulerZ( new kinematics::Dof(0), "RootYaw" );
     joint->addTransform( trans, true );
     _robot->addTransform( trans );
  
@@ -312,9 +316,10 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
     joint->addTransform( trans, true );
     _robot->addTransform( trans );
 
-    trans = new kinematics::TrfmRotateEulerZ( new kinematics::Dof(0), "RootYaw" );
+    trans = new kinematics::TrfmRotateEulerX( new kinematics::Dof(0), "RootRoll" );
     joint->addTransform( trans, true );
     _robot->addTransform( trans );
+
 
     /// FIRST (ROOT) Node pushed
     bodyNodes.push_back( node );
@@ -343,9 +348,14 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
 	        string fullpath( path );
 		fullpath.append( filename );
                 //-- TODO Create a ShapeMesh from the 3DS Model
+                model = _robot->loadModel( fullpath );
+                
                 kinematics::ShapeMesh *p = new kinematics::ShapeMesh( Vector3d(0, 0, 0), 0 );
 		node->setShape( p );
 	    }
+            
+            models.push_back( model );
+            modelsInd.push_back( bodyNodes.size() );
 
 	    bodyNodes.push_back( node );
 	}
@@ -519,6 +529,10 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
         _robot->addNode( bodyNodes[i] ); 
     }
 
+    for( unsigned int i = 0; i < models.size(); i++ ) {
+      _robot->addModel( models[i], modelsInd[i] );
+    }
+
     //-- Init the object
     _robot->initSkel();
 
@@ -529,7 +543,7 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
  * @function parseObject
  * @brief Load object
  */
-int parseObject( string /*_fullpath*/, planning::Object *_object )
+int parseObject( string _filename, planning::Object *_object )
 {
     _object->mMovable = false;
 
@@ -537,6 +551,8 @@ int parseObject( string /*_fullpath*/, planning::Object *_object )
     kinematics::BodyNode *node;
     kinematics::Joint *joint;
     kinematics::Transformation* trans;
+
+    Model3DS* model;
 
     //-- Set the initial RootNode that controls the position and orientation
     node = _object->createBodyNode( "RootNode" );
@@ -550,7 +566,7 @@ int parseObject( string /*_fullpath*/, planning::Object *_object )
     joint->addTransform( trans, true );
     _object->addTransform( trans );
 
-    trans = new kinematics::TrfmRotateEulerX( new kinematics::Dof(0), "RootRoll" );
+    trans = new kinematics::TrfmRotateEulerZ( new kinematics::Dof(0), "RootYaw" );
     joint->addTransform( trans, true );
     _object->addTransform( trans );
  
@@ -558,12 +574,22 @@ int parseObject( string /*_fullpath*/, planning::Object *_object )
     joint->addTransform( trans, true );
     _object->addTransform( trans );
 
-    trans = new kinematics::TrfmRotateEulerZ( new kinematics::Dof(0), "RootYaw" );
+    trans = new kinematics::TrfmRotateEulerX( new kinematics::Dof(0), "RootRoll" );
     joint->addTransform( trans, true );
     _object->addTransform( trans );
 
 
+    if( _filename != "NOMODEL" ) {
+
+      //-- TODO Create a ShapeMesh from the 3DS Model
+      model = _object->loadModel( _filename );
+                
+      kinematics::ShapeMesh *p = new kinematics::ShapeMesh( Vector3d(0, 0, 0), 0 );
+      node->setShape( p );
+    }
+            
     _object->addNode( node );
+    _object->addModel( model, 0 );
 
     //-- Init the object
     _object->initSkel();

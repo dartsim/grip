@@ -1,5 +1,5 @@
-#ifndef	GRIP_CONSTANTS_H
-#define	GRIP_CONSTANTS_H
+#ifndef	CONSTANTS_H
+#define	CONSTANTS_H
 
 #include <math.h>
 #include <float.h>
@@ -26,4 +26,4 @@ inline double RAD2DEG(int r)	 { return (r * DEGREE); }
 inline double DEG2RAD(double d)  { return (d * RADIAN); }
 inline double RAD2DEG(double r)	 { return (r * DEGREE); }
 
-#endif  /** GRIP_CONSTANTS_H */
+#endif  /** CONSTANTS_H */

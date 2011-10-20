@@ -143,9 +143,9 @@ int Viewer::DrawGLScene()
 
 	glPushMatrix();
 	if( mWorld != NULL ) { 
-            std::cout << "Draw World \n" << std::endl;
             drawWorld(); 
         }
+
 	glPopMatrix();
 
 	glPopMatrix();

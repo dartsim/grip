@@ -58,12 +58,10 @@ public:
 	Matrix3d camRotT;
 	Vector3d worldV, prevWorldV;
 
-	//Model3DS* model;
-
-	Viewer(wxWindow * parent, wxWindowID id, const wxPoint & pos,
-			const wxSize& size, long style = 0, const wxString & name =
+	Viewer( wxWindow * parent, wxWindowID id, const wxPoint & pos,
+		const wxSize& size, long style = 0, const wxString & name =
 					_("GLCanvas"), int * attribList = 0,
-			const wxPalette & palette = wxNullPalette) :
+		const wxPalette & palette = wxNullPalette) :
 		wxGLCanvas(parent, id, pos, size, style, name, attribList, palette) {
 	}
 
