@@ -13,11 +13,11 @@ CONNECTIVITY
 
  CON  FROM         TO         X     Y      Z    ROL   PIT   YAW  AXIS    TYPE         RANGE
 ----------------------------------------------------------------------------------------------
-> CON WORLD        L0       0.0   0.0    0.0     90     0     0   PX    FIXED
-> CON	L0         L1       0.0   0.3    0.0      0   0.0   0.0   NY    REVOL    -180  180
-> CON	L1         L2       0.0   0.0    0.0      0   0.0   180   PX    REVOL    -120  120
-> CON	L2         L3       0.0  -0.328  0.0	180   0.0   0.0   NY    REVOL    -180  180
-> CON	L3         L4       0.0   0      0.0      0   0.0   180   NX    REVOL    -120  120
-> CON	L4         L5       0.0  -0.2765 0.0      0   0.0   180   NY    REVOL    -180  180
-> CON	L5         L6       0.0   0.0    0.0      0   0.0   180   NX    REVOL    -120  120
-> CON	L6         FT       0.0  -0.2    0.0      0   0.0   0.0   NY    REVOL    -180  180
+> CON WORLD        L0       0.0   0.0    0.0      0   0.0 180.0   PX    FIXED
+> CON	L0         L1      -0.3   0.0    0.0      0   0.0   0.0   PX    REVOL    -180  180
+> CON	L1         L2       0.0   0.0    0.0      0   0.0   0.0   PY    REVOL    -120  120
+> CON	L2         L3    -0.328   0.0	 0.0      0   0.0   0.0   PX    REVOL    -180  180
+> CON	L3         L4       0.0   0.0    0.0      0   0.0   0.0   PY    REVOL    -120  120
+> CON	L4         L5   -0.2765   0.0    0.0      0   0.0   0.0   PX    REVOL    -180  180
+> CON	L5         L6       0.0   0.0    0.0      0   0.0   0.0   PY    REVOL    -120  120
+> CON	L6         FT      -0.2   0.0    0.0      0   0.0   0.0   PX    REVOL    -180  180

@@ -1,30 +1,33 @@
-##### ROBOTS #####
+5:59 PM 2/17/2011##### ROBOTS #####
 
 ##### ROBOT 1 #####
 
-> 	ROBOT SCHUNKARM schunk/SchunkArmHand.rsdh
+> 	ROBOT SCHUNKARM schunk/SchunkArmHand2.rsdh
 > 	POSITION -0.132 1.316 0.721
-> 	ORIENTATION 90 -0 0
+> 	ORIENTATION -90 -90 0
 
 ##### INITIAL ANGLES #####
 
-> 	INIT L1 0
-> 	INIT L2 0
-> 	INIT L3 0
-> 	INIT L4 0
-> 	INIT L5 0
-> 	INIT L6 0
-> 	INIT FT 0
-> 	INIT HAND 0
-> 	INIT F11 0
-> 	INIT F21 0
-> 	INIT F31 0
-> 	INIT F12 0
-> 	INIT F22 0
-> 	INIT F32 0
-> 	INIT F13 0
-> 	INIT F23 0
-> 	INIT F33 0
+
+# INITIAL_ANGLES
+> INIT L0    0
+> INIT L1   +0.6
+> INIT L2   -0.5
+> INIT L3   180
+> INIT L4   +0.3
+> INIT L5    0
+> INIT L6   +0.7
+> INIT FT    0.0
+> INIT HAND +0.5
+> INIT F11   180
+> INIT F21   0.4
+> INIT F31  -1.57
+> INIT F12   0.7
+> INIT F22   0.7
+> INIT F32   0.7
+> INIT F13  -0.7
+> INIT F23  -0.7
+> INIT F33  -0.7
 
 ##### OBJECTS #####
 
@@ -34,49 +37,41 @@
 > 	POSITION -0.848 1.14 0.721
 > 	ORIENTATION 90 -0 90
 
-##### OBJECT 2 #####
-
-> 	OBJECT axe objects/axe3.3ds
-> 	POSITION -0.366 1.496 0.753
-> 	ORIENTATION 90 -40 20
-
-##### OBJECT 3 #####
-
 > 	OBJECT table2 objects/table2b.3ds
 > 	POSITION -1.14 0.789 0
 > 	ORIENTATION 90 -0 0
 
-##### OBJECT 4 #####
+##### OBJECT 3 #####
 
 > 	OBJECT book objects/book.3ds
 > 	POSITION 0.789 1.102 0.73
 > 	ORIENTATION 90 -0 0
 
-##### OBJECT 5 #####
+##### OBJECT 4 #####
 
 > 	OBJECT lamp objects/lamp3.3ds
 > 	POSITION 0.395 1.3 0.65
 > 	ORIENTATION 90 3.18055e-015 70
 
-##### OBJECT 6 #####
+##### OBJECT 5 #####
 
 > 	OBJECT BEAR2 polarbear/polarbear.3ds
-> 	POSITION 0.673 -1.082 0
-> 	ORIENTATION -9.18147e-016 30 30
+> 	POSITION -1.608 1.328 0.416
+> 	ORIENTATION 86.198 -6.294 81.818
 
-##### OBJECT 7 #####
+##### OBJECT 6 #####
 
 > 	OBJECT BEAR3 polarbear/polarbear.3ds
-> 	POSITION -2 0 0
-> 	ORIENTATION 0 -0 90
+> 	POSITION 2.168 1.188 0.416
+> 	ORIENTATION 88.732 -0 49.09
 
 ##### SCENE INFO
 
 > CAMERA
-ROT 0.313186 -22.2871 -118.792
-WRT 0.249267 -1.0343 -0.978862
-RAD 3.12
+ROT 2.03842 -30.1211 -129.214
+WRT 0.224198 -1.00886 -0.599771
+RAD 4
 
 > COLORS
-BACK 0 0 0
-GRID 0.5 0.5 0
+BACK 1 1 1
+GRID 0.8 0.8 1
