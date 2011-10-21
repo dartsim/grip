@@ -2,32 +2,20 @@
 
 ##### ROBOT 1 #####
 
-> 	ROBOT SCHUNKARM schunk/SchunkArmHand.rsdh
+> 	ROBOT SCHUNKARM schunk/SchunkArm.rsdh
 > 	POSITION -0.132 1.316 0.721
-> 	ORIENTATION -90 -90 0
+> 	ORIENTATION 0 -90 -90
 
 ##### INITIAL ANGLES #####
 
-
-# INITIAL_ANGLES
-> INIT L0    0
-> INIT L1   +0.6
-> INIT L2   -0.5
-> INIT L3   180
-> INIT L4   +0.3
-> INIT L5    0
-> INIT L6   +0.7
-> INIT FT    0.0
-> INIT HAND +0.5
-> INIT F11   180
-> INIT F21   0.4
-> INIT F31  -1.57
-> INIT F12   0.7
-> INIT F22   0.7
-> INIT F32   0.7
-> INIT F13  -0.7
-> INIT F23  -0.7
-> INIT F33  -0.7
+> 	INIT L0 0
+> 	INIT L1 0
+> 	INIT L2 0.87
+> 	INIT L3 0
+> 	INIT L4 0
+> 	INIT L5 0
+> 	INIT L6 0
+> 	INIT FT 0
 
 ##### OBJECTS #####
 
