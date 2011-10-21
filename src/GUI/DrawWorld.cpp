@@ -37,7 +37,10 @@ void drawWorld() {
     for( unsigned int j = 0; j < mWorld->mRobots[i]->mModels.size(); j++ ) {
        
       int ind = mWorld->mRobots[i]->mModelIndices[j]; 
-      Eigen::Matrix4d poseMatrix =mWorld->mRobots[i]->getNode( ind )->getWorldTransform();         
+      Eigen::Matrix4d poseMatrix =mWorld->mRobots[i]->getNode( ind )->getWorldTransform();   
+      std::cout << "Robot Node: "<< mWorld->mRobots[i]->getNode(ind)->getName() << std::endl;
+      std::cout<<"Post: \n"<< poseMatrix << std::endl;
+      
       Transform<double,3,Affine> pose;
       pose.matrix() = poseMatrix;  
       drawModel( mWorld->mRobots[i]->mModels[j], pose );

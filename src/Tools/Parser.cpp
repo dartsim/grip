@@ -117,51 +117,21 @@ planning::World* parseWorld( std::string _fullname )
 	/**  READ ROBOT SPEC                  */
 	/** --------------------------------- */
 	else if (state == RSTATE) {
-            kinematics::Joint *joint;
 
 	    if (str == "POSITION") {
 	        Vector3d pos;
 		wstream >> pos(0) >> pos(1) >> pos(2);
 
-                joint = robot->getNode(0)->getParentJoint();
-                for( int i = 0; i < joint->getNumTransforms(); i++ )
-                {
-                    if( string( joint->getTransform(i)->getName() ) == "RootPos" )
-                    {
-                        for( int j = 0; j < joint->getTransform(i)->getNumDofs(); j++ )
-                        {
-                            if( string( joint->getTransform(i)->getDof(j)->getName() ) =="RootX" )
-                            { joint->getTransform(i)->getDof(j)->setValue( pos(0) ); } 
-
-                            if( string( joint->getTransform(i)->getDof(j)->getName() ) =="RootY" )
-                            { joint->getTransform(i)->getDof(j)->setValue( pos(1) ); } 
-
-                            if( string( joint->getTransform(i)->getDof(j)->getName() ) =="RootZ" )
-                            { joint->getTransform(i)->getDof(j)->setValue( pos(2) ); } 
-                        }  
-
-                        break;
-                    } 
-                } 
-                                
+                robot->setPositionX( pos(0) );
+                robot->setPositionY( pos(1) );
+                robot->setPositionZ( pos(2) );
 
 	    } else if (str == "ORIENTATION") {
 
 		double roll, pitch, yaw;
 		wstream >> roll >> pitch >> yaw;
 
-                joint = robot->getNode(0)->getParentJoint();
-                for( int i = 0; i < joint->getNumTransforms(); i++ )
-                {
-                    if( string( joint->getTransform(i)->getName() ) == "RootRoll" )
-                    {  joint->getTransform(i)->getDof(0)->setValue( DEG2RAD(roll) ); } 
-
-                    if( string( joint->getTransform(i)->getName() ) == "RootPitch" )
-                    {  joint->getTransform(i)->getDof(0)->setValue( DEG2RAD(pitch) ); } 
-
-                    if( string( joint->getTransform(i)->getName() ) == "RootYaw" )
-                    {  joint->getTransform(i)->getDof(0)->setValue( DEG2RAD(yaw) ); } 
-                } 
+                robot->setRotationRPY( DEG2RAD(roll), DEG2RAD(pitch), DEG2RAD(yaw) );
 
 	    } else if (str == "INIT") {
                 printf("Init spec \n");
@@ -198,26 +168,9 @@ planning::World* parseWorld( std::string _fullname )
 		wstream >> pos(1);
 		wstream >> pos(2);
 
-                joint = object->getNode(0)->getParentJoint();
-                for( int i = 0; i < joint->getNumTransforms(); i++ )
-                {
-                    if( string( joint->getTransform(i)->getName() ) == "RootPos" )
-                    {
-                        for( int j = 0; j < joint->getTransform(i)->getNumDofs(); j++ )
-                        {
-                            if( string( joint->getTransform(i)->getDof(j)->getName() ) =="RootX" )
-                            { joint->getTransform(i)->getDof(j)->setValue( pos(0) ); } 
-
-                            if( string( joint->getTransform(i)->getDof(j)->getName() ) =="RootY" )
-                            { joint->getTransform(i)->getDof(j)->setValue( pos(1) ); } 
-
-                            if( string( joint->getTransform(i)->getDof(j)->getName() ) =="RootZ" )
-                            { joint->getTransform(i)->getDof(j)->setValue( pos(2) ); } 
-                        }  
-
-                        break;
-                    } 
-                } 
+                object->setPositionX( pos(0) );
+                object->setPositionY( pos(1) );
+                object->setPositionZ( pos(2) );
 
 	    } else if (str == "ORIENTATION") {
 		double roll, pitch, yaw;
@@ -225,19 +178,8 @@ planning::World* parseWorld( std::string _fullname )
 		wstream >> pitch;
 		wstream >> yaw;
 
-                joint = object->getNode(0)->getParentJoint();
-                for( int i = 0; i < joint->getNumTransforms(); i++ )
-                {
-                    if( string( joint->getTransform(i)->getName() ) == "RootRoll" )
-                    {  joint->getTransform(i)->getDof(0)->setValue( DEG2RAD(roll) ); } 
-
-                    if( string( joint->getTransform(i)->getName() ) == "RootPitch" )
-                    {  joint->getTransform(i)->getDof(0)->setValue( DEG2RAD(pitch) ); } 
-
-                    if( string( joint->getTransform(i)->getName() ) == "RootYaw" )
-                    {  joint->getTransform(i)->getDof(0)->setValue( DEG2RAD(yaw) ); } 
-                } 
-
+                object->setRotationRPY( DEG2RAD(roll), DEG2RAD(pitch), DEG2RAD(yaw) );
+ 
 	    } else if (str == "TYPE") {
 		string buf;
 		wstream >> buf;
@@ -296,34 +238,6 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
     std::vector< kinematics::BodyNode* > bodyNodes(0);
     std::vector< kinematics::Joint* > joints(0);
 
-    //-- Set the initial RootNode that controls the position and orientation
-    node = _robot->createBodyNode( "RootNode" );
-    joint = new kinematics::Joint( NULL, node, "RootJoint" );
-
-    //-- Add DOFs for RPY and XYZ of the whole robot
-    trans = new kinematics::TrfmTranslate( new kinematics::Dof(0, "RootX"),
-		 		           new kinematics::Dof(0, "RootY"),
-				           new kinematics::Dof(0, "RootZ"),
-				           "RootPos" );
-    joint->addTransform( trans, true );
-    _robot->addTransform( trans );
-
-    trans = new kinematics::TrfmRotateEulerZ( new kinematics::Dof(0), "RootYaw" );
-    joint->addTransform( trans, true );
-    _robot->addTransform( trans );
- 
-    trans = new kinematics::TrfmRotateEulerY( new kinematics::Dof(0), "RootPitch" );
-    joint->addTransform( trans, true );
-    _robot->addTransform( trans );
-
-    trans = new kinematics::TrfmRotateEulerX( new kinematics::Dof(0), "RootRoll" );
-    joint->addTransform( trans, true );
-    _robot->addTransform( trans );
-
-
-    /// FIRST (ROOT) Node pushed
-    bodyNodes.push_back( node );
-
 
     //-- Read the RSDH file
     while(!rstream.eof()) {
@@ -355,9 +269,8 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
 	    }
             
             models.push_back( model );
-            modelsInd.push_back( bodyNodes.size() );
-
 	    bodyNodes.push_back( node );
+            modelsInd.push_back( bodyNodes.size() );
 	}
 
         /// Set Center of Mass of the Node
@@ -414,7 +327,7 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
 	    if(cnum == -1){  std::cerr << "--(!) Non-existant child: " << cname << std::endl; return 1;  }
 
 	    if(pnum == -2){
-                joint = new kinematics::Joint( bodyNodes[0], bodyNodes[cnum], "Joint" );
+                joint = new kinematics::Joint( _robot->getRoot(), bodyNodes[cnum], "Joint" );
 	    } else {
                 joint = new kinematics::Joint( bodyNodes[pnum], bodyNodes[cnum], "Joint" );
             }
@@ -438,15 +351,14 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
 					           "Translate" );
 	    joint->addTransform( trans, false ); 
 
-            trans = new kinematics::TrfmRotateEulerZ( new::kinematics::Dof(yaw) );
+            trans = new kinematics::TrfmRotateEulerZ( new::kinematics::Dof( DEG2RAD(yaw) ) );
             joint->addTransform( trans, false );  
 
-            trans = new kinematics::TrfmRotateEulerY( new::kinematics::Dof(pitch) );
+            trans = new kinematics::TrfmRotateEulerY( new::kinematics::Dof( DEG2RAD(pitch) ) );
             joint->addTransform( trans, false );  
 
-            trans = new kinematics::TrfmRotateEulerX( new::kinematics::Dof(roll) );
+            trans = new kinematics::TrfmRotateEulerX( new::kinematics::Dof( DEG2RAD(roll)) );
             joint->addTransform( trans, false );  
-
 
 	    string bufAxis;
 	    rstream >> bufAxis;
@@ -465,15 +377,9 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
          
                 if( bufAxis == "PZ" ) 
                 {  trans = new kinematics::TrfmRotateEulerZ( new kinematics::Dof(0) );  }
-                if( bufAxis == "NZ" ) 
-                {  trans = new kinematics::TrfmRotateEulerZ( new kinematics::Dof(0) );  }
                 if( bufAxis == "PY" ) 
                 {  trans = new kinematics::TrfmRotateEulerY( new kinematics::Dof(0) );  }
-                if( bufAxis == "NY" ) 
-                {  trans = new kinematics::TrfmRotateEulerY( new kinematics::Dof(0) );  }
                 if( bufAxis == "PX" ) 
-                {  trans = new kinematics::TrfmRotateEulerX( new kinematics::Dof(0) );  }
-                if( bufAxis == "NX" ) 
                 {  trans = new kinematics::TrfmRotateEulerX( new kinematics::Dof(0) );  }
                   
                 joint->addTransform( trans, true );
@@ -486,15 +392,9 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
 
                 if( bufAxis == "PZ" ) 
                 {  trans = new kinematics::TrfmTranslateZ( new kinematics::Dof(0) );  }
-                if( bufAxis == "NZ" ) 
-                {  trans = new kinematics::TrfmTranslateZ( new kinematics::Dof(0) );  }
                 if( bufAxis == "PY" ) 
                 {  trans = new kinematics::TrfmTranslateY( new kinematics::Dof(0) );  }
-                if( bufAxis == "NY" ) 
-                {  trans = new kinematics::TrfmTranslateY( new kinematics::Dof(0) );  }
                 if( bufAxis == "PX" ) 
-                {  trans = new kinematics::TrfmTranslateX( new kinematics::Dof(0) );  }
-                if( bufAxis == "NX" ) 
                 {  trans = new kinematics::TrfmTranslateX( new kinematics::Dof(0) );  }
                   
                 joint->addTransform( trans, true );
@@ -525,17 +425,19 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
     }
     rstream.close();
 
+            printf("Here 1\n");
     for( unsigned int i=0; i < bodyNodes.size(); i++ ) {
         _robot->addNode( bodyNodes[i] ); 
     }
-
+            printf("Here 2\n");
     for( unsigned int i = 0; i < models.size(); i++ ) {
       _robot->addModel( models[i], modelsInd[i] );
     }
 
+            printf("Here 3\n");
     //-- Init the object
     _robot->initSkel();
-
+            printf("Here 4\n");
     return 0;
 }
 
@@ -545,56 +447,24 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
  */
 int parseObject( string _filename, planning::Object *_object )
 {
-    _object->mMovable = false;
-
-    //-- Set the initial RootNode that controls the position and orientation
-    kinematics::BodyNode *node;
-    kinematics::Joint *joint;
-    kinematics::Transformation* trans;
-
     Model3DS* model;
-
-    //-- Set the initial RootNode that controls the position and orientation
-    node = _object->createBodyNode( "RootNode" );
-    joint = new kinematics::Joint( NULL, node, "RootJoint" );
-
-    //-- Add DOFs for RPY and XYZ of the whole robot
-    trans = new kinematics::TrfmTranslate( new kinematics::Dof(0, "RootX"),
-		 		           new kinematics::Dof(0, "RootY"),
-				           new kinematics::Dof(0, "RootZ"),
-				           "RootPos" );
-    joint->addTransform( trans, true );
-    _object->addTransform( trans );
-
-    trans = new kinematics::TrfmRotateEulerZ( new kinematics::Dof(0), "RootYaw" );
-    joint->addTransform( trans, true );
-    _object->addTransform( trans );
- 
-    trans = new kinematics::TrfmRotateEulerY( new kinematics::Dof(0), "RootPitch" );
-    joint->addTransform( trans, true );
-    _object->addTransform( trans );
-
-    trans = new kinematics::TrfmRotateEulerX( new kinematics::Dof(0), "RootRoll" );
-    joint->addTransform( trans, true );
-    _object->addTransform( trans );
-
+    _object->mMovable = false;
 
     if( _filename != "NOMODEL" ) {
 
       //-- TODO Create a ShapeMesh from the 3DS Model
-      model = _object->loadModel( _filename );
-                
+      model = _object->loadModel( _filename );                
       kinematics::ShapeMesh *p = new kinematics::ShapeMesh( Vector3d(0, 0, 0), 0 );
-      node->setShape( p );
+      _object->getRoot()->setShape( p );
     }
             
-    _object->addNode( node );
+    //-- Assume an object : a unique body node
     _object->addModel( model, 0 );
 
     //-- Init the object
     _object->initSkel();
 
-    printf( "End parse Object \n");
+    printf( "--(i) End parse Object \n");
     return 0;
 }
 
