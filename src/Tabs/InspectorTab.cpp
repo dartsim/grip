@@ -263,6 +263,15 @@ void InspectorTab::GRIPStateChange() {
 	    jSlider->Hide();
 	}
 
+        //-- Get XYZ and RPY
+        Eigen::Matrix4d tf = pBodyNode->getWorldTransform();
+        x = tf(0,3); 
+        y = tf(1,3); 
+        z = tf(2,3);
+	roll = atan2( tf(2,1), tf(2,2) );
+	pitch = -asin( tf(2,0) );
+	yaw = atan2( tf(1,0), tf(0,0) );  
+
     }
  
     //-- Return type Robot
