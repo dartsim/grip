@@ -138,59 +138,90 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
     if(selectedTreeNode == NULL){ return; }
 
     int selected = selectedTreeNode->dType;
-    if(selected == Return_Type_Object){
-            pObject = (planning::Object*)(selectedTreeNode->data);
-	}
-	else if(selected == Return_Type_Node){
-            pBodyNode = (kinematics::BodyNode*)(selectedTreeNode->data);
-	}
-	else if(selected == Return_Type_Robot){
-            pRobot = (planning::Robot*)(selectedTreeNode->data);
-	}
   
-        /// 
-	if(slnum == J_SLIDER && selected == Return_Type_Node){
+    //-- If selected : OBJECT
+    if(selected == Return_Type_Object){
+        pObject = (planning::Object*)(selectedTreeNode->data);
 
-		if( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_HINGE )
-		{    pBodyNode->getParentJoint()->getDof(0)->setValue( DEG2RAD(pos) ); }
-		else if ( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_TRANS )
-		{    pBodyNode->getParentJoint()->getDof(0)->setValue( pos ); }
-
-                /// Update the robot or object (both Skeletons)
-                pBodyNode->getSkel()->initSkel();
-		sprintf(numBuf,"Joint Change: %7.4f", pos);
-
-	} else{
-		switch(slnum){
-			case X_SLIDER:
-				pObject->setPositionX( pos );
-				sprintf(numBuf,"X Change: %7.4f", pos);
-				break;
-			case Y_SLIDER:
-				pObject->setPositionY( pos );
-				sprintf(numBuf,"Y Change: %7.4f", pos);
-				break;
-			case Z_SLIDER:
-				pObject->setPositionZ( pos );
-				sprintf(numBuf,"Z Change: %7.4f", pos);
-				break;
-			case ROLL_SLIDER:
-			case PITCH_SLIDER:
-			case YAW_SLIDER:
-                                pObject->setRotationRPY( rollSlider->pos, pitchSlider->pos, yawSlider->pos );
-				sprintf(numBuf,"Angle Change: %7.4f", pos);
-				break;
-			default:
-				return;
-		}
-
-		if(selected == Return_Type_Robot) {
-                    pObject->initSkel();
-		}
+        switch(slnum) {
+	    case X_SLIDER:
+	        pObject->setPositionX( pos );
+		sprintf(numBuf,"X Change: %7.4f", pos);
+		break;
+	    case Y_SLIDER:
+	        pObject->setPositionY( pos );
+		sprintf(numBuf,"Y Change: %7.4f", pos);
+		break;
+	    case Z_SLIDER:
+		pObject->setPositionZ( pos );
+		sprintf(numBuf,"Z Change: %7.4f", pos);
+		break;
+	    case ROLL_SLIDER:
+	    case PITCH_SLIDER:
+	    case YAW_SLIDER:
+                pObject->setRotationRPY( rollSlider->pos, pitchSlider->pos, yawSlider->pos );
+		sprintf(numBuf,"Angle Change: %7.4f", pos);
+		break;
+	    default:
+	        return;
         }
+        pObject->initSkel();
+    }
 
-	if(frame!=NULL)	frame->SetStatusText(wxString(numBuf,wxConvUTF8));
-	viewer->UpdateCamera();
+    //-- If selected : NODE
+    else if(selected == Return_Type_Node){
+        pBodyNode = (kinematics::BodyNode*)(selectedTreeNode->data);
+
+        switch(slnum) {
+            //-- Change joint value
+            case J_SLIDER:
+        	if( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_HINGE ) {
+                    pBodyNode->getParentJoint()->getDof(0)->setValue( DEG2RAD(pos) ); 
+                } 
+                else if ( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_TRANS ) {
+                    pBodyNode->getParentJoint()->getDof(0)->setValue( pos ); 
+                }
+                break;
+	    default:
+	        return;
+	}
+        /// Update the robot or object (both Skeletons)
+        pBodyNode->getSkel()->initSkel();
+	sprintf(numBuf,"Joint Change: %7.4f", pos);
+
+    }
+    //-- If selected : ROBOT
+    else if(selected == Return_Type_Robot){
+        pRobot = (planning::Robot*)(selectedTreeNode->data);
+
+        switch(slnum) {
+	    case X_SLIDER:
+	        pRobot->setPositionX( pos );
+		sprintf(numBuf,"X Change: %7.4f", pos);
+		break;
+	    case Y_SLIDER:
+	        pRobot->setPositionY( pos );
+		sprintf(numBuf,"Y Change: %7.4f", pos);
+		break;
+	    case Z_SLIDER:
+		pRobot->setPositionZ( pos );
+		sprintf(numBuf,"Z Change: %7.4f", pos);
+		break;
+	    case ROLL_SLIDER:
+	    case PITCH_SLIDER:
+	    case YAW_SLIDER:
+                pRobot->setRotationRPY( rollSlider->pos, pitchSlider->pos, yawSlider->pos );
+		sprintf(numBuf,"Angle Change: %7.4f", pos);
+		break;
+	    default:
+	        return;
+	}
+        pRobot->initSkel();
+    }
+  
+    if(frame!=NULL) frame->SetStatusText(wxString(numBuf,wxConvUTF8));
+
+    viewer->UpdateCamera();
 }
 
 /**
