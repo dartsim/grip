@@ -47,6 +47,10 @@
 #include <wx/glcanvas.h>
 #include <Tools/GL/glcommon.h>
 #include <Tools/Constants.h>
+#include <planning/Model3DS.h>
+#include <kinematics/Shape.h>
+#include <kinematics/BodyNode.h>
+#include <kinematics/ShapeMesh.h>
 //#include <Tools/Model3DS.h>
 
 using namespace Eigen;
@@ -55,6 +59,7 @@ class Viewer: public wxGLCanvas {
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	Eigen::Transform<double, 3, Eigen::Affine> camT, prevCamT;
+
 	Matrix3d camRotT;
 	Vector3d worldV, prevWorldV;
 
@@ -80,6 +85,9 @@ public:
 	int  DrawGLScene();
 	void ResetGL();
 	void addGrid();
+
+	void drawWorld(); 
+	void drawModel( Model3DS* _model, Eigen::Transform<double, 3, Eigen::Affine> *_pose );
 
 	long x, y, xInit, yInit;
 	int w, h;
