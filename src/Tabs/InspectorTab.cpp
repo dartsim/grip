@@ -135,11 +135,10 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
     char numBuf[1000];
     numBuf[0] = '\0';
     //sprintf(numBuf,"");
+    if(selectedTreeNode == NULL){ return; }
 
-	if(selectedTreeNode == NULL){ return; }
-
-	int selected = selectedTreeNode->dType;
-	if(selected == Return_Type_Object){
+    int selected = selectedTreeNode->dType;
+    if(selected == Return_Type_Object){
             pObject = (planning::Object*)(selectedTreeNode->data);
 	}
 	else if(selected == Return_Type_Node){
@@ -155,10 +154,10 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
 		if( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_HINGE )
 		{    pBodyNode->getParentJoint()->getDof(0)->setValue( DEG2RAD(pos) ); }
 		else if ( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_TRANS )
-		{    pBodyNode->getParentJoint()->getDof(0)->setValue( pos ); 
-                     /// Update the robot or object (both Skeletons)
-                     pBodyNode->getSkel()->initSkel();
- 		}
+		{    pBodyNode->getParentJoint()->getDof(0)->setValue( pos ); }
+
+                /// Update the robot or object (both Skeletons)
+                pBodyNode->getSkel()->initSkel();
 		sprintf(numBuf,"Joint Change: %7.4f", pos);
 
 	} else{

@@ -39,7 +39,6 @@
 #include "Viewer.h"
 #include "wx/sizer.h"
 #include "GUI.h"
-//#include "DrawWorld.h"
 #include <wx/glcanvas.h>
 
 #include <iostream>
@@ -49,14 +48,12 @@ using namespace std;
 
 
 void Viewer::drawWorld() { 
-  // Draw Objects     
+  // Draw Objects    
   for( unsigned int i = 0; i < mWorld->mObjects.size(); i++ ) {
 
     for( unsigned int j = 0; j < mWorld->mObjects[i]->getNumNodes(); j++ ) {
         
       Eigen::Matrix4d poseMatrix =mWorld->mObjects[i]->getNode(j)->getWorldTransform();         
-      std::cout << "Object: "<< mWorld->mObjects[i]->getName() << std::endl;
-      std::cout<< poseMatrix << std::endl;
       Transform<double,3,Affine> pose;
       pose.setIdentity();
       pose.matrix() = poseMatrix;  
@@ -71,8 +68,6 @@ void Viewer::drawWorld() {
        
       int ind = mWorld->mRobots[i]->mModelIndices[j]; 
       Eigen::Matrix4d poseMatrix =mWorld->mRobots[i]->getNode( ind )->getWorldTransform();   
-      std::cout << "Robot Node: "<< mWorld->mRobots[i]->getNode(ind)->getName() << std::endl;
-      std::cout<<"Post: \n"<< poseMatrix << std::endl;
       
       Transform<double,3,Affine> pose;
       pose.matrix() = poseMatrix;  
@@ -110,16 +105,16 @@ void Viewer::drawModel( Model3DS* _model, Transform<double, 3, Affine> *_pose )
 		glColor3d(0.20f,0.20f,0.20f);
 	}
 */
-	if( _model != NULL ) {
-		glCallList(_model->modelDL);
-		//glCallList(model->colDL);  // For testing collision model
-	}
+   if( _model != NULL ) {
+     glCallList(_model->modelDL);
+     //glCallList(model->colDL);  // For testing collision model
+   }
 
-	glDisable(GL_POLYGON_STIPPLE);
+   glDisable(GL_POLYGON_STIPPLE);
 	
-	glColor3f(1.0f,1.0f,1.0f);
-	glEnable( GL_TEXTURE_2D );
-	glPopMatrix(); 
+   glColor3f(1.0f,1.0f,1.0f);
+   glEnable( GL_TEXTURE_2D );
+   glPopMatrix(); 
   
 }
 

@@ -51,7 +51,6 @@
 #include <kinematics/Shape.h>
 #include <kinematics/BodyNode.h>
 #include <kinematics/ShapeMesh.h>
-//#include <Tools/Model3DS.h>
 
 using namespace Eigen;
 

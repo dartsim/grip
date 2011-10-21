@@ -51,10 +51,10 @@ class InspectorTab : public GRIPTab
 {
 public:
 	InspectorTab(){};
-    InspectorTab(wxWindow * parent, wxWindowID id = -1,
-             const wxPoint & pos = wxDefaultPosition,
-             const wxSize & size = wxDefaultSize,
-             long style = wxTAB_TRAVERSAL);
+        InspectorTab(wxWindow * parent, wxWindowID id = -1,
+                     const wxPoint & pos = wxDefaultPosition,
+                     const wxSize & size = wxDefaultSize,
+                     long style = wxTAB_TRAVERSAL);
 	virtual ~InspectorTab(){}
 
 	wxStaticText* itemName;
