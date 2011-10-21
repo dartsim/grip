@@ -202,7 +202,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
  */
 void InspectorTab::GRIPStateChange() {
 
-    if(selectedTreeNode==NULL){
+    if( selectedTreeNode == NULL ){
         itemName->SetLabel(wxString("Item: None",wxConvUTF8));
 	parentName->Hide();
 	jSlider->Hide();
@@ -227,13 +227,13 @@ void InspectorTab::GRIPStateChange() {
 
 	statusBuf = " Selected Object: " + pObject->getName();
 	buf = "Object: " + pObject->getName();
-	itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
+	itemName->SetLabel( wxString(buf.c_str(),wxConvUTF8) );
 	parentName->Show();
 	parentName->SetLabel(wxString("",wxConvUTF8));
 	jSlider->Hide();
 
         //-- Get XYZ and RPY
-        pObject->getRotationRPY( roll, pitch, yaw);
+        pObject->getRotationRPY( roll, pitch, yaw );
         pObject->getPositionX( x );
         pObject->getPositionY( y );
         pObject->getPositionZ( z );
@@ -262,8 +262,6 @@ void InspectorTab::GRIPStateChange() {
 	    buf2 = " (Root Link) ";
 	    jSlider->Hide();
 	}
-
-       x =3; y = 3; z = 3; roll = 8; pitch = 8; yaw = 8;
 
     }
  
