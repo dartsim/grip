@@ -49,8 +49,12 @@
 using namespace std;
 
 
-
+/**
+ * @function drawWorld
+ * @brief Draw World and everything inside it: Robots + Objects
+ */
 void Viewer::drawWorld() { 
+
   // Draw Objects    
   for( unsigned int i = 0; i < mWorld->mObjects.size(); i++ ) {
 

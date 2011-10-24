@@ -134,7 +134,6 @@ planning::World* parseWorld( std::string _fullname )
                 robot->setRotationRPY( DEG2RAD(roll), DEG2RAD(pitch), DEG2RAD(yaw) );
 
 	    } else if (str == "INIT") {
-                printf("Init spec \n");
 
 	        string buf;
 		wstream >> buf;
@@ -152,7 +151,6 @@ planning::World* parseWorld( std::string _fullname )
                     node->getParentJoint()->getDof(0)->setValue(val);
 		    std::cout << "Init: node" << node->getName() << " to " << node->getParentJoint()->getDof(0)->getValue() << std::endl;
 		}
-                printf("End Init spec \n");
 
 	    }
         
@@ -425,19 +423,18 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
     }
     rstream.close();
 
-            printf("Here 1\n");
     for( unsigned int i=0; i < bodyNodes.size(); i++ ) {
         _robot->addNode( bodyNodes[i] ); 
     }
-            printf("Here 2\n");
+
     for( unsigned int i = 0; i < models.size(); i++ ) {
       _robot->addModel( models[i], modelsInd[i] );
     }
 
-            printf("Here 3\n");
+
     //-- Init the object
     _robot->initSkel();
-            printf("Here 4\n");
+
     return 0;
 }
 
@@ -464,7 +461,6 @@ int parseObject( string _filename, planning::Object *_object )
     //-- Init the object
     _object->initSkel();
 
-    printf( "--(i) End parse Object \n");
     return 0;
 }
 

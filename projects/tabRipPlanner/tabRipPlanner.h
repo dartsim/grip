@@ -60,20 +60,14 @@ using namespace planning;
 class RipPlannerTab : public GRIPTab
 {
 public:
-	RipPlannerTab(){};
-        RipPlannerTab( wxWindow * parent, wxWindowID id = -1,
-                       const wxPoint & pos = wxDefaultPosition,
-                       const wxSize & size = wxDefaultSize,
-                       long style = wxTAB_TRAVERSAL);
-	virtual ~RipPlannerTab(){}
-
 	int rrtStyle;
 	bool greedyMode;
 	bool connectMode;
 	bool showProg;
 	PathPlanner *planner;
 
-	int robotID;
+	int robotId;
+        Eigen::VectorXi links;
 
 	wxTextCtrl *timeText;
 
@@ -85,7 +79,15 @@ public:
 	planning::Robot* selectedRobot;
 	kinematics::BodyNode* selectedNode;
 
-        // functions
+        /// Functions
+
+	RipPlannerTab(){};
+        RipPlannerTab( wxWindow * parent, wxWindowID id = -1,
+                       const wxPoint & pos = wxDefaultPosition,
+                       const wxSize & size = wxDefaultSize,
+                       long style = wxTAB_TRAVERSAL);
+	virtual ~RipPlannerTab(){}
+
 	void OnSlider(wxCommandEvent &evt);
 	void OnRadio(wxCommandEvent &evt);
 	void OnButton(wxCommandEvent &evt);

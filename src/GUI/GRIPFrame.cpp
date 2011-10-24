@@ -502,7 +502,7 @@ void GRIPFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 void GRIPFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
 	wxMessageBox(wxString::Format(wxT("GRIP: Humanoid Robotics Lab. Georgia Tech. \
-                                      \n\n Mike Stilman, Saul Reynolds-Haertl, Jon Scholz\
+                                      \n\n Mike Stilman, Saul Reynolds-Haertle, Jon Scholz\
 									  \n Pushkar Kolhe, Jiuguang Wang, Tobias Kunz"),
                                   wxVERSION_STRING,
                                   wxGetOsDescription().c_str()

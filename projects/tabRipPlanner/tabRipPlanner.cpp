@@ -103,7 +103,7 @@ RipPlannerTab::RipPlannerTab( wxWindow *parent, const wxWindowID id,
 
     startConf.resize(0);
     goalConf.resize(0);
-    //robotID = 0;
+    robotID = 0;
 
     sizerFull = new wxBoxSizer( wxHORIZONTAL );
  
@@ -255,133 +255,137 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
 
     switch (button_num) {
 
+        /** Set Start */
         case button_SetStart:
 	    if ( mWorld != NULL ) {
 	        if( mWorld->mRobots.size() < 1) {
             	    cout << "--(!) Must have a world with a robot to set a Start state (!)--" << endl;
 		    break;
 		}
-		cout << "Setting Start state for " << mWorld->mRobots[robotID]->getName() << ":" << endl;
-		startConf.resize(0);
-	/*	int numlinks = mWorld->mRobots[robotID]->getRobotNumDOF();
-		startConf.resize( numlinks );
-                
-		for( unsigned int i = 0; i < numlinks; i++ ){
-		    startConf[i] = world->robots[robotID]->activeLinks[i]->jVal;
-		    cout << startConf[i] << " ";
-		} */
+		cout << "--(i) Setting Start state for " << mWorld->mRobots[robotID]->getName() << ":" << endl;
+
+                startConf = mWorld->mRobots[robotID]->getQuickDofs();
+
+		for( unsigned int i = 0; i < startConf.size(); i++ )
+                {  cout << startConf(i) << " ";  } 
 		cout << endl;
 	    } else {
 	        cout << "--(!) Must have a world loaded to set a Start state.(!)--" << endl;
 	    }
 	    break;
 
+        /** Set Goal */
 	case button_SetGoal:
 	    if ( mWorld != NULL ) {
 	        if( mWorld->mRobots.size() < 1){
 		cout << "--(!) Must have a world with a robot to set a Goal state.(!)--" << endl;
 		break;
 		}
-		cout << "Setting Goal state for " << mWorld->mRobots[robotID]->getName() << ":" << endl;
-		goalConf.resize(0);
-	/*	int numlinks = world->robots[robotID]->getRobotNumDOF();
-		goalConf.resize( numlinks );
-		for( unsigned int i = 0; i < numlinks; i++ ){
-		    goalConf[i] = world->robots[robotID]->activeLinks[i]->jVal;
-		    cout << goalConf[i] << " ";
-		} */
+		cout << "--(i) Setting Goal state for " << mWorld->mRobots[robotID]->getName() << ":" << endl;
+
+                goalConf = mWorld->mRobots[robotID]->getQuickDofs();
+
+		for( unsigned int i = 0; i < goalConf.size(); i++ )
+                {  cout << goalConf(i) << " "; } 
 		cout << endl;
 	    } else {
 	        cout << "--(!) Must have a world loaded to set a Goal state (!)--" << endl;
 	    }
 	    break;
 
+        /** Show Start */
 	case button_showStart:
 	    if( startConf.size() < 1 ){
 	        cout << "--(x) First, set a start configuration (x)--" << endl;
 		break;
-	    } /*
-	    for(unsigned int i=0; i<world->robots[robotID]->activeLinks.size(); i++){
-	        world->robots[robotID]->activeLinks[i]->jVal = startConf[i];
-		cout << startConf[i] << " ";
-		}
-	    //cout << endl;
-	    //world->updateRobot(world->robots[robotID]);
-	    //viewer->UpdateCamera(); */
+	    } 
+
+            mWorld->mRobots[robotID]->setQuickDofs( startConf );
+
+	    for( unsigned int i = 0; i< startConf.size(); i++ )
+            {  cout << startConf(i) << " "; }
+	    cout << endl;
+
+	    mWorld->mRobots[robotID]->update();
+	    viewer->UpdateCamera(); 
 	    break;
 
+        /** Show Goal */
 	case button_showGoal:
-	/*    if(goalConf.size() < 1){
-	        cout << "First, set a goal config." << endl;
+	    if(goalConf.size() < 1){
+	        cout << "--(x) First, set a goal configuration (x)--" << endl;
 		break;
 	    }
-	    for(unsigned int i=0; i<world->robots[robotID]->activeLinks.size(); i++){
-	        world->robots[robotID]->activeLinks[i]->jVal = goalConf[i];
-		cout << goalConf[i] << " ";
-	    }
+
+            mWorld->mRobots[robotID]->setQuickDofs( goalConf );
+
+	    for( unsigned int i = 0; i< goalConf.size(); i++ )
+            {  cout << goalConf[i] << " ";  }
 	    cout << endl;
-	    world->updateRobot(world->robots[robotID]);
-	    viewer->UpdateCamera(); */
+
+	    mWorld->mRobots[robotID]->update();
+	    viewer->UpdateCamera(); 
 	    break;
 
-
+        /** Reset Planner */ 
 	case button_resetPlanner:
 	    if ( mWorld != NULL) {
 	        if ( planner != NULL)
 		    delete planner;
                
 		cout << "Creating a new planner" << endl;
-		//planner = new Planner(world, 0, greedyMode, connectMode, showProg, rrtStyle);
+		planner = new PathPlanner( mWorld, false );
 	    } else {
 	        cout << "--(!) Must have a world loaded to make a planner (!)--" << endl;
 	    }
 	    break;
 
+        /** Empty button 1 */
 	case button_empty1:
-	    cout << "Empty Button to use for whatever you want" << endl;
-
-	    { /*
-	        vector<double> v(world->robots[0]->activeLinks.size());
-		world->robots[0]->getConf(v);
-		v[1] = 3.14 / 2;
-		world->robots[0]->setConf(v);
-		world->updateRobot(world->robots[0]);
-		viewer->UpdateCamera(); */
-	    }
-
+	    cout << "-- (0) Empty Button to use for whatever you want (0)--" << endl;
 	    break;
 
+        /** Empty button 2 */
 	case button_empty2:
-	    cout << "Empty Button to use for whatever you want" << endl;
+	    cout << "-- (0) Empty Button to use for whatever you want (0)--" << endl;
 	    break;
 
+        /** Execute Plan */
 	case button_Plan:
 	    if( goalConf.size() < 0 ){ cout << "--(x) Must set a goal (x)--" << endl; break; }
 	    if( startConf.size() < 0 ){ cout << "--(x) Must set a start (x)--" << endl; break; }
 	    if( mWorld == NULL ){ cout << "--(x) Must load a world (x)--" << endl; break; }
 	    if( mWorld->mRobots.size() < 1){ cout << "--(x) Must load a world with a robot(x)--" << endl; break; }
 
-	    //planner = new Planner(world,startConf,goalConf, robotID, greedyMode, connectMode, showProg, rrtStyle);
+	    planner = new PathPlanner( mWorld, false);
 
-	   //wxThread planThread;
-	   //planThread.Create();
+	    //wxThread planThread;
+	    //planThread.Create();
 
-	   //planner->Plan();
+	    planner->planPath( robotID, 
+                               links, 
+                               startConf, 
+                               goalConf, 
+                               path, 
+                               rrtStyle,  
+                               connectMode,
+                               greedyMode, 
+                               smooth, 
+                               maxNodes );
 			
-	   SetTimeline();
-	   break;
+	    SetTimeline();
+	    break;
 
 	case button_UpdateTime:
 	    // Update the time span of the movie timeline
 	    SetTimeline();		
 	    break;
 
-	case button_ShowPath:
-            /*
-	    if( mWorld == NULL || planner == NULL || !planner->solved || planner->path.size() == 0){
-	        cout << "Must create a valid plan before printing." << endl;
+	case button_ShowPath:            
+	    if( mWorld == NULL || planner == NULL || !planner->solved || planner->path.size() == 0 ) {
+	        cout << "--(!) Must create a valid plan before printing. (!)--" << endl;
 		return;
-	    }*/
+	    }
 	    break;
 	}
 }
@@ -391,9 +395,9 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
  * @brief 
  */
 void RipPlannerTab::SetTimeline(){
-/*
-    if( mWorld == NULL || planner == NULL || !planner->solved || planner->path.size() == 0) {
-        cout << "Must create a valid plan before updating its duration." << endl;
+
+    if( mWorld == NULL || planner == NULL || !planner->solved || planner->path.size() == 0 ) {
+        cout << "--(!) Must create a valid plan before updating its duration (!)--" << endl;
 	return;
     }
 
@@ -405,18 +409,16 @@ void RipPlannerTab::SetTimeline(){
 
     cout << "Updating Timeline - Increment: " << increment << " Total T: " << T << " Steps: " << numsteps << endl;
 
-    frame->InitTimer(string("RRT_Plan"),increment);
-
-    int robotID = world->findRobot(planner->probot->name);
+    frame->InitTimer( string("RRT_Plan"),increment );
 
     for( int i = 0; i < numsteps; i++){
-        for(int l=0; l < planner->numLinks; l++){
-	    world->robots[robotID]->activeLinks[l]->jVal = planner->path[i][l];
+        for(int l = 0; l < links.size(); l++ ) {
+	    mWorld->mRobots[robotId]->activeLinks[l]->jVal = planner->path[i][l];
         }
         world->updateRobot(world->robots[robotID]);
         frame->AddWorld(world);
     }
-*/
+
 }
 
 /**
