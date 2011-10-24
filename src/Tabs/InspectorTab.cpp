@@ -159,7 +159,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
 	    case ROLL_SLIDER:
 	    case PITCH_SLIDER:
 	    case YAW_SLIDER:
-                pObject->setRotationRPY( rollSlider->pos, pitchSlider->pos, yawSlider->pos );
+                pObject->setRotationRPY(DEG2RAD(rollSlider->pos), DEG2RAD(pitchSlider->pos), DEG2RAD(yawSlider->pos));
 		sprintf(numBuf,"Angle Change: %7.4f", pos);
 		break;
 	    default:
