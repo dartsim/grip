@@ -1,22 +1,11 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 2.6)
 project (tabRipPlanner)
 
+# include (${CMAKE_INSTALL_PREFIX}/share/dart/DART_config.cmake)
+# include (${CMAKE_INSTALL_PREFIX}/share/grip/GRIP_config.cmake)
+# This include is used only if you have installed Grip
+
 message (STATUS "Creating Makefile for the tabRipPlanner project")
-
-if(WIN32)
-	set (CMAKE_INSTALL_PREFIX "C:/Golems" )
-    message (STATUS "Setup Visual Studio Specific Flags")
-	set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd /Zi /GL /Gy /W1")
-	set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD /Zi /GL /Gy /W1")
-	set (CMAKE_DEFAULT_STARTUP_PROJECT tabRipPlanner)
-else ()
-   set (CMAKE_INSTALL_PREFIX /usr/local )
-   set (CMAKE_CXX_FLAGS "-g -O0 -Wall -Wextra -Wpointer-arith -fno-default-inline -fno-implicit-inline-templates -DwxUSE_THREADS")
-endif()
-
-include (${CMAKE_INSTALL_PREFIX}/share/dart/DART_config.cmake)
-include (${CMAKE_INSTALL_PREFIX}/share/grip/GRIP_config.cmake)
-# This include is used only if you have installed DART and GRIP
 
 # Search all header and source files
 file (GLOB srcs "*.cpp")
@@ -35,8 +24,15 @@ if (wxWidgets_FOUND)
    else()
     add_executable (tabRipPlanner ${srcs} ${hdrs})
    endif()
+
    target_link_libraries (tabRipPlanner ${GRIP_LIBRARIES} ${DART_LIBRARIES} ${wxWidgets_LIBRARIES} )
    
 else (wxWidgets_FOUND)
   message ("wxWidgets not found!")
 endif (wxWidgets_FOUND)
+
+
+
+
+
+
