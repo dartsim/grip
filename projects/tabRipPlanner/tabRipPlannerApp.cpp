@@ -3,10 +3,10 @@
 
 extern wxNotebook* tabView;
 
-class RipTabPlanningApp : public GRIPApp {
+class RipPlannerTabApp : public GRIPApp {
 	virtual void AddTabs() {
-		tabView->AddPage(new RipTabPlanning(tabView), wxT("RIP Planner"));
+		tabView->AddPage(new RipPlannerTab(tabView), wxT("RIP Planner"));
 	}
 };
 
-IMPLEMENT_APP(RipTabPlanning)
+IMPLEMENT_APP(RipPlannerTabApp)

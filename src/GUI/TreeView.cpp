@@ -123,13 +123,13 @@ void TreeView::CreateFromWorld()
 	ret->data = mWorld->mObjects[i];
 	ret->dType = Return_Type_Object;
 	mWorld->mObjects[i]->mGripID = hPrev = AppendItem( rootId,
-                                                         wxString( mWorld->mObjects[i]->mName.c_str(), wxConvUTF8),
-                                                         Tree_Icon_Object,
-                                                         -1,
-                                                         ret );
+                                                           wxString( mWorld->mObjects[i]->mName.c_str(), wxConvUTF8),
+                                                           Tree_Icon_Object,
+                                                           -1,
+                                                           ret );
     }
 
-//    ///-- Add robot(s) to the tree
+    ///-- Add robot(s) to the tree
     for ( unsigned int i = 0; i < mWorld->mRobots.size(); i++ )
     {
         ret = new TreeViewReturn;

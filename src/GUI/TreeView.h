@@ -98,7 +98,7 @@ public:
 	virtual ~TreeView(){}
 
 	void CreateFromWorld();
-	wxTreeItemId AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hPrev, wxTreeItemId hParent, bool inChain);
+	wxTreeItemId AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hPrev, wxTreeItemId hParent, bool inChain );
 
 	void OnSelChanged(wxTreeEvent& event);
 	void ExpandAll();

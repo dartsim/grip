@@ -170,19 +170,23 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
 
     //-- If selected : NODE
     else if(selected == Return_Type_Node){
+        printf("All guys should get here \n");
         pBodyNode = (kinematics::BodyNode*)(selectedTreeNode->data);
 
         switch(slnum) {
             //-- Change joint value
             case J_SLIDER:
         	if( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_HINGE ) {
+                    printf("Hinge case \n");
                     pBodyNode->getParentJoint()->getDof(0)->setValue( DEG2RAD(pos) ); 
                 } 
                 else if ( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_TRANS ) {
+                    printf("Trans name \n");
                     pBodyNode->getParentJoint()->getDof(0)->setValue( pos ); 
                 }
                 break;
 	    default:
+                printf("None, you are supposed to show this \n");
 	        return;
 	}
         /// Update the robot or object (both Skeletons)

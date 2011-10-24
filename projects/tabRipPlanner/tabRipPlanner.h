@@ -36,60 +36,56 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef RIP_PLANNING_TAB
-#define RIP_PLANNING_TAB
+#ifndef RIP_PLANNER_TAB
+#define RIP_PLANNER_TAB
 
-#include <GUI/Viewer.h>
-#include <GUI/GUI.h>
-#include <GUI/GRIPSlider.h>
-#include <GUI/GRIPFrame.h>
+#include <Tabs/GRIPTab.h>
+#include <Tabs/GRIPThread.h>
 
-#include <kinematics/BodyNode.h>
-#include <kinematics/Joint.h>
-#include <kinematics/Dof.h>
 #include <planning/Robot.h>
 #include <planning/Object.h>
+#include <kinematics/BodyNode.h>
 
-#include <Tabs/GRIPThread.h>
-#include <Tools/Constants.h>
+#include "PathPlanner.h"
 
-//#include <Matrix.h>
-#include <planning/Robot.h>
-//#include "../Tools/Planner.h"
-
-#define rstate vector<double>
+#include <iostream>
 
 using namespace std;
 using namespace planning;
 
-class RipTabPlanning : public GRIPTab
+/**
+ * @class RipTabPlanner
+ * @brief Implements the RIP Tab + Planners
+ */
+class RipPlannerTab : public GRIPTab
 {
 public:
-	RipTabPlanning(){};
-    RipTabPlanning(wxWindow * parent, wxWindowID id = -1,
-             const wxPoint & pos = wxDefaultPosition,
-             const wxSize & size = wxDefaultSize,
-             long style = wxTAB_TRAVERSAL);
-	virtual ~RipTabPlanning(){}
+	RipPlannerTab(){};
+        RipPlannerTab( wxWindow * parent, wxWindowID id = -1,
+                       const wxPoint & pos = wxDefaultPosition,
+                       const wxSize & size = wxDefaultSize,
+                       long style = wxTAB_TRAVERSAL);
+	virtual ~RipPlannerTab(){}
 
 	int rrtStyle;
 	bool greedyMode;
 	bool connectMode;
 	bool showProg;
-	//Planner *planner;
+	PathPlanner *planner;
 
 	int robotID;
 
 	wxTextCtrl *timeText;
 
-	rstate startConf;
-	rstate goalConf;
+	Eigen::VectorXd startConf;
+	Eigen::VectorXd goalConf;
 
-	// public vars to capture external selection stuff (should move these higher somethime)
-	//Object* selectedObject;
-	//Robot* selectedRobot;
-	//Link* selectedLink;
+	// public vars to capture external selection stuff 
+	planning::Object* selectedObject;
+	planning::Robot* selectedRobot;
+	kinematics::BodyNode* selectedNode;
 
+        // functions
 	void OnSlider(wxCommandEvent &evt);
 	void OnRadio(wxCommandEvent &evt);
 	void OnButton(wxCommandEvent &evt);
@@ -105,8 +101,8 @@ public:
 	// void Thread();
 	// void onCompleteThread();
 
-	DECLARE_DYNAMIC_CLASS(RipTabPlanning)
+	DECLARE_DYNAMIC_CLASS( RipTabPlannerTab )
 	DECLARE_EVENT_TABLE()
 };
 
-#endif
+#endif /** RIP_PLANNER_TAB */
