@@ -169,7 +169,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
     }
 
     //-- If selected : NODE
-    else if(selected == Return_Type_Node){
+    else if( selected == Return_Type_Node ){
         pBodyNode = (kinematics::BodyNode*)(selectedTreeNode->data);
 
         switch(slnum) {
@@ -276,22 +276,44 @@ void InspectorTab::GRIPStateChange() {
         pBodyNode = (kinematics::BodyNode*)(selectedTreeNode->data);
 
 	statusBuf = " Selected Node: " + string( pBodyNode->getName() ) + " of Robot: " + string( ((planning::Robot*) pBodyNode->getSkel())->getName() );
-	buf = "Body Node: " + string( pBodyNode->getName() );
+	buf = "Node: " + string( pBodyNode->getName() );
 	itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
 
-	if( pBodyNode->getParentNode() != NULL ) {
-	    buf2 = "Parent Link: " + string( pBodyNode->getParentNode()->getName() ) + "   Robot: " + string( ((planning::Robot*) pBodyNode->getSkel())->getName() );
+        /** A normal body Node */
+	if( pBodyNode->getParentNode() != pBodyNode->getSkel()->getRoot() ) {
+	    buf2 = "Parent Node: " + string( pBodyNode->getParentNode()->getName() ) + "   Robot: " + string( ((planning::Robot*) pBodyNode->getSkel())->getName() );
         
-	    jSlider->setRange( RAD2DEG(pBodyNode->getParentJoint()->getDof(0)->getMin() ),
-                               RAD2DEG(pBodyNode->getParentJoint()->getDof(0)->getMax() ) );
+
+            /** If joint is hinge */
 	    if( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_HINGE ) {
-	        jSlider->setValue(RAD2DEG(pBodyNode->getParentJoint()->getDof(0)->getValue() ) );
+
+	        jSlider->setRange( RAD2DEG( pBodyNode->getParentJoint()->getDof(0)->getMin() ),
+                                   RAD2DEG( pBodyNode->getParentJoint()->getDof(0)->getMax() ) );
+	        jSlider->setValue( RAD2DEG( pBodyNode->getParentJoint()->getDof(0)->getValue() ) );
+  
+                jSlider->Show();
+ 
+            /** If joint is translational */
+	    } else if( pBodyNode->getParentJoint()->getJointType() == kinematics::Joint::J_TRANS ) {
+
+	        jSlider->setRange( pBodyNode->getParentJoint()->getDof(0)->getMin(),
+                                   pBodyNode->getParentJoint()->getDof(0)->getMax() );
+		jSlider->setValue( pBodyNode->getParentJoint()->getDof(0)->getValue() );
+
+	        jSlider->Show();
+
+            /** If joint is unknown -- FIXED */
 	    } else {
-		jSlider->setValue(pBodyNode->getParentJoint()->getDof(0)->getValue());
+            
+              /** Nothing here, do not show slider for joint */   
 	    }
-	    jSlider->Show();
+
+
+
+
+        /** Root body Node*/
         } else {
-	    buf2 = " (Root Link) ";
+	    buf2 = " (Root Node) ";
 	    jSlider->Hide();
 	}
 

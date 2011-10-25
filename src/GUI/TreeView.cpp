@@ -107,7 +107,7 @@ TreeView::TreeView(wxWindow *parent, const wxWindowID id,
 void TreeView::CreateFromWorld()
 {
 
-    if( mWorld == NULL) return;
+    if( mWorld == NULL ) return;
 
     DeleteAllItems();
 
@@ -143,7 +143,8 @@ void TreeView::CreateFromWorld()
         ///-- Add body nodes ( AKA Links ) as sub-trees
 	for (unsigned int j = 0; j < mWorld->mRobots[i]->getNumNodes(); j++ )
 	{
-            if ( mWorld->mRobots[i]->getNode(j)->getParentNode() == NULL ) {
+            // Get the first bodyNode (do not consider the 6 default DOF! )
+            if ( mWorld->mRobots[i]->getNode(j)->getParentNode() ==  mWorld->mRobots[i]->getRoot() ) {
 	        hPrev = AddNodeTree( mWorld->mRobots[i]->getNode(j), hPrev, hPrev, false );
 	    }
         }
@@ -178,7 +179,6 @@ wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hP
 		    break;
 	    } 
         
-
 	wxTreeItemId newParent = hParent;
 
 	if ( _node->getNumChildJoints() == 1) {
@@ -225,10 +225,10 @@ wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hP
  * @brief
  */
 void TreeView::OnSelChanged(wxTreeEvent& evt) {
-
 	TreeViewReturn* ret = (TreeViewReturn*)GetItemData(evt.GetItem());
 	selectedTreeNode = ret;
 	evt.Skip();
+        printf("Fine? \n");
 }
 
 
