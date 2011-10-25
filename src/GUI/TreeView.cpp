@@ -228,7 +228,6 @@ void TreeView::OnSelChanged(wxTreeEvent& evt) {
 	TreeViewReturn* ret = (TreeViewReturn*)GetItemData(evt.GetItem());
 	selectedTreeNode = ret;
 	evt.Skip();
-        printf("Fine? \n");
 }
 
 

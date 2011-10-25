@@ -73,6 +73,7 @@ END_EVENT_TABLE()
 
 // Class constructor for the tab: Each tab will be a subclass of wxPanel
 IMPLEMENT_DYNAMIC_CLASS(InspectorTab, GRIPTab)
+
 InspectorTab::InspectorTab(wxWindow *parent, const wxWindowID id,
                        const wxPoint& pos, const wxSize& size,
                        long style)
@@ -211,7 +212,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
 	    case ROLL_SLIDER:
 	    case PITCH_SLIDER:
 	    case YAW_SLIDER:
-                pRobot->setRotationRPY( rollSlider->pos, pitchSlider->pos, yawSlider->pos );
+                pRobot->setRotationRPY( DEG2RAD(rollSlider->pos), DEG2RAD(pitchSlider->pos), DEG2RAD(yawSlider->pos) );
 		sprintf(numBuf,"Angle Change: %7.4f", pos);
 		break;
 	    default:
@@ -307,8 +308,6 @@ void InspectorTab::GRIPStateChange() {
             
               /** Nothing here, do not show slider for joint */   
 	    }
-
-
 
 
         /** Root body Node*/
