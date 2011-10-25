@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Georgia Tech Research Corporation
+ * Copyright (c) 2011, Georgia Tech Research Corporation
  * 
  * Humanoid Robotics Lab      Georgia Institute of Technology
  * Director: Mike Stilman     http://www.golems.org
@@ -45,14 +45,12 @@
 #include <GUI/GRIPFrame.h>
 #include <Tabs/GRIPTab.h>
 
-#include "PathPlanner.h"
 #include <iostream>
 
 #include <Tabs/AllTabs.h>
 #include <GRIPApp.h>
 
 using namespace std;
-using namespace planning;
 
 /* Quick intro to adding tabs:
  * 1- Copy template cpp and header files and replace with new class name
@@ -103,7 +101,15 @@ RipPlannerTab::RipPlannerTab( wxWindow *parent, const wxWindowID id,
 
     startConf.resize(0);
     goalConf.resize(0);
-    robotID = 0;
+
+    robotId = 0;
+    links.resize(0);
+
+    rrtStyle = 0;
+    greedyMode = false;
+    connectMode = false;
+    showProg = false;
+    planner = NULL;
 
     sizerFull = new wxBoxSizer( wxHORIZONTAL );
  
@@ -226,11 +232,6 @@ RipPlannerTab::RipPlannerTab( wxWindow *parent, const wxWindowID id,
 
     SetSizer(sizerFull);
 
-    rrtStyle = 0;
-    greedyMode = false;
-    connectMode = false;
-    showProg = false;
-    planner = NULL;
 }
 
 /**
@@ -251,6 +252,7 @@ void RipPlannerTab::OnRadio(wxCommandEvent &evt) {
  * @brief Handle Button Events
  */
 void RipPlannerTab::OnButton(wxCommandEvent &evt) {
+
     int button_num = evt.GetId();
 
     switch (button_num) {
@@ -262,9 +264,9 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
             	    cout << "--(!) Must have a world with a robot to set a Start state (!)--" << endl;
 		    break;
 		}
-		cout << "--(i) Setting Start state for " << mWorld->mRobots[robotID]->getName() << ":" << endl;
+		cout << "--(i) Setting Start state for " << mWorld->mRobots[robotId]->getName() << ":" << endl;
 
-                startConf = mWorld->mRobots[robotID]->getQuickDofs();
+                startConf = mWorld->mRobots[robotId]->getQuickDofs();
 
 		for( unsigned int i = 0; i < startConf.size(); i++ )
                 {  cout << startConf(i) << " ";  } 
@@ -281,9 +283,9 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
 		cout << "--(!) Must have a world with a robot to set a Goal state.(!)--" << endl;
 		break;
 		}
-		cout << "--(i) Setting Goal state for " << mWorld->mRobots[robotID]->getName() << ":" << endl;
+		cout << "--(i) Setting Goal state for " << mWorld->mRobots[robotId]->getName() << ":" << endl;
 
-                goalConf = mWorld->mRobots[robotID]->getQuickDofs();
+                goalConf = mWorld->mRobots[robotId]->getQuickDofs();
 
 		for( unsigned int i = 0; i < goalConf.size(); i++ )
                 {  cout << goalConf(i) << " "; } 
@@ -300,13 +302,13 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
 		break;
 	    } 
 
-            mWorld->mRobots[robotID]->setQuickDofs( startConf );
+            mWorld->mRobots[robotId]->setQuickDofs( startConf );
 
 	    for( unsigned int i = 0; i< startConf.size(); i++ )
             {  cout << startConf(i) << " "; }
 	    cout << endl;
 
-	    mWorld->mRobots[robotID]->update();
+	    mWorld->mRobots[robotId]->update();
 	    viewer->UpdateCamera(); 
 	    break;
 
@@ -317,13 +319,13 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
 		break;
 	    }
 
-            mWorld->mRobots[robotID]->setQuickDofs( goalConf );
+            mWorld->mRobots[robotId]->setQuickDofs( goalConf );
 
 	    for( unsigned int i = 0; i< goalConf.size(); i++ )
             {  cout << goalConf[i] << " ";  }
 	    cout << endl;
 
-	    mWorld->mRobots[robotID]->update();
+	    mWorld->mRobots[robotId]->update();
 	    viewer->UpdateCamera(); 
 	    break;
 
@@ -334,7 +336,8 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
 		    delete planner;
                
 		cout << "Creating a new planner" << endl;
-		planner = new PathPlanner( mWorld, false );
+                double stepSize = 0.1; // default
+		planner = new PathPlanner( *mWorld, false, stepSize );
 	    } else {
 	        cout << "--(!) Must have a world loaded to make a planner (!)--" << endl;
 	    }
@@ -352,40 +355,50 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
 
         /** Execute Plan */
 	case button_Plan:
+           {         
 	    if( goalConf.size() < 0 ){ cout << "--(x) Must set a goal (x)--" << endl; break; }
 	    if( startConf.size() < 0 ){ cout << "--(x) Must set a start (x)--" << endl; break; }
 	    if( mWorld == NULL ){ cout << "--(x) Must load a world (x)--" << endl; break; }
 	    if( mWorld->mRobots.size() < 1){ cout << "--(x) Must load a world with a robot(x)--" << endl; break; }
 
-	    planner = new PathPlanner( mWorld, false);
+            double stepSize = 0.1;
 
+	    planner = new PathPlanner( *mWorld, false, stepSize );
 	    //wxThread planThread;
 	    //planThread.Create();
+            links = mWorld->mRobots[robotId]->getQuickDofsIndices();
 
-	    planner->planPath( robotID, 
-                               links, 
-                               startConf, 
-                               goalConf, 
-                               path, 
-                               rrtStyle,  
-                               connectMode,
-                               greedyMode, 
-                               smooth, 
-                               maxNodes );
-			
-	    SetTimeline();
+            int maxNodes = 5000;
+            bool smooth = true;
+	    bool result = planner->planPath( robotId, 
+                                             links, 
+                                             startConf, 
+                                             goalConf, 
+                                             rrtStyle,  
+                                             connectMode,
+                                             greedyMode, 
+                                             smooth, 
+                                             maxNodes );
+            if( result  )
+            {  SetTimeline(); }
+           }
 	    break;
 
 	case button_UpdateTime:
-	    // Update the time span of the movie timeline
-	    SetTimeline();		
+           {
+	    /// Update the time span of the movie timeline
+	    SetTimeline();
+           }		
 	    break;
 
+        /** Show Path */
 	case button_ShowPath:            
-	    if( mWorld == NULL || planner == NULL || !planner->solved || planner->path.size() == 0 ) {
+	    if( mWorld == NULL || planner == NULL || planner->path.size() == 0 ) {
 	        cout << "--(!) Must create a valid plan before printing. (!)--" << endl;
 		return;
-	    }
+	    } else {
+                printf("--(i) Printing (i)-- \n");
+            }        
 	    break;
 	}
 }
@@ -396,7 +409,7 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
  */
 void RipPlannerTab::SetTimeline(){
 
-    if( mWorld == NULL || planner == NULL || !planner->solved || planner->path.size() == 0 ) {
+    if( mWorld == NULL || planner == NULL || planner->path.size() == 0 ) {
         cout << "--(!) Must create a valid plan before updating its duration (!)--" << endl;
 	return;
     }
@@ -407,16 +420,18 @@ void RipPlannerTab::SetTimeline(){
     int numsteps = planner->path.size();
     double increment = T/(double)numsteps;
 
-    cout << "Updating Timeline - Increment: " << increment << " Total T: " << T << " Steps: " << numsteps << endl;
+    cout << "-->(+) Updating Timeline - Increment: " << increment << " Total T: " << T << " Steps: " << numsteps << endl;
 
     frame->InitTimer( string("RRT_Plan"),increment );
 
-    for( int i = 0; i < numsteps; i++){
-        for(int l = 0; l < links.size(); l++ ) {
-	    mWorld->mRobots[robotId]->activeLinks[l]->jVal = planner->path[i][l];
-        }
-        world->updateRobot(world->robots[robotID]);
-        frame->AddWorld(world);
+    Eigen::VectorXd vals( links.size() );
+
+    for( std::list<Eigen::VectorXd>::iterator it = planner->path.begin(); it != planner->path.end(); it++ ) {
+
+        mWorld->mRobots[robotId]->setQuickDofs( *it );
+	mWorld->mRobots[robotId]->update();
+
+        frame->AddWorld( mWorld );
     }
 
 }
@@ -463,7 +478,7 @@ void RipPlannerTab::OnSlider(wxCommandEvent &evt) {
     switch (slnum) {
         case slider_Time:
 	    sprintf(numBuf, "X Change: %7.4f", pos);
-	    cout << "Timeline slider output: " << numBuf << endl;
+	    cout << "-->(i) Timeline slider output: " << numBuf << endl;
 	    //handleTimeSlider(); // uses slider position to query plan state
 	    break;
 

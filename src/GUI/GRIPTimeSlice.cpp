@@ -39,50 +39,69 @@
 #include "GRIPTimeSlice.h"
 #include <iostream>
 
-//GRIPTimeSlice::GRIPTimeSlice(World *w) {
-GRIPTimeSlice::GRIPTimeSlice() {
-/*	
-	oPose.clear();
-	rPose.clear();
-	rJoints.clear();
+/**
+ * @function GRIPTimeSlice
+ * @brief Constructor
+ */
+GRIPTimeSlice::GRIPTimeSlice( planning::World *_w ) {
+	
+	objectsXYZ.clear(); objectsRPY.clear();
+	robotsXYZ.clear(); robotsRPY.clear();
+        robotBodyNodesPoses.clear(); 
 
-	for(unsigned int i = 0; i < w->objects.size(); i++) {
-		oPose.push_back(w->objects[i]->absPose);
+        double x, y, z;
+        double roll, pitch, yaw;
+     
+        /// Get Objects Poses
+	for(unsigned int i = 0; i < _w->mObjects.size(); i++ ) {
+            _w->mObjects[i]->getPositionXYZ( x, y, z);                
+	    objectsXYZ.push_back( Eigen::Vector3d( x, y, z ) );
+
+            _w->mObjects[i]->getRotationRPY( roll, pitch, yaw );                
+	    objectsRPY.push_back( Eigen::Vector3d( roll, pitch, yaw ) );
 	}
-	for(unsigned int i = 0; i < w->robots.size(); i++) {
-		Robot* r = w->robots[i];
-		rPose.push_back(r->baseLink->absPose);
-		Eigen::VectorXd RJointVec(r->links.size());
-		for(unsigned int j = 0; j < r->links.size(); j++) {
-			RJointVec[j] = r->links[j]->jVal;
-		}
-		rJoints.push_back(RJointVec);
+   
+        /// Get Robot Poses
+	for(unsigned int i = 0; i < _w->mRobots.size(); i++ ) {
+            _w->mRobots[i]->getPositionXYZ( x, y, z);                
+	    robotsXYZ.push_back( Eigen::Vector3d( x, y, z ) );
+
+            _w->mRobots[i]->getRotationRPY( roll, pitch, yaw );                
+	    robotsRPY.push_back( Eigen::Vector3d( roll, pitch, yaw ) );
+
+            /// Get Node DOFs values
+	    Eigen::VectorXd RJointVec;
+            RJointVec = _w->mRobots[i]->getQuickDofs();
+	    robotBodyNodesPoses.push_back( RJointVec );
+
 	}
-*/
+
 }
 
 /**
- * @function GRIPTimeSlice
+ * @function ~GRIPTimeSlice
+ * @brief Destructor
  */
 GRIPTimeSlice::~GRIPTimeSlice() {
+
 }
 
 /**
  * @function SetToWorld
  */
-/*
-void GRIPTimeSlice::SetToWorld(World* w) {
+void GRIPTimeSlice::SetToWorld( planning::World* _w ) {
 	
-	for(unsigned int i = 0; i < w->objects.size(); i++) {
-		w->objects[i]->absPose = oPose[i];
-	}
-	for(unsigned int i = 0; i < w->robots.size(); i++) {
-		Robot* r = w->robots[i];
-		r->baseLink->absPose = rPose[i];
-		for(unsigned int j = 0; j < r->links.size(); j++) {
-			r->links[j]->jVal = (rJoints[i])[j];
-		}
-		r->baseLink->updateAbsPose();
-	}
+    for(unsigned int i = 0; i < _w->mObjects.size(); i++ ) {
+
+        _w->mObjects[i]->setPositionXYZ( objectsXYZ[i](0), objectsXYZ[i](1), objectsXYZ[i](2) );
+        _w->mObjects[i]->setRotationRPY( objectsRPY[i](0), objectsRPY[i](1), objectsRPY[i](2) );
+    }
+    for(unsigned int i = 0; i < _w->mRobots.size(); i++ ) {
+
+        _w->mRobots[i]->setPositionXYZ( robotsXYZ[i](0), robotsXYZ[i](1), robotsXYZ[i](2) );
+        _w->mRobots[i]->setRotationRPY( robotsRPY[i](0), robotsRPY[i](1), robotsRPY[i](2) );
+        _w->mRobots[i]->setQuickDofs( robotBodyNodesPoses[i] );
+
+    }
 }
-*/
+

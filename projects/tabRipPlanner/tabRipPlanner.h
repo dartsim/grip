@@ -51,7 +51,6 @@
 #include <iostream>
 
 using namespace std;
-using namespace planning;
 
 /**
  * @class RipTabPlanner
@@ -60,51 +59,51 @@ using namespace planning;
 class RipPlannerTab : public GRIPTab
 {
 public:
-	int rrtStyle;
-	bool greedyMode;
-	bool connectMode;
-	bool showProg;
-	PathPlanner *planner;
+    Eigen::VectorXd startConf;
+    Eigen::VectorXd goalConf;
 
-	int robotId;
-        Eigen::VectorXi links;
+    int robotId;
+    Eigen::VectorXi links;
 
-	wxTextCtrl *timeText;
+    int rrtStyle;
+    bool greedyMode;
+    bool connectMode;
+    bool showProg;
+    PathPlanner *planner;
 
-	Eigen::VectorXd startConf;
-	Eigen::VectorXd goalConf;
+    wxTextCtrl *timeText;
 
-	// public vars to capture external selection stuff 
-	planning::Object* selectedObject;
-	planning::Robot* selectedRobot;
-	kinematics::BodyNode* selectedNode;
+    // public vars to capture external selection stuff 
+    planning::Object* selectedObject;
+    planning::Robot* selectedRobot;
+    kinematics::BodyNode* selectedNode;
 
-        /// Functions
+    /// Functions
 
-	RipPlannerTab(){};
-        RipPlannerTab( wxWindow * parent, wxWindowID id = -1,
-                       const wxPoint & pos = wxDefaultPosition,
-                       const wxSize & size = wxDefaultSize,
-                       long style = wxTAB_TRAVERSAL);
-	virtual ~RipPlannerTab(){}
+    RipPlannerTab(){};
+    RipPlannerTab( wxWindow * parent, wxWindowID id = -1,
+                   const wxPoint & pos = wxDefaultPosition,
+                   const wxSize & size = wxDefaultSize,
+                   long style = wxTAB_TRAVERSAL);
+    virtual ~RipPlannerTab(){}
 
-	void OnSlider(wxCommandEvent &evt);
-	void OnRadio(wxCommandEvent &evt);
-	void OnButton(wxCommandEvent &evt);
-	void OnCheckBox(wxCommandEvent &evt);
-	void SetTimeline();
-	void GRIPStateChange();
+    void OnSlider(wxCommandEvent &evt);
+    void OnRadio(wxCommandEvent &evt);
+    void OnButton(wxCommandEvent &evt);
+    void OnCheckBox(wxCommandEvent &evt);
+    void SetTimeline();
+    void GRIPStateChange();
 
-	// Thread specific
-	// GRIPThread* thread;
+    // Thread specific
+    // GRIPThread* thread;
 
-	// Your Thread routine
-	// call GRIPThread::CheckPoint() regularly
-	// void Thread();
-	// void onCompleteThread();
+    // Your Thread routine
+    // call GRIPThread::CheckPoint() regularly
+    // void Thread();
+    // void onCompleteThread();
 
-	DECLARE_DYNAMIC_CLASS( RipTabPlannerTab )
-	DECLARE_EVENT_TABLE()
+    DECLARE_DYNAMIC_CLASS( RipTabPlannerTab )
+    DECLARE_EVENT_TABLE()
 };
 
 #endif /** RIP_PLANNER_TAB */

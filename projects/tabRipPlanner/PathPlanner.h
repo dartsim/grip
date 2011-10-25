@@ -23,15 +23,14 @@ public:
     /// Member variables
     double stepSize;
     planning::World* world;
-    bool solved;
     std::list<Eigen::VectorXd> path;
     
 
     /// Constructor
     PathPlanner();
     PathPlanner( planning::World &_world, 
-                 bool _copyWorld = true, 
-                 double _stepSize = 0.1 )
+                 bool _copyWorld = false, 
+                 double _stepSize = 0.1 );
     /// Destructor
     ~PathPlanner();  
 
@@ -40,15 +39,23 @@ public:
                    const Eigen::VectorXi &_links, 
                    const Eigen::VectorXd &_start, 
                    const Eigen::VectorXd &_goal, 
-                   std::list<Eigen::VectorXd> &_path, 
                    bool _bidirectional = true, 
                    bool _connect = true, 
+                   bool _greedy = false,
                    bool _smooth = true, 
-                   unsigned int _maxNodes = 0 ) const;
+                   unsigned int _maxNodes = 0 );
 
-    bool checkPathSegment(int robotId, const std::vector<int> &linkIds, const Eigen::VectorXd &config1, const Eigen::VectorXd &config2) const;
-    void smoothPath(int robotId, std::vector<int> links, std::list<Eigen::VectorXd> &path) const;
-    void smoothPath2( int robotId, std::vector<int> linkIds, std::list<Eigen::VectorXd> &path ) const;
+    bool checkPathSegment( int _robotId, 
+                           const Eigen::VectorXi &_links, 
+                           const Eigen::VectorXd &_config1, 
+                           const Eigen::VectorXd &_config2 ) const;
+
+    void smoothPath( int _robotId, 
+                     const Eigen::VectorXi &_links,
+                     std::list<Eigen::VectorXd> &_path );
+    void smoothPath2( int _robotId, 
+                      const Eigen::VectorXi &_links, 
+                      std::list<Eigen::VectorXd> &_path );
 
 private:
     /// Member variables
@@ -59,18 +66,23 @@ private:
                             const Eigen::VectorXi &_links, 
                             const Eigen::VectorXd &_start, 
                             const Eigen::VectorXd &_goal, 
-                            std::list<Eigen::VectorXd> &_path, 
                             bool _connect, 
-                            unsigned int _maxNodes ) const;
+                            bool _greedy,
+                            unsigned int _maxNodes );
 
     /// Grows 2 RRT (Start and Goal)
     bool planBidirectionalRrt( int _robotId, 
                                const Eigen::VectorXi &_links, 
                                const Eigen::VectorXd &_start, 
-                               const Eigen::VectorXd &_goal, 
-                               std::list<Eigen::VectorXd> &_path, 
+                               const Eigen::VectorXd &_goal,  
                                bool _connect, 
-                               unsigned int _maxNodes ) const;
+		               bool _greedy,
+                               unsigned int _maxNodes );
+
+    /// Random value between two given min and max
+    inline int randomInRange( int _min, int _max) {
+        return (int) ( (double)_min + (double) ( (_max - _min) * ( (double)rand() / ((double)RAND_MAX + 1) ) ) );
+    }
 
 };
 

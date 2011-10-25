@@ -10,6 +10,7 @@ message (STATUS "Creating Makefile for the tabRipPlanner project")
 # Search all header and source files
 file (GLOB srcs "*.cpp")
 file (GLOB hdrs "*.h")
+file (GLOB kdtree_srcs kdtree/kdtree.c )
 
 set (wxWidgets_USE_LIBS base core gl)
 find_package (wxWidgets)
@@ -19,10 +20,10 @@ if (wxWidgets_FOUND)
   link_directories(${CMAKE_SOURCE_DIR}/lib ${GRIP_LIBDIR} ${WXWIDGETS_SHARED_LIBRARY_DIRS})
 
   if(MSVC)
-	add_executable (tabRipPlanner WIN32 ${srcs} ${hdrs})
+	add_executable (tabRipPlanner WIN32 ${srcs} ${hdrs} ${kdtree_srcs} )
 	set_target_properties (tabRipPlanner PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
    else()
-    add_executable (tabRipPlanner ${srcs} ${hdrs})
+    add_executable (tabRipPlanner ${srcs} ${hdrs} ${kdtree_srcs} )
    endif()
 
    target_link_libraries (tabRipPlanner ${GRIP_LIBRARIES} ${DART_LIBRARIES} ${wxWidgets_LIBRARIES} )

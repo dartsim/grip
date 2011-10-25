@@ -98,7 +98,7 @@ public:
 	void OnCameraReset(wxCommandEvent& event);
 
 	void InitTimer(string title, double period);
-	//void AddWorld(World* world);
+	void AddWorld( planning::World* world );
 
 	vector<GRIPTimeSlice*> timeVector;
 	double tCurrent;

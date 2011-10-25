@@ -584,14 +584,13 @@ void GRIPFrame::OnTimeScroll(wxScrollEvent& event){
  * @brief 
  * @date 2011-10-13
  */
-/*
-void GRIPFrame::AddWorld(World* world){
-	GRIPTimeSlice* tsnew = new GRIPTimeSlice(world);
+void GRIPFrame::AddWorld( planning::World* _world){
+	GRIPTimeSlice* tsnew = new GRIPTimeSlice( _world );
 	timeVector.push_back(tsnew);
 	tMax += tIncrement;
 	timeTrack->SetRange(0, tMax * tPrecision);
 }
-*/
+
 
 /**
  * @function InitTimer

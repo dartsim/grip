@@ -42,19 +42,19 @@
 //#include <Eigen/StdVector>  // http://eigen.tuxfamily.org/dox/StlContainers.html
 #include <Eigen/Core>
 #include <vector>
+#include <planning/World.h>
 
 class GRIPTimeSlice
 {
 public:
-	GRIPTimeSlice();
+	GRIPTimeSlice( planning::World* _world );
 	~GRIPTimeSlice();
 
-	//void SetToWorld(World*);
-/*
-	std::vector<Eigen::Transform<double, 3, Eigen::Affine>, Eigen::aligned_allocator<Eigen::Transform<double, 3, Eigen::Affine> > > oPose;
-	std::vector<Eigen::Transform<double, 3, Eigen::Affine>, Eigen::aligned_allocator<Eigen::Transform<double, 3, Eigen::Affine> > > rPose;
-	std::vector<Eigen::VectorXd> rJoints;
-*/
+	void SetToWorld( planning::World* _world );
+
+	std::vector<Eigen::VectorXd> objectsXYZ; std::vector<Eigen::VectorXd> objectsRPY;
+	std::vector<Eigen::VectorXd> robotsXYZ; std::vector<Eigen::VectorXd> robotsRPY;
+	std::vector<Eigen::VectorXd> robotBodyNodesPoses;
 };
 
 #endif

@@ -8,7 +8,8 @@
 #define _RRT_H_
 
 #include <vector>
-#include <ctime.h>
+#include <list>
+#include <time.h>
 #include <Eigen/Core>
 #include <planning/World.h>
 #include "kdtree/kdtree.h"
@@ -22,7 +23,7 @@ class RRT {
 public:
 
     typedef enum {
-      STEP_COLLLISION, /**< Collided with obstacle. No added */
+      STEP_COLLISION, /**< Collided with obstacle. No added */
       STEP_REACHED,    /**< The configuration that we grow to is less than stepSize away from node we grow from. No node added */
       STEP_PROGRESS    /**< One node added */
     }  StepResult;
@@ -42,7 +43,7 @@ public:
     struct kdtree *kdTree;
 
     /// Constructor
-    RRT( planning::World _world, 
+    RRT( planning::World* _world, 
          int _robotId, 
          const Eigen::VectorXi &_links, 
          const Eigen::VectorXd &_root, 
