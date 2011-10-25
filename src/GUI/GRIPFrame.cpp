@@ -307,14 +307,14 @@ void GRIPFrame::DoLoad(string filename){
         mWorld = parseWorld( string(filename) );
         mWorld->printInfo();
 
-	cout << "--(v)Done Loading." << endl;
+	cout << "--(v) Done Loading (v)--" << endl;
 	treeView->CreateFromWorld();
-	cout << "Done Updating TreeView." << endl;
+	cout << "--(v) Done Updating TreeView (v)--" << endl;
 	viewer->ResetGL();
-	SetStatusText(wxT("Done Loading"));
+	SetStatusText(wxT("--(i) Done Loading (i)--"));
 
 	//Extract path to executable & save "lastload" there
-	cout << "Saving " << filename << " to .lastload file" << endl;
+	cout << "--(i) Saving " << filename << " to .lastload file (i)--" << endl;
         wxString filename_string(filename.c_str(), wxConvUTF8);
 	saveText(filename_string,".lastload");
 
@@ -331,6 +331,7 @@ void GRIPFrame::DoLoad(string filename){
  * @date 2011-10-13
  */
 void GRIPFrame::DeleteWorld(){
+
 	InitTimer("",0);
 	for(size_t i=0; i<timeVector.size(); i++){
 		if(timeVector[i]!=NULL)
@@ -389,25 +390,25 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
 	wxClientDC dc2(viewer);
 	dc2.GetSize(&w, &h);
 
-	for(double s=0; s<timeVector.size(); s+= step){
-		int i = (int)s;
+	for(double s=0; s < timeVector.size(); s+= step){
+	    int i = (int)s;
 
-		//timeVector[i]->SetToWorld(world);
-		viewer->UpdateCamera();
-		wxYield();
+	    timeVector[i]->SetToWorld( mWorld );
+	    viewer->UpdateCamera();
+	    wxYield();
 
-		unsigned char* imageData = (unsigned char*) malloc(w * h * 3);
-		glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, imageData);
-		wxImage img_ud(w,h,imageData);
-		wxImage img = img_ud.Mirror(false);
+	    unsigned char* imageData = (unsigned char*) malloc(w * h * 3);
+	    glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+	    wxImage img_ud(w,h,imageData);
+	    wxImage img = img_ud.Mirror(false);
 
-		sprintf(buf, "%s/%06d.png",path.c_str(),count);
+	    sprintf(buf, "%s/%06d.png",path.c_str(),count);
 
-		wxString fname = wxString(buf,wxConvUTF8);
-		cout << "Saving:" << buf << ":" << endl;
-		img.SaveFile(fname, wxBITMAP_TYPE_PNG);
+	    wxString fname = wxString(buf,wxConvUTF8);
+	    cout << "Saving:" << buf << ":" << endl;
+	    img.SaveFile(fname, wxBITMAP_TYPE_PNG);
 
-		count++;
+	    count++;
 	}
 
     delete buf;
@@ -553,6 +554,7 @@ void GRIPFrame::setTimeValue(double value, bool sendSignal){
  * @date 2011-10-13
  */
 void GRIPFrame::updateTimeValue(double value, bool sendSignal){
+        printf("Are you called? \n");
 	if(tIncrement == 0) return;
 	char buf[100];
 	sprintf(buf, "%6.2f", tCurrent);
@@ -562,7 +564,7 @@ void GRIPFrame::updateTimeValue(double value, bool sendSignal){
 
 	unsigned int timeIndex = (int)((tCurrent/tMax)*((double)timeVector.size()));
 	if(timeIndex > timeVector.size()-1) timeIndex = timeVector.size()-1;
-	//timeVector[timeIndex]->SetToWorld(world);
+	timeVector[timeIndex]->SetToWorld( mWorld );
 	viewer->UpdateCamera();
 
 	if(sendSignal) updateAllTabs();
@@ -574,8 +576,9 @@ void GRIPFrame::updateTimeValue(double value, bool sendSignal){
  * @date 2011-10-13
  */
 void GRIPFrame::OnTimeScroll(wxScrollEvent& event){
+        printf("Are you being scrolled? \n");
 	tCurrent = (double)(event.GetPosition())/(double)tPrecision;
-	//updateTimeValue(tCurrent);
+	updateTimeValue(tCurrent);
 	updateTimeValue(tCurrent,true);
 }
 

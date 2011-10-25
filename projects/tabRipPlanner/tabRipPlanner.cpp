@@ -369,7 +369,7 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
             links = mWorld->mRobots[robotId]->getQuickDofsIndices();
 
             int maxNodes = 5000;
-            bool smooth = true;
+            bool smooth = false;
 	    bool result = planner->planPath( robotId, 
                                              links, 
                                              startConf, 
@@ -407,7 +407,7 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
  * @function setTimeLine
  * @brief 
  */
-void RipPlannerTab::SetTimeline(){
+void RipPlannerTab::SetTimeline() {
 
     if( mWorld == NULL || planner == NULL || planner->path.size() == 0 ) {
         cout << "--(!) Must create a valid plan before updating its duration (!)--" << endl;

@@ -65,55 +65,55 @@ class GRIPFrame : public wxFrame
 public:
     GRIPFrame(const wxString& title);
 
-	wxPanel *backPanel;
+    wxPanel *backPanel;
 
-	GRIPSlider *timeSlider;
+    GRIPSlider *timeSlider;
 
-	wxSlider *timeTrack;
-	wxTextCtrl *timeText;
+    wxSlider *timeTrack;
+    wxTextCtrl *timeText;
 
-	wxToolBar* filebar;
-	wxToolBar* optionbar;
-	wxBitmap toolBarBitmaps[10];
+    wxToolBar* filebar;
+    wxToolBar* optionbar;
+    wxBitmap toolBarBitmaps[10];
 
-	//void OnSize(wxSizeEvent& evt);
-	int saveText(wxString scenepath, const char* llfile);
+    //void OnSize(wxSizeEvent& evt);
+    int saveText(wxString scenepath, const char* llfile);
     void OnQuit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnSaveScene(wxCommandEvent& event);
     void OnSaveRobot(wxCommandEvent& event);
-	void OnLoad(wxCommandEvent& event);
-	void OnQuickLoad(wxCommandEvent& event);
-	void OnToolOrder(wxCommandEvent& event);
-	void OnToolCheckColl(wxCommandEvent& event);
-	void OnToolScreenshot(wxCommandEvent& event);
-	void OnToolMovie(wxCommandEvent& event);
+    void OnLoad(wxCommandEvent& event);
+    void OnQuickLoad(wxCommandEvent& event);
+    void OnToolOrder(wxCommandEvent& event);
+    void OnToolCheckColl(wxCommandEvent& event);
+    void OnToolScreenshot(wxCommandEvent& event);
+    void OnToolMovie(wxCommandEvent& event);
     void OnClose(wxCommandEvent& event);
 
-	void OnTimeScroll(wxScrollEvent &evt);
-	void OnTimeEnter(wxCommandEvent &evt);
+    void OnTimeScroll(wxScrollEvent &evt);
+    void OnTimeEnter(wxCommandEvent &evt);
 
-	void OnWhite(wxCommandEvent& event);
-	void OnBlack(wxCommandEvent& event);
-	void OnCameraReset(wxCommandEvent& event);
+    void OnWhite(wxCommandEvent& event);
+    void OnBlack(wxCommandEvent& event); 
+    void OnCameraReset(wxCommandEvent& event);
 
-	void InitTimer(string title, double period);
-	void AddWorld( planning::World* world );
+    void InitTimer(string title, double period);
+    void AddWorld( planning::World* world );
 
-	vector<GRIPTimeSlice*> timeVector;
-	double tCurrent;
-	double tMax;
-	double tIncrement;
-	int tPrecision;
-	void setTimeValue(double value, bool sendSignal = false);
-	void updateTimeValue(double value, bool sendSignal = false);
+    vector<GRIPTimeSlice*> timeVector;
+    double tCurrent;
+    double tMax;
+    double tIncrement;
+    int tPrecision;
+    void setTimeValue(double value, bool sendSignal = false);
+    void updateTimeValue(double value, bool sendSignal = false);
 
-	void updateAllTabs();
+    void updateAllTabs();
 
-	void DoLoad(string filename);
-	void DeleteWorld();
+    void DoLoad(string filename);
+    void DeleteWorld();
 
-	void onTVChange(wxTreeEvent& event);
+    void onTVChange(wxTreeEvent& event);
 
     DECLARE_EVENT_TABLE()
 };

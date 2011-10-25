@@ -100,8 +100,9 @@ void GRIPTimeSlice::SetToWorld( planning::World* _w ) {
 
         _w->mRobots[i]->setPositionXYZ( robotsXYZ[i](0), robotsXYZ[i](1), robotsXYZ[i](2) );
         _w->mRobots[i]->setRotationRPY( robotsRPY[i](0), robotsRPY[i](1), robotsRPY[i](2) );
-        _w->mRobots[i]->setQuickDofs( robotBodyNodesPoses[i] );
-
+        _w->mRobots[i]->setQuickDofs( robotBodyNodesPoses[i] );         
+        _w->mRobots[i]->update();
     }
+ 
 }
 
