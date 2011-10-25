@@ -28,7 +28,6 @@ RRT::RRT( planning::World *_world,
     /// Initialize random generator   
     srand( time(NULL) );
 
-    printf("NDim: %d \n", ndim);
     /// Create kdtree and add the first node (start) 
     kdTree = kd_create( ndim );
     addNode( _root, -1 ); 
@@ -78,12 +77,6 @@ bool RRT::connect( const Eigen::VectorXd &_target ) {
  */
 RRT::StepResult RRT::tryStep() {
     Eigen::VectorXd qtry = getRandomConfig();
-    printf( "Try step random: \n");
-    for( int i = 0; i <qtry.size(); i++ )
-    {  printf(" %.3f ", qtry(i) ); }
-    printf("\n");
-
-
     return tryStep( qtry );
 }
 
@@ -198,7 +191,6 @@ void RRT::tracePath( int _node,
             _path.push_back( configVector[x] );
         }
         x = parentVector[x];
-        printf("Path size: %d \n", _path.size() );
     }
 }
 

@@ -21,7 +21,7 @@ PathPlanner::PathPlanner( planning::World &_world, bool _copyWorld, double _step
     copyWorld = _copyWorld;
 
     if( copyWorld ) {
-       printf( "Not implemented yet. Is this necesary? \n" );
+       printf( "Not implemented yet. Sorry -- achq \n" );
     } else {
         world = &_world;
     }
@@ -54,27 +54,6 @@ bool PathPlanner::planPath( int _robotId,
                             bool _smooth, 
                             unsigned int _maxNodes ) {
 
-    printf( "Planner Summary: \n" );
-    printf("Links Index: \n");
-    for( int i = 0; i < _links.size(); i++ )
-    { printf(" %d ", _links(i) ); }
-    printf("\n");
-    
-    printf("Start: \n");
-    for( int i = 0; i < _start.size(); i++ )
-    { printf(" %.3f ", _start(i) ); }
-    printf("\n");
-
-    printf("Goal: \n");
-    for( int i = 0; i < _goal.size(); i++ )
-    { printf(" %.3f ", _goal(i) ); }
-    printf("\n");
-
-    printf(" Bidirectional: %d \n", _bidirectional );
-    printf(" Connect: %d \n", _connect );
-    printf(" Greedy: %d \n", _greedy );
-    printf(" Smooth: %d \n", _smooth );
-    printf("  MAX nodes: %d \n", _maxNodes );
 
     //world->mRobots[_robotId]->setQuickDofs( _start ); // Other quick way
     world->mRobots[_robotId]->setDofs( _start, _links );
@@ -117,34 +96,63 @@ bool PathPlanner::planSingleTreeRrt( int _robotId,
 
     double smallestGap = DBL_MAX;
 
-    while ( result != RRT::STEP_REACHED ) {
+    // For greedy, probability of directing to goal (0-100)
+    int p = 50;
 
-        if( _connect ) {
-            printf("No goal \n");
-	    rrt.connect();
-	    if( rrt.connect( _goal ) ) {
-                printf("Trying goal \n");
-	        result = RRT::STEP_REACHED;
-	    }
+    while ( result != RRT::STEP_REACHED && smallestGap > stepSize ) {
 
-	} else {
-            printf("Common \n");
-	    rrt.tryStep();
-	    result = rrt.tryStep( _goal );
-	}
+        /** greedy section */
+        if( _greedy ) {
 
-	if( _maxNodes > 0 && rrt.getSize() > _maxNodes ) {
-	    return false;
+            /** greedy and connect */
+            if( _connect ) {
+ 
+               if( randomInRange(0, 100) < p ) {
+                   if( rrt.connect(_goal) ) { 
+                       result = RRT::STEP_REACHED; 
+                   }    
+               } else {
+                   rrt.connect();  
+               }
+
+            /** greedy and NO connect */
+            } else {
+
+               if( randomInRange(0,100) < p ) {
+                   result = rrt.tryStep( _goal );
+               } else {
+                   rrt.tryStep();
+               }    
+            }
+ 
+        /** NO greedy section */
+        } else {
+
+            /** NO greedy and Connect */
+            if( _connect ) {
+                rrt.connect();
+
+            /** No greedy and No connect */
+            } else {
+                rrt.tryStep();
+            }
+  
+        }
+   
+        if( _maxNodes > 0 && rrt.getSize() > _maxNodes ) {
+            printf("--(!) Exceeded maximum of %d nodes. No path found (!)--\n", _maxNodes );
+            return false;
         }
 
-	double gap = rrt.getGap( _goal );
-	if( gap < smallestGap ) {
-	    smallestGap = gap;
-	    cout << "Gap: " << smallestGap << "    Tree size: " << rrt.configVector.size() << endl;
-	}
-    }
-    /// Save path to path member variable of PathPlanner 
-    printf(" Reached path! Gap: %.3f \n", rrt.getGap( _goal ) );
+        double gap = rrt.getGap( _goal );
+        if( gap < smallestGap ) {
+            smallestGap = gap;
+            cout << "--(o) Gap: " << smallestGap << "  Tree size: " << rrt.configVector.size() << " (o)--" << endl;
+        }
+    } // End of while
+
+    /// Save path  
+    printf(" --> Reached goal! : Gap: %.3f \n", rrt.getGap( _goal ) );
     rrt.tracePath( rrt.activeNode, path, false );
    
     return true;

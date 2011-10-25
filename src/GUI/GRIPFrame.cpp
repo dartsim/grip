@@ -554,7 +554,6 @@ void GRIPFrame::setTimeValue(double value, bool sendSignal){
  * @date 2011-10-13
  */
 void GRIPFrame::updateTimeValue(double value, bool sendSignal){
-        printf("Are you called? \n");
 	if(tIncrement == 0) return;
 	char buf[100];
 	sprintf(buf, "%6.2f", tCurrent);
@@ -576,7 +575,6 @@ void GRIPFrame::updateTimeValue(double value, bool sendSignal){
  * @date 2011-10-13
  */
 void GRIPFrame::OnTimeScroll(wxScrollEvent& event){
-        printf("Are you being scrolled? \n");
 	tCurrent = (double)(event.GetPosition())/(double)tPrecision;
 	updateTimeValue(tCurrent);
 	updateTimeValue(tCurrent,true);
