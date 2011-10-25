@@ -147,7 +147,7 @@ bool PathPlanner::planSingleTreeRrt( int _robotId,
         double gap = rrt.getGap( _goal );
         if( gap < smallestGap ) {
             smallestGap = gap;
-            cout << "--(o) Gap: " << smallestGap << "  Tree size: " << rrt.configVector.size() << " (o)--" << endl;
+            cout << "--> [planner] Gap: " << smallestGap << "  Tree size: " << rrt.configVector.size() << endl;
         }
     } // End of while
 
@@ -167,14 +167,52 @@ bool PathPlanner::planBidirectionalRrt( int _robotId,
                                         const Eigen::VectorXd &_start, 
                                         const Eigen::VectorXd &_goal, 
                                         bool _connect,
-                                        bool _greedy, 
+                                        bool _greedy, // no effect here
                                         unsigned int _maxNodes ) {
-    // ================================================//
-    // YOUR CODE HERE                                  //
-    // ================================================//	
-    RRT rrt_a( world, _robotId, _links, _start, stepSize );
-    RRT rrt_b( world, _robotId, _links, _goal, stepSize );
+	
+    RRT rrt_start( world, _robotId, _links, _start, stepSize );
+    RRT rrt_goal( world, _robotId, _links, _goal, stepSize );
+
+    RRT* rrt_a = &rrt_start;
+    RRT* rrt_b = &rrt_goal;
+	
+    double smallestGap = DBL_MAX;
+    bool connectedTrees = false;
+
+    while( !connectedTrees ) {
+
+        RRT* temp = rrt_a;
+	rrt_a = rrt_b;
+	rrt_b = temp;
+
+	if( _connect ) {
+
+	    rrt_a->connect();
+	    connectedTrees = rrt_b->connect( rrt_a->configVector[rrt_a->activeNode] );
+
+	} else {
+	    rrt_a->tryStep();
+	    connectedTrees = ( RRT::STEP_REACHED == rrt_b->tryStep(rrt_a->configVector[rrt_a->activeNode]) );
+	}
+
+	if( _maxNodes > 0 && rrt_a->getSize() + rrt_b->getSize() > _maxNodes ) {
+	    return false;
+        }
+
+	double gap = rrt_b->getGap( rrt_a->configVector[rrt_a->activeNode] );
+
+	if( gap < smallestGap ) {
+	    smallestGap = gap;
+	    cout << "-->[planner] Gap: " << smallestGap << "  Tree sizes: " << rrt_start.configVector.size() << "/" << rrt_goal.configVector.size() << endl;
+	}
+    }
+	
+    rrt_start.tracePath( rrt_start.activeNode, path );
+    // WATCH OUT! We DO NOT clean path in trace before filling, so this is valid
+    rrt_goal.tracePath( rrt_goal.activeNode, path, true );
+	
     return true;
+
 }
 
 

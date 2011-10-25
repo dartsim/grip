@@ -30,7 +30,7 @@ public:
     PathPlanner();
     PathPlanner( planning::World &_world, 
                  bool _copyWorld = false, 
-                 double _stepSize = 0.1 );
+                 double _stepSize = 0.02 );
     /// Destructor
     ~PathPlanner();  
 

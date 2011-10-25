@@ -68,7 +68,7 @@ public:
     int rrtStyle;
     bool greedyMode;
     bool connectMode;
-    bool showProg;
+    bool smooth;
     PathPlanner *planner;
 
     wxTextCtrl *timeText;

@@ -50,18 +50,18 @@ class GRIPSlider : public wxPanel
 {
 public:
 	GRIPSlider(){}
-	GRIPSlider(wxBitmap bmp, double left, double right, int precision, double initialpos,
-						int lineSize, int pageSize,
-						wxWindow *parent, const wxWindowID id = -1, bool vertical = false,
-                       const wxPoint& pos = wxDefaultPosition, 
-					   const wxSize& size = wxDefaultSize,
-                       long style = wxTAB_TRAVERSAL);
-	GRIPSlider(const char* name, double left, double right, int precision, double initialpos,
-						int lineSize, int pageSize,
-						wxWindow *parent, const wxWindowID id = -1, bool vertical = false,
-                       const wxPoint& pos = wxDefaultPosition, 
-					   const wxSize& size = wxDefaultSize,
-                       long style = wxTAB_TRAVERSAL);
+	GRIPSlider( wxBitmap bmp, double left, double right, int precision, double initialpos,
+		    int lineSize, int pageSize,
+		    wxWindow *parent, const wxWindowID id = -1, bool vertical = false,
+                    const wxPoint& pos = wxDefaultPosition, 
+		    const wxSize& size = wxDefaultSize,
+                    long style = wxTAB_TRAVERSAL );
+	GRIPSlider( const char* name, double left, double right, int precision, double initialpos,
+		    int lineSize, int pageSize,
+		    wxWindow *parent, const wxWindowID id = -1, bool vertical = false,
+                    const wxPoint& pos = wxDefaultPosition, 
+		    const wxSize& size = wxDefaultSize,
+                    long style = wxTAB_TRAVERSAL);
 	virtual ~GRIPSlider(){}
 
 	wxBoxSizer *sizer;

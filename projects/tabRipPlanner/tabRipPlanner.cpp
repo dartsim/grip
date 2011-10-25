@@ -73,7 +73,7 @@ enum planTabEvents {
 	button_ShowPath,
 	checkbox_beGreedy,
 	checkbox_useConnect,
-	checkbox_showProgress,
+	checkbox_useSmooth,
 	slider_Time
 };
 
@@ -108,7 +108,7 @@ RipPlannerTab::RipPlannerTab( wxWindow *parent, const wxWindowID id,
     rrtStyle = 0;
     greedyMode = false;
     connectMode = false;
-    showProg = false;
+    smooth = false;
     planner = NULL;
 
     sizerFull = new wxBoxSizer( wxHORIZONTAL );
@@ -132,7 +132,7 @@ RipPlannerTab::RipPlannerTab( wxWindow *parent, const wxWindowID id,
 		    1, // vertical stretch evenly
 		    wxALIGN_NOT,
 		    0 );
-    miniSizer->Add( new wxCheckBox(this, checkbox_showProgress, _T("show &progress (update viewer online)")),
+    miniSizer->Add( new wxCheckBox(this, checkbox_useSmooth, _T("use &smoother (make it less ugly)")),
 		    1, // vertical stretch evenly
 		    wxALIGN_NOT,
 		    0 );
@@ -361,7 +361,7 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
 	    if( mWorld == NULL ){ cout << "--(x) Must load a world (x)--" << endl; break; }
 	    if( mWorld->mRobots.size() < 1){ cout << "--(x) Must load a world with a robot(x)--" << endl; break; }
 
-            double stepSize = 0.1;
+            double stepSize = 0.02;
 
 	    planner = new PathPlanner( *mWorld, false, stepSize );
 	    //wxThread planThread;
@@ -369,7 +369,6 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
             links = mWorld->mRobots[robotId]->getQuickDofsIndices();
 
             int maxNodes = 5000;
-            bool smooth = false;
 	    bool result = planner->planPath( robotId, 
                                              links, 
                                              startConf, 
@@ -454,9 +453,9 @@ void RipPlannerTab::OnCheckBox( wxCommandEvent &evt ) {
 	    connectMode = (bool)evt.GetSelection();
 	    cout << "--> useConnect = " << connectMode << endl;
 	    break;
-	case checkbox_showProgress:
-	    showProg = (bool)evt.GetSelection();
-	    cout << "--> showProg = " << showProg << endl;
+	case checkbox_useSmooth:
+	    smooth = (bool)evt.GetSelection();
+	    cout << "--> Smooth option = " << smooth << endl;
 	    break;
     }
 }
