@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Georgia Tech Research Corporation
+ * Copyright (c) 2011, Georgia Tech Research Corporation
  * 
  * Humanoid Robotics Lab      Georgia Institute of Technology
  * Director: Mike Stilman     http://www.golems.org
@@ -49,6 +49,7 @@
 #include "GRIPSlider.h"
 #include "GRIPTimeSlice.h"
 #include "GRIPFrame.h"
+#include <Tools/utils.h>
 
 #include "icons/open.xpm"
 #include "icons/save.xpm"
@@ -67,10 +68,11 @@ enum toolNums{
     Tool_open= 1262,
     Tool_save= 1263,
     Tool_quickload = 1264,
-	Tool_linkorder = 1265,
-	Tool_checkcollisions = 1266,
-	Tool_screenshot = 1267,
-	Tool_movie = 1268
+
+    Tool_linkorder = 1265,
+    Tool_checkcollisions = 1266,
+    Tool_screenshot = 1267,
+    Tool_movie = 1268
 };
 
 extern bool check_for_collisions;
@@ -82,182 +84,190 @@ extern bool check_for_collisions;
  * @brief Constructor 
  * @date 2011-10-13
  */
-GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
-{
-	tPrecision = 1000;
-	tMax = 5;
-	tMax = 0;
-	InitTimer("",0);
+GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
+
+    tPrecision = 1000;
+    tMax = 5;
+    tMax = 0;
+    InitTimer("",0);
     std::cout << "GRIPFrame 1" << std::endl;
     wxMenu *fileMenu = new wxMenu;
     wxMenu *helpMenu = new wxMenu;
-	wxMenu *settingsMenu = new wxMenu;
-	wxMenu *bgMenu = new wxMenu;
-	//wxMenu *saveMenu = new wxMenu;
-	fileMenu->Append(MenuLoad, wxT("L&oad\tAlt-O"));
-	fileMenu->Append(MenuQuickLoad, wxT("Q&uickLoad\tAlt-Shift-Q"));
-	fileMenu->Append(MenuSaveScene, wxT("Save Scene"));
-	//saveMenu->Append(MenuSaveRobot, wxT("Save Robot"));
-	//fileMenu->AppendSubMenu(saveMenu, wxT("S&ave\tAlt-S"));
-	fileMenu->Append(MenuClose, wxT("C&lose\tAlt-C"));
-	fileMenu->AppendSeparator();
-	fileMenu->Append(MenuQuit, wxT("E&xit\tAlt-Q"));
+    wxMenu *settingsMenu = new wxMenu;
+    wxMenu *bgMenu = new wxMenu;
+    //wxMenu *saveMenu = new wxMenu;
 
-	bgMenu->Append(MenuBgWhite, wxT("White"));
-	bgMenu->Append(MenuBgBlack, wxT("Black"));
+    fileMenu->Append(MenuLoad, wxT("L&oad\tAlt-O"));
+    fileMenu->Append(MenuQuickLoad, wxT("Q&uickLoad\tAlt-Shift-Q"));
+    fileMenu->Append(MenuSaveScene, wxT("Save Scene"));
+    //saveMenu->Append(MenuSaveRobot, wxT("Save Robot"));
+    //fileMenu->AppendSubMenu(saveMenu, wxT("S&ave\tAlt-S"));
+    fileMenu->Append(MenuClose, wxT("C&lose\tAlt-C"));
+    fileMenu->AppendSeparator();
+    fileMenu->Append(MenuQuit, wxT("E&xit\tAlt-Q"));
 
-	settingsMenu->AppendSubMenu(bgMenu, wxT("Background"));
-	settingsMenu->Append(MenuCameraReset, wxT("Reset Camera"));
+    bgMenu->Append(MenuBgWhite, wxT("White"));
+    bgMenu->Append(MenuBgBlack, wxT("Black"));
 
-	helpMenu->Append(MenuAbout, wxT("&About...\tF1"), wxT("Show about dialog"));
+    settingsMenu->AppendSubMenu(bgMenu, wxT("Background"));
+    settingsMenu->Append(MenuCameraReset, wxT("Reset Camera"));
+
+    helpMenu->Append(MenuAbout, wxT("&About...\tF1"), wxT("Show about dialog"));
+
     wxMenuBar *menuBar = new wxMenuBar();
     menuBar->Append(fileMenu, wxT("&File"));
-	menuBar->Append(settingsMenu, wxT("&Settings"));
+    menuBar->Append(settingsMenu, wxT("&Settings"));
     menuBar->Append(helpMenu, wxT("&Help"));
     SetMenuBar(menuBar);
 
-	toolBarBitmaps[0] = wxIcon(open_xpm);
-	toolBarBitmaps[1] = wxIcon(save_xpm);
-	toolBarBitmaps[2] = wxIcon(redo_xpm);
-	toolBarBitmaps[3] = wxIcon(anchor_xpm);
-	toolBarBitmaps[4] = wxIcon(asterisk_xpm);
-	toolBarBitmaps[5] = wxIcon(camera_xpm);
-	toolBarBitmaps[6] = wxIcon(film_xpm);
+    toolBarBitmaps[0] = wxIcon(open_xpm);
+    toolBarBitmaps[1] = wxIcon(save_xpm);
+    toolBarBitmaps[2] = wxIcon(redo_xpm);
+    toolBarBitmaps[3] = wxIcon(anchor_xpm);
+    toolBarBitmaps[4] = wxIcon(asterisk_xpm);
+    toolBarBitmaps[5] = wxIcon(camera_xpm);
+    toolBarBitmaps[6] = wxIcon(film_xpm);
 
-	wxBitmap clockBmp = wxBitmap(clock_xpm);
+    wxBitmap clockBmp = wxBitmap(clock_xpm);
 
-	filebar = new wxToolBar(this,ID_TOOLBAR,wxPoint(0, 0), wxSize(prefTreeViewWidth+50, toolBarHeight), wxTB_HORIZONTAL);
 
-	filebar->SetToolBitmapSize(wxSize(16, 16));
+    filebar = new wxToolBar(this,ID_TOOLBAR,wxPoint(0, 0), wxSize(prefTreeViewWidth+50, toolBarHeight), wxTB_HORIZONTAL);
+
+    filebar->SetToolBitmapSize(wxSize(16, 16));
     filebar->AddTool(wxID_OPEN, _T("Open"),toolBarBitmaps[0], toolBarBitmaps[0], wxITEM_NORMAL, _T("Open .rscene file (Alt-O)"));
-	filebar->AddTool(wxID_SAVE, _T("Save"),toolBarBitmaps[1], toolBarBitmaps[1], wxITEM_NORMAL,  _T("Save world to .rscene file (Alt-S)"));
-	filebar->AddSeparator();
-	filebar->AddTool(Tool_quickload, _T("Quick Load"),toolBarBitmaps[2], toolBarBitmaps[2], wxITEM_NORMAL, _T("Load last viewed scene (Alt-Shift-Q)"));
-	filebar->AddSeparator();
-	filebar->AddTool(Tool_screenshot, _T("Screenshot"),toolBarBitmaps[5], toolBarBitmaps[5], wxITEM_NORMAL, _T("Export screenshot"));
-	filebar->AddTool(Tool_movie, _T("Movie"),toolBarBitmaps[6], toolBarBitmaps[6], wxITEM_NORMAL, _T("Export film sequence"));
+    filebar->AddTool(wxID_SAVE, _T("Save"),toolBarBitmaps[1], toolBarBitmaps[1], wxITEM_NORMAL,  _T("Save world to .rscene file (Alt-S)"));
+    filebar->AddSeparator();
+    filebar->AddTool(Tool_quickload, _T("Quick Load"),toolBarBitmaps[2], toolBarBitmaps[2], wxITEM_NORMAL, _T("Load last viewed scene (Alt-Shift-Q)"));
+    filebar->AddSeparator();
+    filebar->AddTool(Tool_screenshot, _T("Screenshot"),toolBarBitmaps[5], toolBarBitmaps[5], wxITEM_NORMAL, _T("Export screenshot"));
+    filebar->AddTool(Tool_movie, _T("Movie"),toolBarBitmaps[6], toolBarBitmaps[6], wxITEM_NORMAL, _T("Export film sequence"));
 
 
-	//timeSlider = new GRIPSlider(clockBmp,0,1000,100,0,100,500,this,ID_TIMESLIDER,true);
-	wxPanel* timePanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, 0);
+    //timeSlider = new GRIPSlider(clockBmp,0,1000,100,0,100,500,this,ID_TIMESLIDER,true);
+    wxPanel* timePanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, 0);
 
-#ifdef WIN32 // For windows use a thicker slider - it looks nice
-	timeTrack = new wxSlider(timePanel,1009,0,0,1000,wxDefaultPosition, wxSize(30,100), wxSL_BOTH | wxSL_VERTICAL | wxALIGN_CENTRE);
+#ifdef WIN32 /// For windows use a thicker slider - it looks nice
+    timeTrack = new wxSlider(timePanel,1009,0,0,1000,wxDefaultPosition, wxSize(30,100), wxSL_BOTH | wxSL_VERTICAL | wxALIGN_CENTRE);
 #else
-	timeTrack = new wxSlider(timePanel,1009,0,0,1000,wxDefaultPosition, wxSize(16,100), wxSL_BOTH | wxSL_VERTICAL | wxALIGN_CENTRE);
+    timeTrack = new wxSlider(timePanel,1009,0,0,1000,wxDefaultPosition, wxSize(16,100), wxSL_BOTH | wxSL_VERTICAL | wxALIGN_CENTRE);
 #endif
-	wxStaticBitmap *timeButton = new wxStaticBitmap(timePanel, -1, clockBmp, wxDefaultPosition, wxSize(16,16), wxALIGN_CENTRE);
-	wxSizer *sizerTime = new wxBoxSizer(wxVERTICAL);
-	sizerTime->Add(timeButton,0 , wxALIGN_CENTRE | wxEXPAND | wxALL, 2);
-	sizerTime->Add(timeTrack,1 , wxALIGN_CENTRE | wxEXPAND | wxALL, 2);
+    wxStaticBitmap *timeButton = new wxStaticBitmap(timePanel, -1, clockBmp, wxDefaultPosition, wxSize(16,16), wxALIGN_CENTRE);
+    wxSizer *sizerTime = new wxBoxSizer(wxVERTICAL);
+    sizerTime->Add(timeButton,0 , wxALIGN_CENTRE | wxEXPAND | wxALL, 2);
+    sizerTime->Add(timeTrack,1 , wxALIGN_CENTRE | wxEXPAND | wxALL, 2);
 
 
-	optionbar = new wxToolBar(this,ID_TOOLBAR,wxPoint(0, 0), wxSize(prefTreeViewWidth, toolBarHeight), wxTB_HORIZONTAL);
-	// wxBitmap optionBarBitmaps[2];
-	optionbar->SetToolBitmapSize(wxSize(16, 16));
+    optionbar = new wxToolBar(this,ID_TOOLBAR,wxPoint(0, 0), wxSize(prefTreeViewWidth, toolBarHeight), wxTB_HORIZONTAL);
+    // wxBitmap optionBarBitmaps[2];
+    optionbar->SetToolBitmapSize(wxSize(16, 16));
     optionbar->AddTool(Tool_linkorder, _T("Link Order"),toolBarBitmaps[3], toolBarBitmaps[3], wxITEM_CHECK, _T("Fix link position"));
     optionbar->AddTool(Tool_checkcollisions, _T("Check Collisions"),toolBarBitmaps[4], toolBarBitmaps[4], wxITEM_CHECK, _T("Click to toggle collision detection"));
 
 
 
-	timeText = new wxTextCtrl(optionbar,1008,wxT(" 0.00"),wxDefaultPosition,wxSize(50,20),wxTE_PROCESS_ENTER | wxTE_RIGHT);
-	optionbar->AddSeparator();
-	optionbar->AddControl(timeText);
+    timeText = new wxTextCtrl(optionbar,1008,wxT(" 0.00"),wxDefaultPosition,wxSize(50,20),wxTE_PROCESS_ENTER | wxTE_RIGHT);
+    optionbar->AddSeparator();
+    optionbar->AddControl(timeText);
 
     CreateStatusBar(2);
     SetStatusText(wxT("GRIP Loading..."));
 
-	// Create sizers - these will manage the layout/resizing of the frame elements
-	wxSizer *sizerFull = new wxBoxSizer(wxVERTICAL);
-	wxSizer *sizerTop = new wxBoxSizer(wxHORIZONTAL);
-	wxSizer *sizerRight = new wxBoxSizer(wxVERTICAL);
-	wxSizer *sizerRightH = new wxBoxSizer(wxHORIZONTAL);
-	wxSizer *sizerBottom = new wxBoxSizer(wxHORIZONTAL);
+    /// Create sizers - these will manage the layout/resizing of the frame elements
+    wxSizer *sizerFull = new wxBoxSizer(wxVERTICAL);
+    wxSizer *sizerTop = new wxBoxSizer(wxHORIZONTAL);
+    wxSizer *sizerRight = new wxBoxSizer(wxVERTICAL);
+    wxSizer *sizerRightH = new wxBoxSizer(wxHORIZONTAL);
+    wxSizer *sizerBottom = new wxBoxSizer(wxHORIZONTAL);
 
-	treeView = new TreeView(this, TreeViewHandle, wxPoint(0, 0), wxSize(prefTreeViewWidth, prefViewerHeight-2*toolBarHeight),
+    treeView = new TreeView(this, TreeViewHandle, wxPoint(0, 0), wxSize(prefTreeViewWidth, prefViewerHeight-2*toolBarHeight),
                             wxTR_LINES_AT_ROOT | wxTR_HAS_BUTTONS | wxTR_HIDE_ROOT | wxSUNKEN_BORDER);
 
 
-	// Adding a backPanel to the lower half of the window covers the generic "inner grey"
-	// with a forms-like control color. The tabView is added to the backPanel
-	backPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, 0);
-	tabView = new wxNotebook(backPanel, wxID_ANY, wxPoint(0, 0), wxSize(prefTreeViewWidth+prefViewerWidth, prefTabsHeight),  wxNB_NOPAGETHEME | wxNB_TOP);
+    /// Adding a backPanel to the lower half of the window covers the generic "inner grey"
+    /// with a forms-like control color. The tabView is added to the backPanel
+    backPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, 0);
+    tabView = new wxNotebook(backPanel, wxID_ANY, wxPoint(0, 0), wxSize(prefTreeViewWidth+prefViewerWidth, prefTabsHeight),  wxNB_NOPAGETHEME | wxNB_TOP);
 
-	addAllTabs();
+    addAllTabs();
 
-	// Start OpenGL and do various hacks to make it work cross platform
-	#ifndef WIN32 // Weird hack to make wxWidgets work in Linux
-	Show();
-	#endif
-	viewer = new Viewer(this, -1, wxPoint(0, 0), wxSize(prefViewerWidth, prefViewerHeight), wxFULL_REPAINT_ON_RESIZE | wxSUNKEN_BORDER);
-
-	#ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
-	viewer->MSWSetOldWndProc((WXFARPROC)DefWindowProc);
-	#endif
+     /// Start OpenGL and do various hacks to make it work cross platform
+#ifndef WIN32 // Weird hack to make wxWidgets work in Linux
+    Show();
+#endif
+    viewer = new Viewer(this, -1, wxPoint(0, 0), wxSize(prefViewerWidth, prefViewerHeight), wxFULL_REPAINT_ON_RESIZE | wxSUNKEN_BORDER);
 
 
-	// Add elements to the sizers, setting the proportion flag to 1 and using the
-    // wxEXPAND flag to ensure that the Viewer fills the entire sizer (subject to constraints)
-	sizerFull->Add(sizerTop, 1,  wxEXPAND | wxALL,  0 );
-	sizerTop->Add(viewer, 1, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
+#ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
+    viewer->MSWSetOldWndProc((WXFARPROC)DefWindowProc);
+#endif
 
-	// Set the proportion flag to 0 (for wxHORIZONTAL sizer) to fix the width to its minimal size
-	sizerTop->Add(sizerRight, 0, wxALIGN_RIGHT | wxEXPAND | wxALL, 0);
 
-	sizerRight->Add(filebar,0, wxALL, 0);
-	sizerRight->Add(sizerRightH, 1 , wxEXPAND | wxALL, 0);
-	sizerRight->Add(optionbar,0, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
+    /// Add elements to the sizers, setting the proportion flag to 1 and using the
+    /// wxEXPAND flag to ensure that the Viewer fills the entire sizer (subject to constraints)
+    sizerFull->Add(sizerTop, 1,  wxEXPAND | wxALL,  0 );
+    sizerTop->Add(viewer, 1, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
 
-	sizerRightH->Add((wxTreeCtrl*)treeView, 1, wxALIGN_CENTRE | wxALL | wxEXPAND, 0);
-	sizerRightH->Add(timePanel,0, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
+    /// Set the proportion flag to 0 (for wxHORIZONTAL sizer) to fix the width to its minimal size
+    sizerTop->Add(sizerRight, 0, wxALIGN_RIGHT | wxEXPAND | wxALL, 0);
 
-	// Place the back panel on the lower part of the window (0 fixes the height for wxVERTICAL sizer)
-	sizerFull->Add(backPanel, 0, wxEXPAND | wxALL, 0);
+    sizerRight->Add(filebar,0, wxALL, 0);
+    sizerRight->Add(sizerRightH, 1 , wxEXPAND | wxALL, 0);
+    sizerRight->Add(optionbar,0, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
 
-	// Add another sizer to stretch the tabs over the back panel while keeping a 3 pixel border
-	sizerBottom->Add(tabView, 1, wxALIGN_LEFT | wxEXPAND | wxALL, 3);
-	backPanel->SetSizer(sizerBottom);
-	timePanel->SetSizer(sizerTime);
+    sizerRightH->Add((wxTreeCtrl*)treeView, 1, wxALIGN_CENTRE | wxALL | wxEXPAND, 0);
+    sizerRightH->Add(timePanel,0, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
 
-	SetSizer(sizerFull);
-	sizerFull->SetSizeHints( this );
-	filebar->Realize();
-	optionbar->Realize();
+    /// Place the back panel on the lower part of the window (0 fixes the height for wxVERTICAL sizer)
+    sizerFull->Add(backPanel, 0, wxEXPAND | wxALL, 0);
 
-	Show();
-	viewer->Freeze();
-	viewer->InitGL();
-	viewer->ResetGL();
-	viewer->Thaw();
+    /// Add another sizer to stretch the tabs over the back panel while keeping a 3 pixel border
+    sizerBottom->Add(tabView, 1, wxALIGN_LEFT | wxEXPAND | wxALL, 3);
+    backPanel->SetSizer(sizerBottom);
+    timePanel->SetSizer(sizerTime);
+
+    SetSizer(sizerFull);
+    sizerFull->SetSizeHints( this );
+    filebar->Realize();
+    optionbar->Realize();
+
+    Show();
+    viewer->Freeze();
+    viewer->InitGL();
+    viewer->ResetGL();
+    viewer->Thaw();
 }
 
 /**
  * @function OnSaveScene
  * @brief Checks if the input file is a .rscene file or not and then writes the scene to it.
  */
-void GRIPFrame::OnSaveScene(wxCommandEvent& WXUNUSED(event)) {
+void GRIPFrame::OnSaveScene( wxCommandEvent& WXUNUSED(event) ) {
+
     wxString filepath;
     string filename;
     size_t endpath;
-    wxFileDialog *SaveDialog = new wxFileDialog(this, _("Save File As"), wxT("../scene/"), wxT(""),
-			_("*.rscene"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
+    wxFileDialog *SaveDialog = new wxFileDialog( this, _("Save File As"), wxT("../scene/"), wxT(""),
+			                         _("*.rscene"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition );
 
     if (SaveDialog->ShowModal() == wxID_OK) {
-			//world->camRadius = viewer->camRadius;
-			//world->camRotT = viewer->camRotT;
-			//world->worldV = viewer->worldV;
-			//world->backColor = viewer->backColor;
-			//world->gridColor = viewer->gridColor;
+
+        mCamRadius = viewer->camRadius;
+	mCamRotT = viewer->camRotT;
+	mWorldV = viewer->worldV;
+	mBackColor = viewer->backColor;
+	mGridColor = viewer->gridColor;
 
 
-			filepath = SaveDialog->GetPath();
-			filename = string(filepath.mb_str());
-			endpath = filename.find(".rscene");
-			if(endpath == (unsigned int)-1) filename += ".rscene";
-			//world->Save(filename);
-			wxString filename_string(filename.c_str(), wxConvUTF8);
-			saveText(filename_string,".lastload");
-	}
+	filepath = SaveDialog->GetPath();
+	filename = string(filepath.mb_str());
+	endpath = filename.find(".rscene");
+
+	if(endpath == (unsigned int)-1) filename += ".rscene";
+
+	saveRscene( filename );
+	wxString filename_string(filename.c_str(), wxConvUTF8);
+	saveText(filename_string,".lastload");
+    }
 }
 
 
@@ -273,28 +283,31 @@ void GRIPFrame::OnSaveRobot(wxCommandEvent& WXUNUSED(event)) {
  * @function OnLoad
  */
 void GRIPFrame::OnLoad(wxCommandEvent& event){
-	viewer->loading=true;
-	wxString filename = wxFileSelector(wxT("Choose a file to open"),wxT("../scene/"),wxT(""),wxT(""), // -- default extension
+    viewer->loading=true;
+    wxString filename = wxFileSelector(wxT("Choose a file to open"),wxT("../scene/"),wxT(""),wxT(""), // -- default extension
                                        wxT("*.rscene"), 0);
-	if ( !filename.empty() )
-		DoLoad(string(filename.mb_str()));
+    if ( !filename.empty() ) {
+        DoLoad(string(filename.mb_str()));
+    }
 }
 
 /**
  * @function OnQuickLoad
+ * @brief Load the latest correctly loaded .rscene
  */
-void GRIPFrame::OnQuickLoad(wxCommandEvent& event){
-	viewer->loading=true;
-	ifstream lastloadFile;
-	lastloadFile.open(".lastload", ios::in);
-	if(lastloadFile.fail()){
-		cout << "--(!) No previously loaded files (!)--" << endl;
-		return;
-	}
-	string line;
-	getline(lastloadFile,line);
-	lastloadFile.close();
-	DoLoad(line);
+void GRIPFrame::OnQuickLoad(wxCommandEvent& event) {
+
+    viewer->loading=true;
+    ifstream lastloadFile;
+    lastloadFile.open(".lastload", ios::in);
+    if(lastloadFile.fail()){
+        cout << "--(!) No previously loaded files (!)--" << endl;
+	return;
+    }
+    string line;
+    getline(lastloadFile,line);
+    lastloadFile.close();
+    DoLoad(line);
 }
 
 /**
@@ -302,18 +315,20 @@ void GRIPFrame::OnQuickLoad(wxCommandEvent& event){
  * @brief Load world from RSDH file
  */
 void GRIPFrame::DoLoad(string filename){
+
 	DeleteWorld();
   
         mWorld = parseWorld( string(filename) );
         mWorld->printInfo();
 
-	cout << "--(v) Done Loading (v)--" << endl;
+        // UpdateTreeView();
+	cout << "--(v) Done Parsing World information (v)--" << endl;
 	treeView->CreateFromWorld();
 	cout << "--(v) Done Updating TreeView (v)--" << endl;
-	viewer->ResetGL();
-	SetStatusText(wxT("--(i) Done Loading (i)--"));
+	// viewer->ResetGL();
+	SetStatusText(wxT("--(i) Done Loading and updating the View (i)--"));
 
-	//Extract path to executable & save "lastload" there
+	/// Extract path to executable & save "lastload" there
 	cout << "--(i) Saving " << filename << " to .lastload file (i)--" << endl;
         wxString filename_string(filename.c_str(), wxConvUTF8);
 	saveText(filename_string,".lastload");
@@ -330,24 +345,24 @@ void GRIPFrame::DoLoad(string filename){
  * @brief 
  * @date 2011-10-13
  */
-void GRIPFrame::DeleteWorld(){
+void GRIPFrame::DeleteWorld() {
 
-	InitTimer("",0);
-	for(size_t i=0; i<timeVector.size(); i++){
-		if(timeVector[i]!=NULL)
-			delete timeVector[i];
-	}
-	timeVector.clear();
-/*
-	if(world !=NULL){
-		World* w = world;
-		world = 0;
-		selectedTreeNode = 0;
-		treeView->DeleteAllItems();
-		w->DeleteModels();
-		delete w;
-	}
-*/
+    InitTimer("",0);
+
+    for( size_t i = 0; i<timeVector.size(); i++){
+        if( timeVector[i] != NULL )
+	    delete timeVector[i];
+    }
+    timeVector.clear();
+
+    if( mWorld != NULL) {
+        planning::World* w = mWorld;
+	mWorld = 0;
+	selectedTreeNode = 0;
+	treeView->DeleteAllItems();
+	delete w;
+    }
+
 }
 
 /**
@@ -362,7 +377,7 @@ void GRIPFrame::OnToolOrder(wxCommandEvent& WXUNUSED(event)){
  * @brief 
  */
 void GRIPFrame::OnToolCheckColl(wxCommandEvent& ){
-	// toggle collision detection
+	/// Toggle collision detection
 	check_for_collisions = !check_for_collisions;
 }
 
@@ -372,79 +387,79 @@ void GRIPFrame::OnToolCheckColl(wxCommandEvent& ){
  * @date 2011-10-13
  */
 void GRIPFrame::OnToolMovie(wxCommandEvent& event){
-	wxString dirname = wxDirSelector(wxT("Choose output directory for movie pictures:")); // , "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST
+    wxString dirname = wxDirSelector(wxT("Choose output directory for movie pictures:")); // , "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST
 
-	if ( dirname.empty() ){ // filename
-		cout << "No Directory Selected" << endl;
-		return;
-	}
+    if ( dirname.empty() ){ // filename
+        std::cout << "No Directory Selected" << std::endl;
+	return;
+    }
 
-	string path = string(dirname.mb_str());
+    string path = string(dirname.mb_str());
 
-	char *buf = new char[1000];
-	int w,h;
+    char *buf = new char[1000];
+    int w,h;
 
-	double step = 1.0;//.03333/tIncrement;
-	int count = 0;
+    double step = 1.0;//.03333/tIncrement;
+    int count = 0;
 	
-	wxClientDC dc2(viewer);
-	dc2.GetSize(&w, &h);
+    wxClientDC dc2(viewer);
+    dc2.GetSize(&w, &h);
 
-	for(double s=0; s < timeVector.size(); s+= step){
-	    int i = (int)s;
+    for( double s=0; s < timeVector.size(); s+= step) {
+        int i = (int)s;
 
-	    timeVector[i]->SetToWorld( mWorld );
-	    viewer->UpdateCamera();
-	    wxYield();
-
-	    unsigned char* imageData = (unsigned char*) malloc(w * h * 3);
-	    glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, imageData);
-	    wxImage img_ud(w,h,imageData);
-	    wxImage img = img_ud.Mirror(false);
-
-	    sprintf(buf, "%s/%06d.png",path.c_str(),count);
-
-	    wxString fname = wxString(buf,wxConvUTF8);
-	    cout << "Saving:" << buf << ":" << endl;
-	    img.SaveFile(fname, wxBITMAP_TYPE_PNG);
-
-	    count++;
-	}
-
-    delete buf;
-	event.Skip();
-}
-
-/**
- * @function OnToolScreenshot
- * @brief
- * @date 2011-10-13
- */
-void GRIPFrame::OnToolScreenshot(wxCommandEvent& event){
+	timeVector[i]->SetToWorld( mWorld );
+	viewer->UpdateCamera();
 	wxYield();
-
-	int w,h;
-	wxClientDC dc(viewer);
-	dc.GetSize(&w, &h);
 
 	unsigned char* imageData = (unsigned char*) malloc(w * h * 3);
 	glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, imageData);
 	wxImage img_ud(w,h,imageData);
 	wxImage img = img_ud.Mirror(false);
-	img.SaveFile(wxT("ScreenGL.png"), wxBITMAP_TYPE_PNG ); // Save GL image
-	wxBitmap glbit(img); // Create a bitmap from GL image
 
-	int w2,h2;
-	wxClientDC dc2(this);
-	dc2.GetSize(&w2, &h2);
-	wxBitmap bit;
-	bit.Create(w2,h2);
-	wxMemoryDC mem(bit);
-	mem.Blit(0,0,w2,h2,&dc2,0,0); // Blit the window
-	mem.DrawBitmap(glbit,2,2);    // Draw the GL image
-	bit.SaveFile(wxT("Screen.png"), wxBITMAP_TYPE_PNG );
+	sprintf(buf, "%s/%06d.png",path.c_str(),count);
 
-	SetStatusText(wxT("Screenshots saved in: Screen.png and ScreenGL.png"));
+	wxString fname = wxString(buf,wxConvUTF8);
+	cout << "Saving:" << buf << ":" << endl;
+	img.SaveFile(fname, wxBITMAP_TYPE_PNG);
+
+	count++;
+    }
+
+    delete buf;
+    event.Skip();
+}
+
+/**
+ * @function OnToolScreenshot
+ * @brief Save a screenshot of the current GUI (Viewer and whole frame)
+ * @date 2011-10-13
+ */
+void GRIPFrame::OnToolScreenshot(wxCommandEvent& event) {
+    wxYield();
+
+    int w,h;
+    wxClientDC dc(viewer);
+    dc.GetSize(&w, &h);
+
+    unsigned char* imageData = (unsigned char*) malloc(w * h * 3);
+    glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+    wxImage img_ud(w,h,imageData);
+    wxImage img = img_ud.Mirror(false);
+    img.SaveFile(wxT("ScreenGL.png"), wxBITMAP_TYPE_PNG ); // Save GL image
+    wxBitmap glbit(img); // Create a bitmap from GL image
+
+    int w2,h2;
+    wxClientDC dc2(this);
+    dc2.GetSize(&w2, &h2);
+    wxBitmap bit;
+    bit.Create(w2,h2);
+    wxMemoryDC mem(bit);
+    mem.Blit(0,0,w2,h2,&dc2,0,0); // Blit the window
+    mem.DrawBitmap(glbit,2,2);    // Draw the GL image
+    bit.SaveFile(wxT("Screen.png"), wxBITMAP_TYPE_PNG );
+
+    SetStatusText(wxT("Screenshots saved in: Screen.png and ScreenGL.png"));
 }
 
 /**
@@ -452,24 +467,23 @@ void GRIPFrame::OnToolScreenshot(wxCommandEvent& event){
  * @brief
  * @date 2011-10-13
  */
-int GRIPFrame::saveText(wxString scenepath, const char* llfile)
-{
-     try {
-		 ofstream lastloadFile(llfile, ios::out);
-		 if (lastloadFile) {
-			 lastloadFile  << string(scenepath.mb_str()) << endl;
-			 lastloadFile.close();
-			 cout << "Saved" << endl;
-			 return 0;
-		 } else {
-			 cout << "Error opening file: " << llfile << endl;
-			 return -1;
-		 }
-     }catch (const std::exception& e) {
-		 cout << "Shouldn't see this catch after migrating to wxWidgets... tell jon: " << e.what() << endl;
-		 return 0;
-     }
-	 return 1;
+int GRIPFrame::saveText(wxString scenepath, const char* llfile) {
+    try {
+        ofstream lastloadFile(llfile, ios::out);
+	if (lastloadFile) {
+	    lastloadFile  << string(scenepath.mb_str()) << endl;
+	    lastloadFile.close();
+	    cout << "Saved" << endl;
+	    return 0;
+        } else {
+	    cout << "Error opening file: " << llfile << endl;
+	    return -1;
+        }
+    } catch (const std::exception& e) {
+        cout << "Shouldn't see this catch after migrating to wxWidgets... tell jon: " << e.what() << endl;
+	return 0;
+    }
+    return 1;
 }
 
 /**
@@ -478,10 +492,10 @@ int GRIPFrame::saveText(wxString scenepath, const char* llfile)
  * @date 2011-10-13
  */
 void GRIPFrame::OnClose(wxCommandEvent& WXUNUSED(event)){
-	DeleteWorld();
-	//viewer->UpdateCamera();
-	//exit(0);
-	//DeleteWorld();
+    DeleteWorld();
+    //viewer->UpdateCamera();
+    //exit(0);
+    //DeleteWorld();
 }
 
 /**
@@ -489,9 +503,8 @@ void GRIPFrame::OnClose(wxCommandEvent& WXUNUSED(event)){
  * @brief
  * @date 2011-10-13
  */
-void GRIPFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
-{
-	exit(0);
+void GRIPFrame::OnQuit(wxCommandEvent& WXUNUSED(event)) {
+    exit(0);
     //Close(true);
 }
 
@@ -500,13 +513,12 @@ void GRIPFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
  * @brief
  * @date 2011-10-13
  */
-void GRIPFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
-{
-	wxMessageBox(wxString::Format(wxT("GRIP: Humanoid Robotics Lab. Georgia Tech. \
+void GRIPFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
+    wxMessageBox( wxString::Format( wxT("GRIP: Humanoid Robotics Lab. Georgia Tech. \
                                       \n\n Mike Stilman, Saul Reynolds-Haertle, Jon Scholz\
 									  \n Pushkar Kolhe, Jiuguang Wang, Tobias Kunz"),
-                                  wxVERSION_STRING,
-                                  wxGetOsDescription().c_str()
+                                    wxVERSION_STRING,
+                                    wxGetOsDescription().c_str()
                                   ),wxT("Info"), wxOK | wxICON_INFORMATION,this);
 }
 
@@ -524,16 +536,17 @@ void GRIPFrame::onTVChange(wxTreeEvent& WXUNUSED(event)){
  * @brief Go through all the tabs and indicate a state change
  * @date 2011-10-13
  */
-void GRIPFrame::updateAllTabs(){
-	int type = 0;
-	wxCommandEvent evt(wxEVT_GRIP_STATE_CHANGE,GetId());
-	evt.SetEventObject(this);
-	evt.SetClientData((void*)&type);
-	size_t numPages = tabView->GetPageCount();
-	for(size_t i=0; i< numPages; i++){
-		GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
-		tab->GRIPStateChange();
-	}
+void GRIPFrame::updateAllTabs() {
+
+    int type = 0;
+    wxCommandEvent evt(wxEVT_GRIP_STATE_CHANGE,GetId());
+    evt.SetEventObject(this);
+    evt.SetClientData((void*)&type);
+    size_t numPages = tabView->GetPageCount();
+    for(size_t i=0; i< numPages; i++){
+        GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
+	tab->GRIPStateChange();
+    }
 }
 
 
@@ -543,9 +556,9 @@ void GRIPFrame::updateAllTabs(){
  * @date 2011-10-13
  */
 void GRIPFrame::setTimeValue(double value, bool sendSignal){
-	tCurrent = value;
-	timeTrack->SetValue(value * tPrecision);
-	updateTimeValue(value, sendSignal);
+    tCurrent = value;
+    timeTrack->SetValue(value * tPrecision);
+    updateTimeValue(value, sendSignal);
 }
 
 /**
@@ -553,20 +566,21 @@ void GRIPFrame::setTimeValue(double value, bool sendSignal){
  * @brief 
  * @date 2011-10-13
  */
-void GRIPFrame::updateTimeValue(double value, bool sendSignal){
-	if(tIncrement == 0) return;
-	char buf[100];
-	sprintf(buf, "%6.2f", tCurrent);
+void GRIPFrame::updateTimeValue(double value, bool sendSignal) {
 
-	wxString posString = wxString(buf,wxConvUTF8);
-	timeText->ChangeValue(posString);
+    if(tIncrement == 0) return;
+    char buf[100];
+    sprintf(buf, "%6.2f", tCurrent);
 
-	unsigned int timeIndex = (int)((tCurrent/tMax)*((double)timeVector.size()));
-	if(timeIndex > timeVector.size()-1) timeIndex = timeVector.size()-1;
-	timeVector[timeIndex]->SetToWorld( mWorld );
-	viewer->UpdateCamera();
+    wxString posString = wxString(buf,wxConvUTF8);
+    timeText->ChangeValue(posString);
 
-	if(sendSignal) updateAllTabs();
+    unsigned int timeIndex = (int)((tCurrent/tMax)*((double)timeVector.size()));
+    if(timeIndex > timeVector.size()-1) timeIndex = timeVector.size()-1;
+    timeVector[timeIndex]->SetToWorld( mWorld );
+    viewer->UpdateCamera();
+
+    if(sendSignal) updateAllTabs();
 }
 
 /**
@@ -574,10 +588,10 @@ void GRIPFrame::updateTimeValue(double value, bool sendSignal){
  * @brief 
  * @date 2011-10-13
  */
-void GRIPFrame::OnTimeScroll(wxScrollEvent& event){
-	tCurrent = (double)(event.GetPosition())/(double)tPrecision;
-	updateTimeValue(tCurrent);
-	updateTimeValue(tCurrent,true);
+void GRIPFrame::OnTimeScroll(wxScrollEvent& event) {
+    tCurrent = (double)(event.GetPosition())/(double)tPrecision;
+    //updateTimeValue(tCurrent);
+    updateTimeValue(tCurrent,true);
 }
 
 /**
@@ -585,11 +599,11 @@ void GRIPFrame::OnTimeScroll(wxScrollEvent& event){
  * @brief 
  * @date 2011-10-13
  */
-void GRIPFrame::AddWorld( planning::World* _world){
-	GRIPTimeSlice* tsnew = new GRIPTimeSlice( _world );
-	timeVector.push_back(tsnew);
-	tMax += tIncrement;
-	timeTrack->SetRange(0, tMax * tPrecision);
+void GRIPFrame::AddWorld( planning::World* _world) {
+    GRIPTimeSlice* tsnew = new GRIPTimeSlice( _world );
+    timeVector.push_back(tsnew);
+    tMax += tIncrement;
+    timeTrack->SetRange(0, tMax * tPrecision);
 }
 
 
@@ -598,13 +612,14 @@ void GRIPFrame::AddWorld( planning::World* _world){
  * @brief 
  * @date 2011-10-13
  */
-void GRIPFrame::InitTimer(string title, double period){
-	for(size_t i=0; i<timeVector.size(); i++){
-		delete timeVector[i];
-	}
-	tMax = 0;
-	timeVector.clear();
-	tIncrement = period;
+void GRIPFrame::InitTimer(string /* title */, double period) {
+
+    for(size_t i=0; i<timeVector.size(); i++){
+        delete timeVector[i];
+    }
+    tMax = 0;
+    timeVector.clear();
+    tIncrement = period;
 }
 
 /**
@@ -613,12 +628,12 @@ void GRIPFrame::InitTimer(string title, double period){
  * @date 2011-10-13
  */
 void GRIPFrame::OnTimeEnter(wxCommandEvent& WXUNUSED(event)){
-	double p;
-	timeText->GetValue().ToDouble(&p);
-	if(p < 0) p = 0;
-	if(p > tMax) p = tMax;
-	setTimeValue(p);
-	setTimeValue(p,true);
+    double p;
+    timeText->GetValue().ToDouble(&p);
+    if(p < 0) p = 0;
+    if(p > tMax) p = tMax;
+    setTimeValue(p);
+    setTimeValue(p,true);
 }
 
 /**
@@ -627,10 +642,10 @@ void GRIPFrame::OnTimeEnter(wxCommandEvent& WXUNUSED(event)){
  * @date 2011-10-13
  */
 void GRIPFrame::OnWhite(wxCommandEvent& WXUNUSED(event)){
-	viewer->backColor = Vector3d(1,1,1);
-	viewer->gridColor = Vector3d(.8,.8,1);
-	viewer->setClearColor();
-	viewer->UpdateCamera();
+    viewer->backColor = Vector3d(1,1,1);
+    viewer->gridColor = Vector3d(.8,.8,1);
+    viewer->setClearColor();
+    viewer->UpdateCamera();
 }
 
 /**
@@ -638,11 +653,12 @@ void GRIPFrame::OnWhite(wxCommandEvent& WXUNUSED(event)){
  * @brief Set scene background to black
  * @date 2011-10-13
  */
-void GRIPFrame::OnBlack(wxCommandEvent& WXUNUSED(event)){
-	viewer->backColor = Vector3d(0,0,0);
-	viewer->gridColor = Vector3d(.5,.5,0);
-	viewer->setClearColor();
-	viewer->UpdateCamera();
+void GRIPFrame::OnBlack(wxCommandEvent& WXUNUSED(event)) {
+
+    viewer->backColor = Vector3d(0,0,0);
+    viewer->gridColor = Vector3d(.5,.5,0);
+    viewer->setClearColor();
+    viewer->UpdateCamera();
 }
 
 /**
@@ -650,8 +666,8 @@ void GRIPFrame::OnBlack(wxCommandEvent& WXUNUSED(event)){
  * @brief 
  * @date 2011-10-13
  */
-void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)){
-	viewer->ResetGL();
+void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)) {
+    viewer->ResetGL();
 }
 
 BEGIN_EVENT_TABLE(GRIPFrame, wxFrame)

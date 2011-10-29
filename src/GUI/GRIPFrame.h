@@ -59,7 +59,10 @@ using namespace std;
 #include <wx/notebook.h>
 
 
-// ----------------------------------------------------------------------------
+/**
+ * @class GRIPFrame
+ * @brief Main Frame in GRIP
+ */
 class GRIPFrame : public wxFrame
 {
 public:
@@ -105,8 +108,8 @@ public:
     double tMax;
     double tIncrement;
     int tPrecision;
-    void setTimeValue(double value, bool sendSignal = false);
-    void updateTimeValue(double value, bool sendSignal = false);
+    void setTimeValue( double value, bool sendSignal = false );
+    void updateTimeValue( double value, bool sendSignal = false );
 
     void updateAllTabs();
 
@@ -121,18 +124,18 @@ public:
 
 enum
 {
-	MenuSaveScene = wxID_HIGHEST+1,
-	MenuSaveRobot,
-	MenuLoad,
-	MenuQuickLoad,
-	MenuClose,
-	MenuBgWhite,
-	MenuBgBlack,
-	MenuCameraReset,
+    MenuSaveScene = wxID_HIGHEST+1,
+    MenuSaveRobot,
+    MenuLoad,
+    MenuQuickLoad,
+    MenuClose,
+    MenuBgWhite,
+    MenuBgBlack,
+    MenuCameraReset,
+
     MenuQuit = wxID_EXIT,
     MenuAbout = wxID_ABOUT
 };
 
 
-
-#endif
+#endif /** GRIP_GRIPFRAME_H */
