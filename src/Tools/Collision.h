@@ -5,10 +5,9 @@
 #ifndef _GRIP_COLLISION_
 #define _GRIP_COLLISION_
 
-#include <vector>
 #include <Eigen/Core>
-#include <iostream>
-#include <stdlib.h>
+#include <Eigen/Geometry>
+#include <vector>
 #include <VCollide/VCollide.h>
 #include <planning/Model3DS.h>
 #include <Tools/Constants.h>
@@ -51,19 +50,27 @@ public:
   ~Collision();
 
   // Member variables
-  std::vector<CollisionEntity> mEntities;
+  std::vector<CollisionEntity*> mEntities;
+  std::vector< std::vector<int> >mRobotsEid;
+  std::vector< std::vector<int> >mObjectsEid;
 
   VCollide vcollide;
-  VCReport report;
+  VCReport vreport;
+  bool mFlag;
 
   // Member functions
   void InitFromWorld( planning::World* _world );
-  void CreateCollisionEntity( CollisionType _type, 
+  int CreateCollisionEntity( CollisionType _type, 
                               int _id, 
                               int _nodeId, 
                               Model3DS *_model, 
                               const Eigen::MatrixXd &_pose );
-
+  bool CheckCollisions();
+  void ClearCollisions();
+  void DetectCollisions();
+  void UpdateAllCollisionModels();
+  void UpdateCollisionModel( int _eid );
+  void updateAllCollisionModels();
 };
 
 #endif /** _GRIP_COLLISION_ */

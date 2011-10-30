@@ -321,7 +321,8 @@ void GRIPFrame::DoLoad(string filename){
   
         mWorld = parseWorld( string(filename) );
         mWorld->printInfo();
-        // Create Collision 
+        // Create Collision
+        mCollision = new Collision(); 
         mCollision->InitFromWorld( mWorld );
 
         // UpdateTreeView();

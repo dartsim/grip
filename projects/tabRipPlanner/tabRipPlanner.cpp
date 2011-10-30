@@ -50,6 +50,7 @@
 #include <Tabs/AllTabs.h>
 #include <GRIPApp.h>
 
+
 using namespace std;
 
 /* Quick intro to adding tabs:
@@ -345,7 +346,17 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
 
         /** Empty button 1 */
 	case button_empty1:
-	    cout << "-- (0) Empty Button to use for whatever you want (0)--" << endl;
+     {
+	    cout << "-- (0) Checking Collisions (0)--" << endl;
+
+      mCollision->UpdateAllCollisionModels();
+      bool st = mCollision->CheckCollisions();
+      if( st == true )
+      { printf("Damn! Collisions \n");}
+      else
+      { printf("Yay! No Collisions \n");}
+
+     }
 	    break;
 
         /** Empty button 2 */
