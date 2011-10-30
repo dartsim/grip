@@ -518,9 +518,9 @@ void GRIPFrame::OnQuit(wxCommandEvent& WXUNUSED(event)) {
  * @date 2011-10-13
  */
 void GRIPFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
-    wxMessageBox( wxString::Format( wxT("GRIP: Humanoid Robotics Lab. Georgia Tech. \
-                                      \n\n Mike Stilman, Saul Reynolds-Haertle, Jon Scholz\
-									  \n Pushkar Kolhe, Jiuguang Wang, Tobias Kunz"),
+    wxMessageBox( wxString::Format( wxT("GRIP: GT Humanoid Robotics Lab \
+                                      \n\n Mike Stilman, Saul Reynolds-Haertle, Jonathan Scholz\
+									  \n Pushkar Kolhe, Tobias Kunz, Ana Huaman"),
                                     wxVERSION_STRING,
                                     wxGetOsDescription().c_str()
                                   ),wxT("Info"), wxOK | wxICON_INFORMATION,this);
