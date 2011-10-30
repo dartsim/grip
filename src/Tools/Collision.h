@@ -5,6 +5,7 @@
 #ifndef _GRIP_COLLISION_
 #define _GRIP_COLLISION_
 
+#include <fcl/simple_setup.h>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <vector>

@@ -7,7 +7,6 @@
 #ifndef _RRT_H_
 #define _RRT_H_
 
-#include "fcl/simple_setup.h"
 #include <vector>
 #include <list>
 #include <time.h>
@@ -15,7 +14,6 @@
 #include <Tools/Collision.h>
 #include <planning/World.h>
 #include "kdtree/kdtree.h"
-
 
 /**
  * @class RRT
