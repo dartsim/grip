@@ -252,7 +252,7 @@ void GRIPFrame::OnSaveScene( wxCommandEvent& WXUNUSED(event) ) {
 
     if (SaveDialog->ShowModal() == wxID_OK) {
 
-        mCamRadius = viewer->camRadius;
+    mCamRadius = viewer->camRadius;
 	mCamRotT = viewer->camRotT;
 	mWorldV = viewer->worldV;
 	mBackColor = viewer->backColor;

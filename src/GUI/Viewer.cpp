@@ -43,17 +43,23 @@
 
 #include <Tools/GL/glcommon.h>
 #include <Tools/Constants.h>
+#include <Tools/Collision.h>
 
 #include <iostream>
 
 using namespace std;
 
-
+extern bool check_for_collisions;
 /**
  * @function drawWorld
  * @brief Draw World and everything inside it: Robots + Objects
  */
 void Viewer::drawWorld() { 
+
+  if(check_for_collisions){
+	  mCollision->UpdateAllCollisionModels();
+      bool st = mCollision->CheckCollisions();
+  }
 
   // Draw Objects    
   for( unsigned int i = 0; i < mWorld->mObjects.size(); i++ ) {
@@ -90,12 +96,12 @@ void Viewer::drawWorld() {
 void Viewer::drawModel( Model3DS* _model, Transform<double, 3, Affine> *_pose )
 {
    if( _model == NULL ) return;
-/*
-   if(collisionFlag){
+
+   if(check_for_collisions && _model->collisionFlag){
 		glDisable(GL_TEXTURE_2D);
 		glColor3f(1.0f, .1f, .1f);
 	}
-*/
+
    glPushMatrix();
    glMultMatrixd( _pose->data() );
 /*

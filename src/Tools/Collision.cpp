@@ -81,10 +81,22 @@ void Collision::InitFromWorld( planning::World* _world ) {
  * @brief Returns true iff collision
  */
 bool Collision::CheckCollisions() {
-UpdateAllCollisionModels();
+   //UpdateAllCollisionModels();
     VCReport report;
     vcollide.Collide( &report, VC_FIRST_CONTACT);  /// Perform collision test.
-	  return report.numObjPairs() > 0;
+
+	for (int j = 0; j < report.numObjPairs(); j++) {
+        mFlag = true;
+		    // Object* object1 = entities[report.obj1ID(j)];
+		    // Object* object2 = entities[report.obj2ID(j)];
+		    mEntities[report.obj1ID(j)]->mCollisionFlag = true;
+		    mEntities[report.obj2ID(j)]->mCollisionFlag = true;
+			mEntities[report.obj1ID(j)]->model->collisionFlag = true;
+		    mEntities[report.obj2ID(j)]->model->collisionFlag = true;
+			//cout << "COLLIDED " <<  mEntities[report.obj1ID(j)]->mId << " " <<  mEntities[report.obj2ID(j)]->mId << endl;
+		    //cout << "COLL: "   << entities[report.obj1ID(j)].object->name<< " : " << entities[report.obj2ID(j)].object->name<<endl;
+    }
+	return report.numObjPairs() > 0;
 }
 
 /**
@@ -94,6 +106,7 @@ UpdateAllCollisionModels();
 void Collision::ClearCollisions() {
     for (unsigned int i = 0; i < mEntities.size(); i++) {
 		    mEntities[i]->mCollisionFlag = false;
+			mEntities[i]->model->collisionFlag = false;
     }
 }
 
@@ -113,6 +126,8 @@ void Collision::DetectCollisions() {
 		    // Object* object2 = entities[report.obj2ID(j)];
 		    mEntities[report.obj1ID(j)]->mCollisionFlag = true;
 		    mEntities[report.obj2ID(j)]->mCollisionFlag = true;
+			mEntities[report.obj1ID(j)]->model->collisionFlag = true;
+			mEntities[report.obj2ID(j)]->model->collisionFlag = true;
 		    //cout << "COLL: "   << entities[report.obj1ID(j)].object->name<< " : " << entities[report.obj2ID(j)].object->name<<endl;
     }
 }
@@ -169,6 +184,7 @@ void Collision::UpdateCollisionModel( int _mEntityIndex ) {
 
 	vcollide.UpdateTrans( eid, newTrans );
 	mEntities[_mEntityIndex]->mCollisionFlag = false;
+	mEntities[_mEntityIndex]->model->collisionFlag = false;
 }
 
 
@@ -187,6 +203,8 @@ int Collision::CreateCollisionEntity( CollisionType _type,
   coll->mId = _id;
   coll->mBodyNodeId = _nodeId;
   coll->mCollisionFlag = true;
+  coll->model = _model;
+  coll->model->collisionFlag = false;
 
   coll->mTrans[0][0] = _pose(0,0); coll->mTrans[0][1] = _pose(0,1); coll->mTrans[0][2] = _pose(0,2); coll->mTrans[0][3] = _pose(0,3);
   coll->mTrans[1][0] = _pose(1,0); coll->mTrans[1][1] = _pose(1,1); coll->mTrans[1][2] = _pose(1,2); coll->mTrans[1][3] = _pose(1,3);

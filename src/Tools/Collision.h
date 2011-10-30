@@ -33,6 +33,7 @@ public:
   int mBodyNodeId; /**< Index of BodyNode in Skeleton (again, of Robot or Object) */
   double mTrans[4][4]; /**< Transformation */
   bool mCollisionFlag; /**< Collision Flag */
+  Model3DS* model;
 
   int mEid; /** Index in vcollide */
 

@@ -49,6 +49,7 @@
 #include <kinematics/Shape.h>
 #include <kinematics/BodyNode.h>
 #include <kinematics/ShapeMesh.h>
+#include "../Tools/Collision.h"
 
 using namespace Eigen;
 
