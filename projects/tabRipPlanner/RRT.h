@@ -7,6 +7,7 @@
 #ifndef _RRT_H_
 #define _RRT_H_
 
+#include "fcl/simple_setup.h"
 #include <vector>
 #include <list>
 #include <time.h>

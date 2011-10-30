@@ -2,6 +2,7 @@
  * @file Collision.cpp
  */
 
+#include "fcl/simple_setup.h"
 #include "Collision.h"
 #include <GUI/GUI.h>
 #include <kinematics/BodyNode.h>
