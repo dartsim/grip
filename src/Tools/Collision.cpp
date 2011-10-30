@@ -81,7 +81,7 @@ void Collision::InitFromWorld( planning::World* _world ) {
  * @brief Returns true iff collision
  */
 bool Collision::CheckCollisions() {
-   //UpdateAllCollisionModels();
+    UpdateAllCollisionModels();
     VCReport report;
     vcollide.Collide( &report, VC_FIRST_CONTACT);  /// Perform collision test.
 

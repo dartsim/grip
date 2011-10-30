@@ -349,12 +349,12 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
      {
 	    cout << "-- (0) Checking Collisions (0)--" << endl;
 
-      mCollision->UpdateAllCollisionModels();
+      //mCollision->UpdateAllCollisionModels();
       bool st = mCollision->CheckCollisions();
       if( st == true )
-      { printf("Damn! Collisions \n");}
+      { printf("Collisions \n");}
       else
-      { printf("Yay! No Collisions \n");}
+      { printf("No Collisions \n");}
 
      }
 	    break;
