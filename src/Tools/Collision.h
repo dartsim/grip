@@ -5,14 +5,13 @@
 #ifndef _GRIP_COLLISION_
 #define _GRIP_COLLISION_
 
-#include <fcl/simple_setup.h>
+#include <planning/World.h>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <vector>
 #include <VCollide/VCollide.h>
 #include <planning/Model3DS.h>
 #include <Tools/Constants.h>
-#include <planning/World.h>
 
 enum CollisionType {
     COLLISION_OBJECT = 0,
