@@ -42,6 +42,7 @@
 //---------------------------------------------------------------------
 
 planning::World* mWorld = 0;
+Collision* mCollision=0;
 
 GRIPFrame*	frame = 0;
 Viewer*		viewer = 0;

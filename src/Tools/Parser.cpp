@@ -239,188 +239,187 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
 
     //-- Read the RSDH file
     while(!rstream.eof()) {
-	lnum++;
+	    lnum++;
 
-	rstream >> str;
+    	rstream >> str;
 
-	if(str[0] != '>') {
-	    getline(rstream,line);
-	    continue;
-	}
+    	if(str[0] != '>') {
+	        getline(rstream,line);
+	        continue;
+	    }  
 
-	rstream >> str;
+  	  rstream >> str;
 
-	if( str == "LINK" ) {
-            char name[30];
-	    rstream >> name; 
-            node = _robot->createBodyNode( name );
-	    rstream >> filename;
+	    if( str == "LINK" ) {
+          char name[30];
+	        rstream >> name; 
+          node = _robot->createBodyNode( name );
+	        rstream >> filename;
 
-	    if(filename != "NOMODEL") {
-	        string fullpath( path );
-		fullpath.append( filename );
-                //-- TODO Create a ShapeMesh from the 3DS Model
-                model = _robot->loadModel( fullpath );
+  	      if(filename != "NOMODEL") {
+	            string fullpath( path );
+		          fullpath.append( filename );
+              //-- TODO Create a ShapeMesh from the 3DS Model
+              model = _robot->loadModel( fullpath );
                 
-                kinematics::ShapeMesh *p = new kinematics::ShapeMesh( Vector3d(0, 0, 0), 0 );
-		node->setShape( p );
-	    }
+              kinematics::ShapeMesh *p = new kinematics::ShapeMesh( Vector3d(0, 0, 0), 0 );
+		          node->setShape( p );
+	        }
             
-            models.push_back( model );
-	    bodyNodes.push_back( node );
-            modelsInd.push_back( bodyNodes.size() );
-	}
+          models.push_back( model );
+	        bodyNodes.push_back( node );
+          modelsInd.push_back( bodyNodes.size() );
+	    }
 
-        /// Set Center of Mass of the Node
-	else if(str == "COM") {
-	    char cname[100];
-	    rstream >> cname;
+      /// Set Center of Mass of the Node
+	    else if(str == "COM") {
+	        char cname[100];
+	        rstream >> cname;
 
-	    int cnum = -1;
+ 	        int cnum = -1;
 
-            for( unsigned int i = 0; i < bodyNodes.size(); i++ ) {    
-                if( bodyNodes[i]->getName() == cname ) { cnum = i; break; } 
-            }
+          for( unsigned int i = 0; i < bodyNodes.size(); i++ ) {    
+              if( bodyNodes[i]->getName() == cname ) { cnum = i; break; } 
+          }
 
-            if( cnum >= 0 ) {
-	        double mass;
-	        rstream >> mass;
+          if( cnum >= 0 ) {
+	            double mass;
+	            rstream >> mass;
                 
-	        kinematics::Shape* p = bodyNodes[cnum]->getShape();
-                p->setMass( mass );
+	            kinematics::Shape* p = bodyNodes[cnum]->getShape();
+              p->setMass( mass );
 
+	            Vector3d pos;
+	            rstream >> pos(0);
+	            rstream >> pos(1);
+	            rstream >> pos(2);
+	            bodyNodes[cnum]->setLocalCOM( pos );
+          }
+
+      } 
+
+      /// Create the Joints and/or DOF
+      else if(str == "CON") {
+
+	        string pname, cname;
+	        rstream >> pname;
+	        rstream >> cname;
+
+  	      int pnum, cnum;
+
+          pnum = -1;
+
+	        if( pname == "WORLD" ) {
+	            pnum = -2;  // and it is parentNode
+	        } else {
+              for( unsigned int i = 0; i < bodyNodes.size(); i++ ) {    
+                  if( bodyNodes[i]->getName() == pname ) { pnum = i; break; } 
+              }
+	        }
+
+          for( unsigned int i = 0; i < bodyNodes.size(); i++ ) {    
+              if( bodyNodes[i]->getName() == cname ) { cnum = i; break; } 
+          }
+
+	        if(pnum == -1){  std::cerr << "--(!) Non-existant parent: " << pname << std::endl; return 1;  }
+	        if(cnum == -1){  std::cerr << "--(!) Non-existant child: " << cname << std::endl; return 1;  }
+
+	        if(pnum == -2){
+              joint = new kinematics::Joint( _robot->getRoot(), bodyNodes[cnum], "Joint" );
+	        } else {
+              joint = new kinematics::Joint( bodyNodes[pnum], bodyNodes[cnum], "Joint" );
+          }
+
+            
 	        Vector3d pos;
 	        rstream >> pos(0);
 	        rstream >> pos(1);
 	        rstream >> pos(2);
-	        bodyNodes[cnum]->setLocalCOM( pos );
-            }
-
-        } 
-
-        /// Create the Joints and/or DOF
-        else if(str == "CON") {
-
-	    string pname, cname;
-	    rstream >> pname;
-	    rstream >> cname;
-
-	    int pnum, cnum;
-
-            pnum = -1;
-
-	    if( pname == "WORLD" ) {
-	        pnum = -2;  // and it is parentNode
-	    } else {
-                for( unsigned int i = 0; i < bodyNodes.size(); i++ ) {    
-                    if( bodyNodes[i]->getName() == pname ) { pnum = i; break; } 
-                }
-	    }
-
-            for( unsigned int i = 0; i < bodyNodes.size(); i++ ) {    
-                if( bodyNodes[i]->getName() == cname ) { cnum = i; break; } 
-                }
-
-	    if(pnum == -1){  std::cerr << "--(!) Non-existant parent: " << pname << std::endl; return 1;  }
-	    if(cnum == -1){  std::cerr << "--(!) Non-existant child: " << cname << std::endl; return 1;  }
-
-	    if(pnum == -2){
-                joint = new kinematics::Joint( _robot->getRoot(), bodyNodes[cnum], "Joint" );
-	    } else {
-                joint = new kinematics::Joint( bodyNodes[pnum], bodyNodes[cnum], "Joint" );
-            }
-
             
-	    Vector3d pos;
-	    rstream >> pos(0);
-	    rstream >> pos(1);
-	    rstream >> pos(2);
-            
-	    double roll, pitch, yaw;
-	    rstream >> roll;
-	    rstream >> pitch;
-	    rstream >> yaw;
+	        double roll, pitch, yaw;
+	        rstream >> roll;
+	        rstream >> pitch;
+	        rstream >> yaw;
  
-            /** Add Transform for rotation and translation. No DOF */ 
+          /** Add Transform for rotation and translation. No DOF */ 
 
-            trans = new kinematics::TrfmTranslate( new kinematics::Dof(pos(0)),
+          trans = new kinematics::TrfmTranslate( new kinematics::Dof(pos(0)),
 						   new kinematics::Dof(pos(1)),
 						   new kinematics::Dof(pos(2)),
 					           "Translate" );
-	    joint->addTransform( trans, false ); 
+	        joint->addTransform( trans, false ); 
 
-            trans = new kinematics::TrfmRotateEulerZ( new::kinematics::Dof( DEG2RAD(yaw) ) );
-            joint->addTransform( trans, false );  
+          trans = new kinematics::TrfmRotateEulerZ( new::kinematics::Dof( DEG2RAD(yaw) ) );
+          joint->addTransform( trans, false );  
 
-            trans = new kinematics::TrfmRotateEulerY( new::kinematics::Dof( DEG2RAD(pitch) ) );
-            joint->addTransform( trans, false );  
+          trans = new kinematics::TrfmRotateEulerY( new::kinematics::Dof( DEG2RAD(pitch) ) );
+          joint->addTransform( trans, false );  
 
-            trans = new kinematics::TrfmRotateEulerX( new::kinematics::Dof( DEG2RAD(roll)) );
-            joint->addTransform( trans, false );  
+          trans = new kinematics::TrfmRotateEulerX( new::kinematics::Dof( DEG2RAD(roll)) );
+          joint->addTransform( trans, false );  
 
-	    string bufAxis;
-	    rstream >> bufAxis;
+	        string bufAxis;
+	        rstream >> bufAxis;
 
-            string bufType;
-	    rstream >> bufType;
+          string bufType;
+	        rstream >> bufType;
 
-            int type = -1; // -1: NONE 0: REVOL 1: PRISM
+          int type = -1; // -1: NONE 0: REVOL 1: PRISM
  
-	    if( bufType == "FIXED" ) 
+	        if( bufType == "FIXED" ) 
             {  }
 
-	    if( bufType == "REVOL" ) 
-            {
-                type = 0;
+	        if( bufType == "REVOL" ) {
+              type = 0;
          
-                if( bufAxis == "PZ" ) 
-                {  trans = new kinematics::TrfmRotateEulerZ( new kinematics::Dof(0) );  }
-                if( bufAxis == "PY" ) 
-                {  trans = new kinematics::TrfmRotateEulerY( new kinematics::Dof(0) );  }
-                if( bufAxis == "PX" ) 
-                {  trans = new kinematics::TrfmRotateEulerX( new kinematics::Dof(0) );  }
+              if( bufAxis == "PZ" ) 
+              {  trans = new kinematics::TrfmRotateEulerZ( new kinematics::Dof(0) );  }
+              if( bufAxis == "PY" ) 
+              {  trans = new kinematics::TrfmRotateEulerY( new kinematics::Dof(0) );  }
+              if( bufAxis == "PX" ) 
+              {  trans = new kinematics::TrfmRotateEulerX( new kinematics::Dof(0) );  }
                   
-                joint->addTransform( trans, true );
-                _robot->addTransform( trans ); 
-            }
+              joint->addTransform( trans, true );
+              _robot->addTransform( trans ); 
+          }
 
-	    if(bufType == "PRISM")
-            {
-                type = 1;
+	        if(bufType == "PRISM") {
+              type = 1;
 
-                if( bufAxis == "PZ" ) 
-                {  trans = new kinematics::TrfmTranslateZ( new kinematics::Dof(0) );  }
-                if( bufAxis == "PY" ) 
-                {  trans = new kinematics::TrfmTranslateY( new kinematics::Dof(0) );  }
-                if( bufAxis == "PX" ) 
-                {  trans = new kinematics::TrfmTranslateX( new kinematics::Dof(0) );  }
+              if( bufAxis == "PZ" ) 
+              {  trans = new kinematics::TrfmTranslateZ( new kinematics::Dof(0) );  }
+              if( bufAxis == "PY" ) 
+              {  trans = new kinematics::TrfmTranslateY( new kinematics::Dof(0) );  }
+              if( bufAxis == "PX" ) 
+              {  trans = new kinematics::TrfmTranslateX( new kinematics::Dof(0) );  }
                   
-                joint->addTransform( trans, true );
-                _robot->addTransform( trans ); 
-            }
+              joint->addTransform( trans, true );
+              _robot->addTransform( trans ); 
+          }
 
-	    if(bufType == "FREE") 
-            { /** THIS SHOULD BE ERASED */ }
+	        if(bufType == "FREE") 
+          { /** THIS SHOULD BE ERASED */ }
 
-	    if( type == 0 || type == 1 ) {
-                double min, max;
-		rstream >> min;
-		rstream >> max;
-		if( type == 0) {
-                    joint->getDof(0)->setMin( DEG2RAD(min) );
-                    joint->getDof(0)->setMax( DEG2RAD(max) );
-		} else {
-                    joint->getDof(0)->setMin( min );
-                    joint->getDof(0)->setMax( max );
-		}
-	    }
+	        if( type == 0 || type == 1 ) {
+              double min, max;
+		          rstream >> min;
+		          rstream >> max;
+		          if( type == 0) {
+                  joint->getDof(0)->setMin( DEG2RAD(min) );
+                  joint->getDof(0)->setMax( DEG2RAD(max) );
+		          } else {
+                  joint->getDof(0)->setMin( min );
+                  joint->getDof(0)->setMax( max );
+		          }
+	        }
             
-	} else{
-	    std::cerr << "BAD LINE in Robot File" << std::endl;
-	}
+	    } else{
+	        std::cerr << "BAD LINE in Robot File" << std::endl;
+	    }
 		
-        getline( rstream, line );
-    }
+      getline( rstream, line );
+
+    } // end of while
     rstream.close();
 
     for( unsigned int i=0; i < bodyNodes.size(); i++ ) {
@@ -429,6 +428,7 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
 
     for( unsigned int i = 0; i < models.size(); i++ ) {
       _robot->addModel( models[i], modelsInd[i] );
+      printf("Mode: %d Model Ind: %d \n", i, modelsInd[i]);
     }
 
 

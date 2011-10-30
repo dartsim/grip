@@ -1,8 +1,29 @@
 project(gvcollide)
 
 #Search all header and source files
-file (GLOB vcollide_srcs "*.cpp")
-file (GLOB vcollide_hdrs "*.h")
+file (GLOB vcollide_srcs build.cpp
+                         collide.cpp
+                         NBody.cpp
+                         overlap.cpp
+                         PairData.cpp
+                         RAPID.cpp
+                         sample_client.cpp
+                         VCollide.cpp
+                         VInternal.cpp )
+
+file (GLOB vcollide_hdrs AABB.H
+                         EndPoint.H
+                         matvec.H
+                         moments.H
+                         NBody.H
+                         obb.H
+                         overlap.H
+                         PairData.H
+                         RAPID.H
+                         RAPID_private.H
+                         RAPID_version.H
+                         VCollide.h
+                         VInternal.H )
 
 # Library 
 set (wxWidgets_USE_LIBS base core gl)

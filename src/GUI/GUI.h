@@ -48,6 +48,7 @@
 
 #include <wx/notebook.h>
 #include <planning/World.h>
+#include <Tools/Collision.h>
 
 class GRIPFrame;
 class Viewer;
@@ -59,6 +60,7 @@ class TemplateTab;
 // The actual variables that are global to GUI elements
 
 extern planning::World  *mWorld;
+extern Collision *mCollision;
 
 extern GRIPFrame*	frame;
 extern Viewer*		viewer;

@@ -320,6 +320,8 @@ void GRIPFrame::DoLoad(string filename){
   
         mWorld = parseWorld( string(filename) );
         mWorld->printInfo();
+        // Create Collision 
+        mCollision->InitFromWorld( mWorld );
 
         // UpdateTreeView();
 	cout << "--(v) Done Parsing World information (v)--" << endl;
