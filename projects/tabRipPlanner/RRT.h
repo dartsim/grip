@@ -11,6 +11,7 @@
 #include <list>
 #include <time.h>
 #include <Eigen/Core>
+#include <Tools/Collision.h>
 #include <planning/World.h>
 #include "kdtree/kdtree.h"
 
@@ -30,6 +31,7 @@ public:
 
     /// Member variables
     planning::World* world;
+    Collision *collision;
     int robotId;
     Eigen::VectorXi links;
 
@@ -43,7 +45,8 @@ public:
     struct kdtree *kdTree;
 
     /// Constructor
-    RRT( planning::World* _world, 
+    RRT( planning::World* _world,
+         Collision *_collision, 
          int _robotId, 
          const Eigen::VectorXi &_links, 
          const Eigen::VectorXd &_root, 

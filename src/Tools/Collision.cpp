@@ -80,7 +80,7 @@ void Collision::InitFromWorld( planning::World* _world ) {
  * @brief Returns true iff collision
  */
 bool Collision::CheckCollisions() {
-
+UpdateAllCollisionModels();
     VCReport report;
     vcollide.Collide( &report, VC_FIRST_CONTACT);  /// Perform collision test.
 	  return report.numObjPairs() > 0;
@@ -121,6 +121,9 @@ void Collision::DetectCollisions() {
  * @function UpdateAllCollisionModels
  */
 void Collision::UpdateAllCollisionModels() {
+
+    for( int i = 0; i < mWorld->mRobots.size(); i++ )
+    { mWorld->mRobots[i]->update(); }
 
     /// Update all the models ( objects + robots )
     for( unsigned int i = 0; i < mEntities.size(); i++ ) {

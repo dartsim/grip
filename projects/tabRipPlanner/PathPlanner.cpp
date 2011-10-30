@@ -16,7 +16,9 @@ PathPlanner::PathPlanner() {
  * @function PathPlanner
  * @brief Constructor
  */
-PathPlanner::PathPlanner( planning::World &_world, bool _copyWorld, double _stepSize ) {
+PathPlanner::PathPlanner( planning::World &_world, 
+                          Collision *_collision,
+                          bool _copyWorld, double _stepSize ) {
 
     copyWorld = _copyWorld;
 
@@ -26,6 +28,7 @@ PathPlanner::PathPlanner( planning::World &_world, bool _copyWorld, double _step
         world = &_world;
     }
 
+    collision = _collision;
     stepSize = _stepSize;
 }
 
@@ -45,7 +48,7 @@ PathPlanner::~PathPlanner() {
  * @brief Main function
  */
 bool PathPlanner::planPath( int _robotId, 
-               		    const Eigen::VectorXi &_links, 
+               		          const Eigen::VectorXi &_links, 
                             const Eigen::VectorXd &_start, 
                             const Eigen::VectorXd &_goal, 
                             bool _bidirectional, 
@@ -57,11 +60,11 @@ bool PathPlanner::planPath( int _robotId,
 
     //world->mRobots[_robotId]->setQuickDofs( _start ); // Other quick way
     world->mRobots[_robotId]->setDofs( _start, _links );
-    if( world->checkCollisions() )
+    if( collision->CheckCollisions() )
         return false;
 
     world->mRobots[_robotId]->setDofs( _goal, _links );
-    if( world->checkCollisions() )
+    if( collision->CheckCollisions() )
         return false;
 	
     bool result;
@@ -91,7 +94,7 @@ bool PathPlanner::planSingleTreeRrt( int _robotId,
                                      bool _greedy,
                                      unsigned int _maxNodes ) {
 
-    RRT rrt( world, _robotId, _links, _start, stepSize );
+    RRT rrt( world, collision, _robotId, _links, _start, stepSize );
     RRT::StepResult result = RRT::STEP_PROGRESS;
 
     double smallestGap = DBL_MAX;
@@ -170,8 +173,8 @@ bool PathPlanner::planBidirectionalRrt( int _robotId,
                                         bool _greedy, // no effect here
                                         unsigned int _maxNodes ) {
 	
-    RRT rrt_start( world, _robotId, _links, _start, stepSize );
-    RRT rrt_goal( world, _robotId, _links, _goal, stepSize );
+    RRT rrt_start( world, collision, _robotId, _links, _start, stepSize );
+    RRT rrt_goal( world, collision, _robotId, _links, _goal, stepSize );
 
     RRT* rrt_a = &rrt_start;
     RRT* rrt_b = &rrt_goal;
@@ -230,7 +233,7 @@ bool PathPlanner::checkPathSegment( int _robotId,
     for( int i = 0; i < n; i++ ) {
         Eigen::VectorXd conf = (double)(n - i)/(double)n * _config1 + (double)(i)/(double)n * _config2;
         world->mRobots[_robotId]->setDofs( conf, _links );
-	if( world->checkCollisions() ) {
+	if( collision->CheckCollisions() ) {
 	    return false;
 	}
     }

@@ -374,7 +374,7 @@ void RipPlannerTab::OnButton(wxCommandEvent &evt) {
 
             double stepSize = 0.02;
 
-	    planner = new PathPlanner( *mWorld, false, stepSize );
+	    planner = new PathPlanner( *mWorld, mCollision, false, stepSize );
 	    //wxThread planThread;
 	    //planThread.Create();
             links = mWorld->mRobots[robotId]->getQuickDofsIndices();

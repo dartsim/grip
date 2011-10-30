@@ -13,13 +13,15 @@
  * @brief Constructor
  */
 RRT::RRT( planning::World *_world, 
-         int _robotId, 
-         const Eigen::VectorXi &_links, 
-         const Eigen::VectorXd &_root, 
-         double _stepSize ) {
+          Collision *_collision,
+          int _robotId, 
+          const Eigen::VectorXi &_links, 
+          const Eigen::VectorXd &_root, 
+          double _stepSize ) {
 
     /// Initialize some member variables
     world = _world; 
+    collision = _collision;
     robotId = _robotId;
     links = _links; 
     ndim = links.size();
@@ -202,7 +204,7 @@ void RRT::tracePath( int _node,
 bool RRT::checkCollisions( const Eigen::VectorXd &_config ) {
     world->mRobots[robotId]->setQuickDofs( _config );
     world->mRobots[robotId]->update();
-    return world->checkCollisions();
+    return collision->CheckCollisions();
 }
 
 /**

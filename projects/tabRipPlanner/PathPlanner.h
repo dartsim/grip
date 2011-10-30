@@ -10,6 +10,7 @@
 #include <Eigen/Core>
 #include <vector>
 #include <planning/World.h>
+#include <Tools/Collision.h>
 #include "RRT.h"
 
 /**
@@ -23,12 +24,14 @@ public:
     /// Member variables
     double stepSize;
     planning::World* world;
+    Collision * collision;
     std::list<Eigen::VectorXd> path;
     
 
     /// Constructor
     PathPlanner();
-    PathPlanner( planning::World &_world, 
+    PathPlanner( planning::World &_world,
+                 Collision *_collision, 
                  bool _copyWorld = false, 
                  double _stepSize = 0.02 );
     /// Destructor
