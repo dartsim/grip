@@ -40,6 +40,7 @@
 #include <fstream>
 
 #include "GUI.h"
+#include <Tools/Collision.h>
 #include "GRIPFrame.h"
 #include "Viewer.h"
 #include "TreeView.h"
