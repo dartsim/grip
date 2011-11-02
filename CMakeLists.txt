@@ -8,7 +8,7 @@ SET(CPACK_PACKAGE_VERSION_MINOR "1")
 SET(CPACK_PACKAGE_VERSION_PATCH "1")
 SET(CPACK_PACKAGE_NAME "grip")
 SET(CPACK_SYSTEM_NAME "i386")
-SET(CPACK_DEBIAN_PACKAGE_DEPENDS "dart (>= 0.1), libwxgtk2.8-dev (>= 3.7)")
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "dart (>= 0.1), libwxgtk2.8-dev (>= 2.8)")
 
 #####################################
 # Global Variables
