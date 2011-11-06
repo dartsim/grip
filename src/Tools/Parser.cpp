@@ -264,6 +264,8 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
                 
               kinematics::ShapeMesh *p = new kinematics::ShapeMesh( Vector3d(0, 0, 0), 0 );
 		          node->setShape( p );
+	        } else {
+	            model = 0;
 	        }
             
           models.push_back( model );
@@ -427,8 +429,10 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
     }
 
     for( unsigned int i = 0; i < models.size(); i++ ) {
-      _robot->addModel( models[i], modelsInd[i] );
-      printf("Mode: %d Model Ind: %d \n", i, modelsInd[i]);
+      if( models[i] != 0 ) {
+          _robot->addModel( models[i], modelsInd[i] );
+          printf("Mode: %d Model Ind: %d \n", i, modelsInd[i]);
+      }
     }
 
 
