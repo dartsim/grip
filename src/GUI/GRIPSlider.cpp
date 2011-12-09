@@ -61,6 +61,7 @@ GRIPSlider::GRIPSlider(const char* name, double left, double right, int precisio
                        long style)
 					   : wxPanel(parent, id, pos, size, style)
 {
+	initialpos = 0.0f;
     SetAutoLayout(true);
     if(vertical) {
         sizer = new wxBoxSizer(wxVERTICAL);
@@ -174,6 +175,7 @@ void GRIPSlider::setValue(double value, bool sendSignal){
  * @function updateValue
  */
 void GRIPSlider::updateValue(double value, bool sendSignal){
+	value = 0.0f;
     char buf[100];
     sprintf(buf, "%6.2f", pos);
     wxString posString = wxString(buf,wxConvUTF8);

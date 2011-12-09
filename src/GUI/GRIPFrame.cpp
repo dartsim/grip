@@ -283,7 +283,7 @@ void GRIPFrame::OnSaveRobot(wxCommandEvent& WXUNUSED(event)) {
 /**
  * @function OnLoad
  */
-void GRIPFrame::OnLoad(wxCommandEvent& event){
+void GRIPFrame::OnLoad(wxCommandEvent& WXUNUSED(event)){
     viewer->loading=true;
     wxString filename = wxFileSelector(wxT("Choose a file to open"),wxT("../scene/"),wxT(""),wxT(""), // -- default extension
                                        wxT("*.rscene"), 0);
@@ -296,7 +296,7 @@ void GRIPFrame::OnLoad(wxCommandEvent& event){
  * @function OnQuickLoad
  * @brief Load the latest correctly loaded .rscene
  */
-void GRIPFrame::OnQuickLoad(wxCommandEvent& event) {
+void GRIPFrame::OnQuickLoad(wxCommandEvent& WXUNUSED(event)) {
 
     viewer->loading=true;
     ifstream lastloadFile;
@@ -380,7 +380,7 @@ void GRIPFrame::OnToolOrder(wxCommandEvent& WXUNUSED(event)){
  * @function OnToolCheckColl
  * @brief 
  */
-void GRIPFrame::OnToolCheckColl(wxCommandEvent& ){
+void GRIPFrame::OnToolCheckColl(wxCommandEvent& WXUNUSED(event)){
 	/// Toggle collision detection
 	check_for_collisions = !check_for_collisions;
 }
@@ -439,7 +439,7 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
  * @brief Save a screenshot of the current GUI (Viewer and whole frame)
  * @date 2011-10-13
  */
-void GRIPFrame::OnToolScreenshot(wxCommandEvent& event) {
+void GRIPFrame::OnToolScreenshot(wxCommandEvent& WXUNUSED(event)) {
     wxYield();
 
     int w,h;
@@ -571,7 +571,7 @@ void GRIPFrame::setTimeValue(double value, bool sendSignal){
  * @date 2011-10-13
  */
 void GRIPFrame::updateTimeValue(double value, bool sendSignal) {
-
+	value = 0.0f;
     if(tIncrement == 0) return;
     char buf[100];
     sprintf(buf, "%6.2f", tCurrent);

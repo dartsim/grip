@@ -159,7 +159,7 @@ planning::World* parseWorld( std::string _fullname )
         /** READ OBJECT SPEC                  */
 	/** --------------------------------- */
 	else if (state == OSTATE) {
-            kinematics::Joint *joint;
+            //kinematics::Joint *joint;
 	    if (str == "POSITION") {
 	        Vector3d pos;
 		wstream >> pos(0);

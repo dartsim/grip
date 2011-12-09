@@ -58,13 +58,12 @@ void Viewer::drawWorld() {
 
   if(check_for_collisions){
 	  mCollision->UpdateAllCollisionModels();
-      bool st = mCollision->CheckCollisions();
   }
 
   // Draw Objects    
   for( unsigned int i = 0; i < mWorld->mObjects.size(); i++ ) {
 
-    for( unsigned int j = 0; j < mWorld->mObjects[i]->getNumNodes(); j++ ) {
+    for( int j = 0; j < mWorld->mObjects[i]->getNumNodes(); j++ ) {
         
       Eigen::Matrix4d poseMatrix =mWorld->mObjects[i]->getNode(j)->getWorldTransform();         
       Transform<double,3,Affine> pose;
@@ -483,8 +482,6 @@ void Viewer::addGrid(){
 	glEnable(GL_FOG);
 	double sizeX=100.0f;
 	double sizeY=100.0f;
-	double inc=.5f;
-	double d = .005;
 
 	double startX=-sizeX/2.f;
 	double endX  =sizeX/2.f;

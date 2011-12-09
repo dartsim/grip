@@ -141,7 +141,7 @@ void TreeView::CreateFromWorld()
                                                           -1,
                                                           ret );
         ///-- Add body nodes ( AKA Links ) as sub-trees
-	for (unsigned int j = 0; j < mWorld->mRobots[i]->getNumNodes(); j++ )
+	for (int j = 0; j < mWorld->mRobots[i]->getNumNodes(); j++ )
 	{
             // Get the first bodyNode (do not consider the 6 default DOF! )
             if ( mWorld->mRobots[i]->getNode(j)->getParentNode() ==  mWorld->mRobots[i]->getRoot() ) {
@@ -209,7 +209,7 @@ wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hP
                                             iconIndex,
                                             -1,
                                             ret );
-	    for (unsigned int i = 0; i < _node->getNumChildJoints(); i++)
+	    for (int i = 0; i < _node->getNumChildJoints(); i++)
       	    {    /*_node->idNum = */hPrev=AddNodeTree( _node->getChildNode(i), 
                                                   hPrev, 
                                                   newParent, 

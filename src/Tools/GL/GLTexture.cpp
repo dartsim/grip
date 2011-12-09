@@ -80,6 +80,8 @@ void GLTexture::Use()
 
 void GLTexture::LoadBMP(string name)
 {
+	printf("LoadBMP is deprecated\n");
+	name = "";
 	/*
 	// Create a place to store the texture
 	AUX_RGBImageRec *TextureImage[1];

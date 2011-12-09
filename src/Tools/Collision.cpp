@@ -138,7 +138,7 @@ void Collision::DetectCollisions() {
  */
 void Collision::UpdateAllCollisionModels() {
 
-    for( int i = 0; i < mWorld->mRobots.size(); i++ )
+    for( unsigned int i = 0; i < mWorld->mRobots.size(); i++ )
     { mWorld->mRobots[i]->update(); }
 
     /// Update all the models ( objects + robots )

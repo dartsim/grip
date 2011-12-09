@@ -62,7 +62,7 @@ int saveRscene( std::string filename ) {
                 return 1;
             }
 
-            unsigned int lnum = 0;
+            int lnum = 0;
 	    while( lnum < dof_vals.size() ) {
 	        wstream << "> \t" << "INIT " << mWorld->mRobots[i]->getDof(dof_ind(lnum))->getJoint()->getChildNode()->getName() << " " << dof_vals(lnum) << endl;
 		lnum++;
