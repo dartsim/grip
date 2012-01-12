@@ -18,6 +18,7 @@ Dependencies:
     ccmake ../ (or cmake-gui to configure)
     Press c to configure, g to generate Makefiles and q to quit
     make
+    sudo make install
     
 1.2 For Eclipse:
 
