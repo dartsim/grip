@@ -61,6 +61,16 @@ enum GRIPThreadError
 	GRIPTHREAD_MISC_ERROR         // Some other error
 };
 
+static const char* gripThreadErrorToString(GRIPThreadError _num) {
+	switch(_num) {
+	case GRIPTHREAD_NO_ERROR: return "GripThread - No error"; break;
+	case GRIPTHREAD_RUNNING: return "GripThread - Running"; break;
+	case GRIPTHREAD_NOT_RUNNING: return "GripThread - Not Running"; break;
+	case GRIPTHREAD_MISC_ERROR: return "GripThread - Misc Error"; break;
+	default: return "GripThread - Default, no Error";
+	}
+}
+
 class GRIPThread: public wxThread {
 	GRIPTab* tab;
 	GRIPThreadError state;
