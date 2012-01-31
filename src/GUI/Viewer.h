@@ -50,6 +50,7 @@
 #include <kinematics/BodyNode.h>
 #include <kinematics/ShapeMesh.h>
 #include "../Tools/Collision.h"
+#include <GL/glut.h>
 
 using namespace Eigen;
 
@@ -66,6 +67,9 @@ public:
 					_("GLCanvas"), int * attribList = 0,
 		const wxPalette & palette = wxNullPalette) :
 		wxGLCanvas(parent, id, pos, size, style, name, attribList, palette) {
+		int argc = 1;
+		char* argv[1] = { wxString((wxTheApp->argv)[0]).char_str() };
+		glutInit(&argc, argv);
 	}
 
 	virtual ~Viewer() {
@@ -84,6 +88,7 @@ public:
 	void ResetGL();
 	void addGrid();
 
+	void drawCube();
 	void drawWorld(); 
 	void drawModel( Model3DS* _model, Eigen::Transform<double, 3, Eigen::Affine> *_pose );
 

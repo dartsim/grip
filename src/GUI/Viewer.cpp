@@ -54,6 +54,64 @@ extern bool check_for_collisions;
  * @function drawWorld
  * @brief Draw World and everything inside it: Robots + Objects
  */
+
+void Viewer::drawCube() {
+	if(!keyChanged) return;
+
+	glPushMatrix();
+	glColor3f(0.3f, 0.3f, 0.3f);
+	float b_w = d.bin_info[0].w / keyScale;
+	float b_h = d.bin_info[0].h / keyScale;
+	float b_d = d.bin_info[0].d / keyScale;
+	glTranslatef(b_w/2.0, b_h/2.0, -0.05);
+	glScalef(b_w, b_h, 0.1);
+	glutSolidCube(1.0f);
+	glPopMatrix();
+
+	glPushMatrix();
+	glColor3f(0.3f, 0.3f, 0.3f);
+	glTranslatef(b_w/2.0, b_h/2.0, b_d/2.0);
+	glScalef(b_w, b_h, b_d);
+	glutWireCube(1.0f);
+	glPopMatrix();
+
+	float max_d = 0.0f;
+
+	std::vector<int> pattern = d.layer_pattern[keyCurrent];
+	int c = 0;
+	for (uint i = 0; i < keyCurrent.size(); i++) {
+		for (int j = 0; j < keyCurrent[i]; j++) {
+			glPushMatrix();
+			float w = d.package_info[i].w / keyScale;
+			float h = d.package_info[i].h / keyScale;
+			float _d = d.package_info[i].d / keyScale;
+			float pos_x = pattern[c * 3 + 0] / keyScale;
+			float pos_y = pattern[c * 3 + 1] / keyScale;
+			float pos_z = pattern[c * 3 + 2] / keyScale;
+			pos_x += w/2.0;
+			pos_y += h/2.0;
+			pos_z += _d/2.0;
+			glTranslatef(pos_x, pos_y, pos_z);
+			glScalef(w, h, _d);
+			glColor3f(c_red[i], c_green[i], c_blue[i]);
+			glutSolidCube(1.0f);
+			glColor3f(0.0f, 0.0f, 0.0f);
+			glutWireCube(1.0f);
+			glPopMatrix();
+			c++;
+
+			if (_d > max_d) max_d = _d;
+		}
+	}
+
+	glPushMatrix();
+	glColor3f(0.7f, 0.7f, 0.7f);
+	glTranslatef(b_w/2.0, b_h/2.0, max_d/2.0);
+	glScalef(b_w, b_h, max_d);
+	glutWireCube(1.0f);
+	glPopMatrix();
+}
+
 void Viewer::drawWorld() { 
 
   if(check_for_collisions){
@@ -180,7 +238,7 @@ int Viewer::DrawGLScene()
 			  0,0,0, // Target Vector in scene
 			  camT(0,2),camT(1,2),camT(2,2));  // Up Vector from Camera pose
 
-	float position[]= {camT(0,3),camT(1,3),camT(2,3), 1.0}; // Camera position
+	float position[]= {camT(0,3),camT(1,3),camT(2,3), 100.0}; // Camera position
 	glEnable(GL_TEXTURE_2D);
 	glColor4f(1.0f,1.0f,1.0f,0.0f);
 
@@ -199,7 +257,7 @@ int Viewer::DrawGLScene()
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
 
-	GLfloat HeadlightAmb[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+	GLfloat HeadlightAmb[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 	GLfloat HeadlightDif[4] = {1.0f, 1.0f, 1.0f, 0.0f};
 	GLfloat HeadlightSpc[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	glLightfv(GL_LIGHT2, GL_AMBIENT, HeadlightAmb);
@@ -212,7 +270,7 @@ int Viewer::DrawGLScene()
 
 	glTranslated(worldV[0],worldV[1],worldV[2]);
 
-	float ambRefl[] = {0.2f, 0.2f, 0.2f, 1.0f}; // default
+	float ambRefl[] = {0.8f, 0.8f, 0.8f, 1.0f}; // default
 	glMaterialfv(GL_FRONT, GL_AMBIENT, ambRefl);
 	float diffRefl[] = {0.8f, 0.8f, 0.8f, 1.0f}; // default
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffRefl);
@@ -230,6 +288,7 @@ int Viewer::DrawGLScene()
 	if( mWorld != NULL ) { 
             drawWorld(); 
         }
+	drawCube();
 
 	glPopMatrix();
 
@@ -259,7 +318,7 @@ void Viewer::resized(wxSizeEvent& evt){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glPolygonMode (GL_FRONT, GL_FILL);
-	gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,100.0f);
+	gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,1000.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	DrawGLScene();
@@ -392,7 +451,7 @@ void Viewer::InitGL(){
 
 	glShadeModel(GL_SMOOTH);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClearDepth(100.0f);
+	glClearDepth(200.0f);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
 	glDepthFunc(GL_LEQUAL);
@@ -407,10 +466,19 @@ void Viewer::InitGL(){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glPolygonMode (GL_FRONT, GL_FILL);
-	gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,15.0f);
+	gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,150.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	UpdateCamera();
+
+	backColor = Vector3d(0,0,0);
+	gridColor = Vector3d(.5,.5,.0);
+
+	camRotT = AngleAxis<double> (DEG2RAD(-30), Vector3d(0, 1, 0));
+	prevCamT = camRotT;
+	worldV = Vector3d(0, 0, 0);
+	prevWorldV = worldV;
+	camRadius = defaultCamRadius;
 }
 
 /**
@@ -429,36 +497,10 @@ void Viewer::ResetGL() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glPolygonMode (GL_FRONT, GL_FILL);
-    gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,15.0f);
+    gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,150.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
         
-    //-- If we loaded the values
-    if( mCamRadius != 0 ) {    
-        camRadius = mCamRadius;
-	camRotT = mCamRotT;
-	camT = mCamRotT;
-	camT.translate(Vector3d(mCamRadius, 0, 0));
-	worldV = mWorldV;
-
-	prevCamT = camT;
-	prevWorldV = worldV;
-
-	gridColor = mGridColor;
-	backColor = mBackColor;
-
-	cout << "Viewer: " << worldV[0] << " " << worldV[1] << " " << worldV[2] << endl;
-    
-    }else {
-        camRotT = AngleAxis<double> (DEG2RAD(-30), Vector3d(0, 1, 0));
-	prevCamT = camRotT;
-	worldV = Vector3d(0, 0, 0);
-	prevWorldV = worldV;
-	camRadius = defaultCamRadius;
-
-	backColor = Vector3d(0,0,0);
-	gridColor = Vector3d(.5,.5,.0);
-    }
         
     setClearColor();
     UpdateCamera();

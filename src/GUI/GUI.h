@@ -49,6 +49,8 @@
 #include <wx/notebook.h>
 #include <planning/World.h>
 #include <Tools/Collision.h>
+#include <Tools/3dbpp.h>
+#include <vector>
 
 class GRIPFrame;
 class Viewer;
@@ -61,6 +63,12 @@ class TemplateTab;
 
 extern planning::World  *mWorld;
 extern Collision *mCollision;
+extern database d;
+extern input i;
+extern std::vector<int> keyCurrent;
+extern bool keyChanged;
+extern float keyScale;
+extern float c_red[10], c_green[10], c_blue[10];
 
 extern GRIPFrame*	frame;
 extern Viewer*		viewer;

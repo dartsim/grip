@@ -86,6 +86,7 @@ public:
     void OnSaveScene(wxCommandEvent& event);
     void OnSaveRobot(wxCommandEvent& event);
     void OnLoad(wxCommandEvent& event);
+    void OnPalletLoad(wxCommandEvent& event);
     void OnQuickLoad(wxCommandEvent& event);
     void OnToolOrder(wxCommandEvent& event);
     void OnToolCheckColl(wxCommandEvent& event);
@@ -134,7 +135,8 @@ enum
     MenuCameraReset,
 
     MenuQuit = wxID_EXIT,
-    MenuAbout = wxID_ABOUT
+    MenuAbout = wxID_ABOUT,
+    MenuPalletLoad
 };
 
 

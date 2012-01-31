@@ -53,6 +53,8 @@
 #include "icons/free.xpm"
 #include "icons/fixed.xpm"
 #include <string>
+#include <stdio.h>
+#include <stdlib.h>
 
 IMPLEMENT_DYNAMIC_CLASS(TreeView, wxTreeCtrl)
 
@@ -98,6 +100,29 @@ TreeView::TreeView(wxWindow *parent, const wxWindowID id,
 	AssignImageList(imageList);
 }
 
+
+void TreeView::CreateFromDatabase() {
+	DeleteAllItems();
+	rootId = AddRoot(wxT("Root"), -1, -1);
+	TreeViewReturn* ret;
+	wxTreeItemId hPrev = rootId;
+
+	std::map<key, pattern>::iterator itp;
+	for (itp = d.layer_pattern.begin(); itp	!= d.layer_pattern.end(); itp++) {
+		ret = new TreeViewReturn;
+		ret->data = const_cast<std::vector<int>*> (&((*itp).first));
+		ret->dType = Return_Type_Key;
+		string key;
+		for (uint i = 0; i < (*itp).first.size(); i++) {
+			char buf[10];
+			sprintf(buf, "%d", (*itp).first[i]);
+			key.append(buf);
+			key.append(" ");
+		}
+		ret->dString = key;
+		AppendItem(rootId, wxString(key.c_str(), wxConvUTF8), Tree_Icon_Object, -1, ret);
+	}
+}
 
 /**
  * @function CreateFromWorld
@@ -161,7 +186,7 @@ wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hP
 
 	TreeViewReturn* ret;
 	int iconIndex = Tree_Icon_Object;
-        
+
         int type = _node->getParentJoint()->getJointType();
 	switch (type)
 	    {
@@ -169,7 +194,7 @@ wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hP
 		    iconIndex = Tree_Icon_Prismatic;
 		    break;
 	        case (kinematics::Joint::J_HINGE ):
-		    iconIndex = Tree_Icon_Revolute; 
+		    iconIndex = Tree_Icon_Revolute;
 		    break;
 	        case (kinematics::Joint::J_UNKNOWN ):
 		    iconIndex = Tree_Icon_Fixed;
@@ -177,8 +202,8 @@ wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hP
 	        default:
 		    iconIndex = Tree_Icon_Object;
 		    break;
-	    } 
-        
+	    }
+
 	wxTreeItemId newParent = hParent;
 
 	if ( _node->getNumChildJoints() == 1) {
@@ -194,7 +219,7 @@ wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hP
 	    }else {
 	       	/*_node->idNum = */hPrev = AppendItem( hParent,
                                                    wxString( string( _node->getName() ).c_str(),wxConvUTF8),
-                                                   iconIndex, 
+                                                   iconIndex,
                                                    -1,
                                                    ret );
             }
@@ -204,15 +229,15 @@ wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hP
 	    ret = new TreeViewReturn;
 	    ret->data = _node;
 	    ret->dType = Return_Type_Node;
-	    hPrev = newParent = AppendItem( hParent, 
+	    hPrev = newParent = AppendItem( hParent,
                                             wxString( string( _node->getName() ).c_str(),wxConvUTF8 ),
                                             iconIndex,
                                             -1,
                                             ret );
 	    for (int i = 0; i < _node->getNumChildJoints(); i++)
-      	    {    /*_node->idNum = */hPrev=AddNodeTree( _node->getChildNode(i), 
-                                                  hPrev, 
-                                                  newParent, 
+      	    {    /*_node->idNum = */hPrev=AddNodeTree( _node->getChildNode(i),
+                                                  hPrev,
+                                                  newParent,
                                                   false );
             }
 	}

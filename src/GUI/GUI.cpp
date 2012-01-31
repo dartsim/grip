@@ -43,6 +43,14 @@
 
 planning::World* mWorld = 0;
 Collision* mCollision=0;
+database d;
+input i;
+std::vector<int> keyCurrent;
+bool keyChanged = 0;
+float keyScale = 4.0f;
+float c_red[10] = 	{0.5, 0.5, 0.0, 0.0, 0.0, 1.0};
+float c_green[10] = {0.0, 0.0, 0.0, 0.5, 1.0, 1.0};
+float c_blue[10] = 	{0.0, 0.5, 0.5, 0.0, 1.0, 0.0};
 
 GRIPFrame*	frame = 0;
 Viewer*		viewer = 0;

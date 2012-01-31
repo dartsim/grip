@@ -14,6 +14,7 @@ find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
   include_directories(${DART_HEADERS} ${GRIP_HEADERS} ${WXWIDGETS_SHARED_INCLUDE_DIRS})
+  include_directories($ENV{MP_PROJECT})
   link_directories(${CMAKE_SOURCE_DIR}/lib ${GRIP_LIBDIR} ${WXWIDGETS_SHARED_LIBRARY_DIRS})
 
   if(MSVC)
@@ -23,7 +24,7 @@ if (wxWidgets_FOUND)
     add_executable (tabPalletizing ${srcs} ${hdrs})
    endif()
    
-   target_link_libraries (tabPalletizing ${GRIP_LIBRARIES} ${DART_LIBRARIES} ${wxWidgets_LIBRARIES} )
+   target_link_libraries (tabPalletizing ${GRIP_LIBRARIES} ${DART_LIBRARIES} ${wxWidgets_LIBRARIES})
   
 else (wxWidgets_FOUND)
   message ("wxWidgets not found!")

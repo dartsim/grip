@@ -39,6 +39,7 @@
 #include "tabPalletizing.h"
 
 #include <wx/wx.h>
+#include <wx/dirdlg.h>
 #include <GUI/Viewer.h>
 #include <GUI/GUI.h>
 #include <GUI/GRIPSlider.h>
@@ -49,19 +50,16 @@ using namespace std;
 #include <Tabs/AllTabs.h>
 #include <GRIPApp.h>
 
-
-//Give each slider a number so we recognize them (also indicates order of select on tabbing)
-enum sliderNames {
-	SAMPLE_GRIP_SLIDER1 = 1000, SAMPLE_GRIP_SLIDER2 = 1001
+enum buttonEvents {
+	be_refresh = 50
 };
 
-//Add a handler for slider changes
+
 BEGIN_EVENT_TABLE(PalletizingTab, wxPanel)
-EVT_COMMAND (wxID_ANY, wxEVT_GRIP_SLIDER_CHANGE, PalletizingTab::OnSlider)
-EVT_MENU(MenuPalletLoad,  PalletizingTab::OnPalletLoad)
+EVT_COMMAND (wxID_ANY, wxEVT_COMMAND_BUTTON_CLICKED, PalletizingTab::OnButton)
 END_EVENT_TABLE ()
 
-// Class constructor for the tab: Each tab will be a subclass of GRIPTab
+
 IMPLEMENT_DYNAMIC_CLASS(PalletizingTab, GRIPTab)
 
 PalletizingTab::PalletizingTab(wxWindow *parent, const wxWindowID id,
@@ -69,129 +67,73 @@ PalletizingTab::PalletizingTab(wxWindow *parent, const wxWindowID id,
 	GRIPTab(parent, id, pos, size, style) {
 	sizerFull = new wxBoxSizer(wxHORIZONTAL);
 
-	// Create Static boxes - these are the outlines you see on the inspector tab - a nice way to organize things
-	wxStaticBox* ss1Box = new wxStaticBox(this, -1, wxT("Sample Box 1"));
-	wxStaticBox* ss2Box = new wxStaticBox(this, -1, wxT("Sample Box 2"));
+	wxStaticBox* ss1Box = new wxStaticBox(this, -1, wxT("Info"));
+	wxStaticBox* ss2Box = new wxStaticBox(this, -1, wxT("Control"));
 
-	// Create sizers for these static boxes
 	wxStaticBoxSizer* ss1BoxS = new wxStaticBoxSizer(ss1Box, wxVERTICAL);
 	wxStaticBoxSizer* ss2BoxS = new wxStaticBoxSizer(ss2Box, wxVERTICAL);
 
-	// Add 2 static text fields (these can be re-written by the handler)
-	sampleText1 = new wxStaticText(this, -1, wxT("Sample text 1"),
+	text1 = new wxStaticText(this, -1, wxT(""),
 			wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
-	sampleText2 = new wxStaticText(this, -1, wxT("Sample text 2"),
+	text2 = new wxStaticText(this, -1, wxT(""),
 			wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
+	setNumOfLayers(0);
+	setNumOfPallets(0);
+	wxButton* button_refresh = new wxButton(this, be_refresh, wxT("Refresh"));
 
-	// Create GRIP-style sliders
-	sampleGRIPSlider1 = new GRIPSlider("SS1", -180, 180, 2000, 0, 1000, 2000,
-			this, SAMPLE_GRIP_SLIDER1);
-	sampleGRIPSlider2 = new GRIPSlider("SS2", -180, 180, 2000, 0, 1000, 2000,
-			this, SAMPLE_GRIP_SLIDER2);
-
-	// Add the boxes to their respective sizers
 	sizerFull->Add(ss1BoxS, 1, wxEXPAND | wxALL, 6);
-	sizerFull->Add(ss2BoxS, 1, wxEXPAND | wxALL, 6);
+	sizerFull->Add(ss2BoxS, 3, wxEXPAND | wxALL, 6);
 	SetSizer(sizerFull);
 
-	// Add content to box1 (1st sample text and slider)
-	ss1BoxS->Add(sampleText1, 1, wxEXPAND | wxALL, 6);
-	ss1BoxS->Add(sampleGRIPSlider1, 1, wxEXPAND | wxALL, 6);
+	ss1BoxS->Add(text1, 1, wxEXPAND | wxALL, 6);
+	ss1BoxS->Add(text2, 1, wxEXPAND | wxALL, 6);
+	ss1BoxS->Add(button_refresh, 3, wxEXPAND | wxALL, 6);
 
-	// Add content to box2 (2nd sample text and slider)
-	ss2BoxS->Add(sampleGRIPSlider2, 1, wxEXPAND | wxALL, 6);
-	ss2BoxS->Add(sampleText2, 1, wxEXPAND | wxALL, 6);
-
-	wxMenu *palletMenu = new wxMenu;
-	palletMenu->Append(MenuPalletLoad, wxT("L&oad Palletizing Files"));
-
-	wxMenuBar *menuBar = frame->GetMenuBar();
-	menuBar->Append(palletMenu, wxT("&Palletizing"));
-	frame->SetMenuBar(menuBar);
-
-//	server = new GRIPServer();
-//	server->setup();
-//
-//	thread = new GRIPThread(this);
-//	gripThreadErrorToString(thread->CreateThread());
+	//	server = new GRIPServer();
+	//	server->setup();
+	//
+	//	thread = new GRIPThread(this);
+	//	gripThreadErrorToString(thread->CreateThread());
 }
 
-//Handle slider changes
-void PalletizingTab::OnSlider(wxCommandEvent &evt) {
-	if(selectedTreeNode==NULL){
-		return;
-	}
-
-	int slnum = evt.GetId();
-	double pos = *(double*) evt.GetClientData();
-	char numBuf[64];
-    numBuf[0] = '\0';
-	//sprintf(numBuf, "");
-
-	switch (slnum) {
-	case SAMPLE_GRIP_SLIDER1:
-		cout << "Changing slider 1" << endl;
-		sprintf(numBuf, "X Change: %7.4f", pos);
+void PalletizingTab::OnButton(wxCommandEvent &evt) {
+	int button_num = evt.GetId();
+	switch (button_num) {
+	case be_refresh:
+		setNumOfLayers(d.layer_pattern.size());
 		break;
-	case SAMPLE_GRIP_SLIDER2:
-		cout << "Changing slider 2" << endl;
-		sprintf(numBuf, "Y Change: %7.4f", pos);
-		break;
-
-	default:
-		return;
 	}
-//cout << "got here" << endl;
-	//world->updateCollision(o);
-//	viewer->UpdateCamera();
-
-	if (frame != NULL)
-		frame->SetStatusText(wxString(numBuf, wxConvUTF8));
 }
-
 
 // This function is called when an object is selected in the Tree View or other
 // global changes to the GRIP world. Use this to capture events from outside the tab.
 void PalletizingTab::GRIPStateChange() {
-	if(selectedTreeNode==NULL){
+	if (selectedTreeNode == NULL) {
 		return;
 	}
 
-	string statusBuf;
-	string buf, buf2;
+	std::vector<int> *k = new std::vector<int>;
+	string buf;
+
 	switch (selectedTreeNode->dType) {
-	case Return_Type_Object:
-		statusBuf = " Selected Object: ";
-		buf = "You clicked on object: ";
-		sampleText1->SetLabel(wxString(buf.c_str(), wxConvUTF8));
-		sampleText2->Hide();
-
+	case Return_Type_Key:
+		k = reinterpret_cast<std::vector<int> *> (selectedTreeNode->data);
+		buf = "Selected " + selectedTreeNode->dString;
+		keyCurrent = *k;
+		keyChanged = 1;
+		viewer->ResetGL();
 		break;
-	case Return_Type_Robot:
-		statusBuf = " Selected Robot: ";
-		buf = "You clicked on robot: ";
-		sampleText2->SetLabel(wxString(buf.c_str(), wxConvUTF8));
-		sampleText1->Hide();
-
+	default:
+		buf = "Object of unknown data type selected";
 		break;
-	case Return_Type_Node:
-		statusBuf = " Selected Link:  of Robot: ";
-		buf = " Link:  of Robot: ";
-		// Do something here if you want to.  you get the idea...
-
-		break;
-    default:
-        fprintf(stderr, "someone else's problem.");
-        assert(0);
-        exit(1);
 	}
-	//frame->SetStatusText(wxString(statusBuf.c_str(), wxConvUTF8));
-	//sizerFull->Layout();
+
+	frame->SetStatusText(wxString(buf.c_str(), wxConvUTF8));
+	sizerFull->Layout();
 }
 
-
 void PalletizingTab::Thread() {
-	while(1) {
+	while (1) {
 		server->acceptMode();
 	}
 }
@@ -200,6 +142,14 @@ void PalletizingTab::onCompleteThread() {
 	printf("Not accepting any more connections\n");
 }
 
-void PalletizingTab::OnPalletLoad(wxCommandEvent& WXUNUSED(event)) {
+void PalletizingTab::setNumOfLayers(int nlayers) {
+	char buf_layers[100];
+	sprintf(buf_layers, "Num. layers = %d", nlayers);
+	text1->SetLabel(wxString(buf_layers, wxConvUTF8));
+}
 
+void PalletizingTab::setNumOfPallets(int npallets) {
+	char buf_layers[100];
+	sprintf(buf_layers, "Num. pallets = %d", npallets);
+	text2->SetLabel(wxString(buf_layers, wxConvUTF8));
 }

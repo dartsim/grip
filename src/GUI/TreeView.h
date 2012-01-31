@@ -49,7 +49,9 @@
 #include "wx/treectrl.h"
 
 ////
-#include <kinematics/BodyNode.h> 
+#include <string.h>
+#include <kinematics/BodyNode.h>
+#include <Tools/3dbpp.h>
 ///
 
 
@@ -57,10 +59,11 @@
 
 enum DataType
 {
-	Return_Type_Object,
+	Return_Type_Object = 0,
 	Return_Type_Robot,
-        Return_Type_Node,
+    Return_Type_Node,
 	Return_Type_Tree_Root,
+	Return_Type_Key,
 	Return_Type_Other
 };
 
@@ -80,6 +83,7 @@ public:
     TreeViewReturn(){}
 
 	void* data;
+	std::string dString;
 	DataType dType;
 };
 
@@ -98,6 +102,7 @@ public:
 	virtual ~TreeView(){}
 
 	void CreateFromWorld();
+	void CreateFromDatabase();
 	wxTreeItemId AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hPrev, wxTreeItemId hParent, bool inChain );
 
 	void OnSelChanged(wxTreeEvent& event);

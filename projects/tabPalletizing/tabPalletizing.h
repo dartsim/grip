@@ -43,6 +43,7 @@
 #include <Tabs/GRIPThread.h>
 #include <Tools/Constants.h>
 #include "GRIPServer.h"
+#include <Tools/3dbpp.h>
 
 class PalletizingTab : public GRIPTab
 {
@@ -59,32 +60,24 @@ public:
 		delete server;
 	}
 
-	wxStaticText* sampleText1;
-	wxStaticText* sampleText2;
-
+	wxStaticText* text1;
+	wxStaticText* text2;
 	wxSizer* sizerFull;
-	GRIPSlider* sampleGRIPSlider1;
-	GRIPSlider* sampleGRIPSlider2;
 
-	// Thread specific
 	GRIPThread* thread;
 
-	// Your Thread routine
 	// call RSTThread::CheckPoint() regularly
 	void Thread();
 	void onCompleteThread();
 
-	void OnSlider(wxCommandEvent &evt);
+	void OnButton(wxCommandEvent &evt);
 	void GRIPStateChange();
-
-	void OnPalletLoad(wxCommandEvent& event);
+	void setNumOfLayers(int);
+	void setNumOfPallets(int);
 
 	DECLARE_DYNAMIC_CLASS(PalletizingTab)
 	DECLARE_EVENT_TABLE()
 };
 
-enum {
-	MenuPalletLoad
-};
 
 #endif
