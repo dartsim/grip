@@ -325,8 +325,9 @@ void GRIPFrame::OnPalletLoad(wxCommandEvent& WXUNUSED(event)) {
 
 	// i.print();
 	d.get_input(i);
+	i.load(dir.To8BitData());
 
-	if (!d.importdb(dir.To8BitData())) {
+	if (!d.importdb()) {
 		SetStatusText(wxString("Failed to import database", wxConvUTF8));
 	}
 	SetStatusText(wxString("Pallet data imported", wxConvUTF8));

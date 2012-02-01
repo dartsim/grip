@@ -83,6 +83,9 @@ public:
     TreeViewReturn(){}
 
 	void* data;
+	void* data2;
+	void* data3;
+	void* data4;
 	std::string dString;
 	DataType dType;
 };

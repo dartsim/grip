@@ -77,8 +77,11 @@ PalletizingTab::PalletizingTab(wxWindow *parent, const wxWindowID id,
 			wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
 	text2 = new wxStaticText(this, -1, wxT(""),
 			wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
+	text3 = new wxStaticText(this, -1, wxT(""),
+			wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
 	setNumOfLayers(0);
 	setNumOfPallets(0);
+	setCost("None selected", 0.0f);
 	wxButton* button_refresh = new wxButton(this, be_refresh, wxT("Refresh"));
 
 	sizerFull->Add(ss1BoxS, 1, wxEXPAND | wxALL, 6);
@@ -88,6 +91,8 @@ PalletizingTab::PalletizingTab(wxWindow *parent, const wxWindowID id,
 	ss1BoxS->Add(text1, 1, wxEXPAND | wxALL, 6);
 	ss1BoxS->Add(text2, 1, wxEXPAND | wxALL, 6);
 	ss1BoxS->Add(button_refresh, 3, wxEXPAND | wxALL, 6);
+
+	ss2BoxS->Add(text3, 1, wxEXPAND | wxALL, 6);
 
 	//	server = new GRIPServer();
 	//	server->setup();
@@ -113,13 +118,23 @@ void PalletizingTab::GRIPStateChange() {
 	}
 
 	std::vector<int> *k = new std::vector<int>;
+	std::vector<int> *k2 = new std::vector<int>;
+	std::vector<int> *k3 = new std::vector<int>;
+	float* f;
 	string buf;
 
 	switch (selectedTreeNode->dType) {
 	case Return_Type_Key:
 		k = reinterpret_cast<std::vector<int> *> (selectedTreeNode->data);
+		k2 = reinterpret_cast<std::vector<int> *> (selectedTreeNode->data2);
+		k3 = reinterpret_cast<std::vector<int> *> (selectedTreeNode->data3);
+		f = reinterpret_cast<float*> (selectedTreeNode->data4);
 		buf = "Selected " + selectedTreeNode->dString;
 		keyCurrent = *k;
+		patternCurrent = *k2;
+		dimensionsCurrent = *k3;
+		costCurrent = *f;
+		setCost(selectedTreeNode->dString.c_str(), costCurrent);
 		keyChanged = 1;
 		viewer->ResetGL();
 		break;
@@ -152,4 +167,10 @@ void PalletizingTab::setNumOfPallets(int npallets) {
 	char buf_layers[100];
 	sprintf(buf_layers, "Num. pallets = %d", npallets);
 	text2->SetLabel(wxString(buf_layers, wxConvUTF8));
+}
+
+void PalletizingTab::setCost(const char* str, float _cost) {
+	char buf_layers[100];
+	sprintf(buf_layers, "Cost of %s is %.2f", str, _cost);
+	text3->SetLabel(wxString(buf_layers, wxConvUTF8));
 }

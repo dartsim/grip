@@ -62,6 +62,7 @@ public:
 
 	wxStaticText* text1;
 	wxStaticText* text2;
+	wxStaticText* text3;
 	wxSizer* sizerFull;
 
 	GRIPThread* thread;
@@ -74,6 +75,7 @@ public:
 	void GRIPStateChange();
 	void setNumOfLayers(int);
 	void setNumOfPallets(int);
+	void setCost(const char*, float);
 
 	DECLARE_DYNAMIC_CLASS(PalletizingTab)
 	DECLARE_EVENT_TABLE()

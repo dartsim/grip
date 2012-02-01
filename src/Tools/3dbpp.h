@@ -9,9 +9,28 @@
 #include <string.h>
 #include <sys/stat.h>
 
-typedef double cost;
+typedef float cost;
 typedef std::vector<int> key;
 typedef std::vector<int> pattern;
+
+static int hcf(int x, int y) {
+    int tmp;
+	if (x < y) {
+		tmp = x;
+		x = y;
+		y = tmp;
+	}
+	while (x % y != 0) {
+		tmp = x % y;
+		y = x;
+		x = tmp;
+	}
+	return (y);
+}
+
+static int lcm(int x, int y) {
+	return (x * y / hcf(x, y));
+}
 
 class package {
 public:
@@ -45,6 +64,10 @@ class bin {
 public:
 	int id, w, h, d, n;
 	std::vector<package> package_list;
+	bin() {
+		id = w = h = d = n = 0;
+	}
+
 	bin(int _id, int _w, int _h, int _d, int _n) {
 		id = _id;
 		w = _w;
@@ -61,8 +84,8 @@ public:
 		package_list.push_back(p);
 	}
 
-	double density() {
-		double d = 0;
+	float density() {
+		float d = 0;
 		for (uint i = 0; i < package_list.size(); i++) {
 			d += package_list[i].volume();
 		}
@@ -97,8 +120,10 @@ public:
 	std::vector<package> package_info;
 	std::vector<bin> bin_info;
 	std::vector<order> order_info;
+	std::string dir;
 
-	input() {}
+	input() {
+	}
 
 	void load_package_list(const char* filename) {
 		std::ifstream ifs;
@@ -170,30 +195,31 @@ public:
 	}
 
 	void load(const char* dirname) {
-		std::string dir;
 		dir.assign(dirname);
 		std::string package_list = dir + "/package_list.txt";
 		std::string bin_list = dir + "/bin_list.txt";
 		std::string problem_list = dir + "/problem_list.txt";
 
 		struct stat buf;
-		if(stat(package_list.c_str(), &buf) == 0) {
+		if (stat(package_list.c_str(), &buf) == 0) {
 			std::cerr << "Loading " << package_list << std::endl;
 			load_package_list(package_list.c_str());
-		}
-		else std::cerr << "Package List not found at " << package_list << std::endl;
+		} else
+			std::cerr << "Package List not found at " << package_list
+					<< std::endl;
 
-		if(stat(bin_list.c_str(), &buf) == 0) {
+		if (stat(bin_list.c_str(), &buf) == 0) {
 			std::cerr << "Loading " << bin_list << std::endl;
 			load_bin_list(bin_list.c_str());
-		}
-		else std::cerr << "Bin List not found at " << bin_list << std::endl;
+		} else
+			std::cerr << "Bin List not found at " << bin_list << std::endl;
 
-		if(stat(problem_list.c_str(), &buf) == 0) {
+		if (stat(problem_list.c_str(), &buf) == 0) {
 			std::cerr << "Loading " << bin_list << std::endl;
 			load_problem(problem_list.c_str());
-		}
-		else std::cerr << "Problem List not found at " << problem_list << std::endl;
+		} else
+			std::cerr << "Problem List not found at " << problem_list
+					<< std::endl;
 	}
 
 	void print() {
@@ -209,14 +235,22 @@ public:
 class database {
 public:
 	std::vector<package> package_info;
-	std::vector<bin> bin_info;
-	std::vector<order> order_info;
+	std::vector<bin> bin_info; // need not be a vector
+	std::vector<order> order_info; // need not be a vector
 	std::vector<package> packlist;
-	std::map<key, cost, classcomp> layer_cost;
-	std::map<key, pattern, classcomp> layer_pattern;
+	bin bin_real;
+	std::multimap<key, cost, classcomp> layer_cost;
+	std::multimap<key, pattern, classcomp> layer_pattern;
+	std::multimap<key, pattern, classcomp> layer_dimensions;
+	std::string dir;
 	std::string db_list;
 
-	database() { }
+	database() {
+	}
+
+	void set_dir(const char* dirname) {
+		dir.assign(dirname);
+	}
 
 	void get_input(input i) {
 		package_info.clear();
@@ -224,26 +258,73 @@ public:
 		order_info.clear();
 		packlist.clear();
 		package_info = i.package_info;
-		bin_info = i.bin_info;
 		order_info = i.order_info;
+		set_dir(i.dir.c_str());
+		db_list = dir + "/db.txt";
+
+		// bin juggad
+		int bin_add = 0;
+		bin_real = i.bin_info[0];
+		for (uint i = 0; i < package_info.size(); i++) {
+			for (uint j = i; j < package_info.size(); j++) {
+				bin b = bin_real;
+				b.d = lcm(package_info[i].d, package_info[j].d);
+				bin_add = 1;
+				for (uint k = 0; k < bin_info.size(); k++) {
+					if(bin_info[k].d == b.d) {
+						bin_add = 0;
+						break;
+					}
+				}
+
+				if(b.d > bin_real.d) bin_add = 0;
+
+				if(bin_add) {
+					bin_info.push_back(b);
+					bin_add = 0;
+				}
+			}
+		}
+
+		std::cout << "New bins" << std::endl;
+		for (uint i = 0; i < bin_info.size(); i++) {
+			std::cout << bin_info[i].id << " " << bin_info[i].w << " "
+					<< bin_info[i].h << " " << bin_info[i].d << " "
+					<< bin_info[i].n << std::endl;
+		}
+		std::cout << std::endl;
 	}
 
-	void insert(key _key, pattern _pattern, int _cost) {
+	void insert(key _key, pattern _pattern, float _cost, pattern _dimensions) {
+		std::multimap<key, pattern>::iterator it;
+		std::pair <std::multimap<key, pattern>::iterator, std::multimap<key, pattern>::iterator> ret;
+		ret = layer_pattern.equal_range(_key);
+		for (it = ret.first; it != ret.second; it++) {
+			if(_key == (*it).first && _pattern == (*it).second) {
+				return;
+			}
+		}
+
+		ret = layer_dimensions.equal_range(_key);
+		for (it = ret.first; it != ret.second; it++) {
+			if (_key == (*it).first && _dimensions == (*it).second) {
+				return;
+			}
+		}
+
 		layer_pattern.insert(std::pair<key, pattern>(_key, _pattern));
 		layer_cost.insert(std::pair<key, cost>(_key, _cost));
+		layer_dimensions.insert(std::pair<key, pattern>(_key, _dimensions));
 	}
 
 	void exportdb() {
-		exportdb(db_list.c_str());
-	}
+		std::ofstream ofs(db_list.c_str());
+		std::multimap<key, pattern>::iterator itp;
+		std::multimap<key, pattern>::iterator itd;
+		std::multimap<key, cost>::iterator itc;
 
-	void exportdb(const char* filename) {
-		std::ofstream ofs(filename);
-		std::map<key, pattern>::iterator itp;
-		std::map<key, cost>::iterator itc;
-
-		for (itp = layer_pattern.begin(), itc = layer_cost.begin(); itp
-				!= layer_pattern.end(); itp++, itc++) {
+		for (itp = layer_pattern.begin(), itc = layer_cost.begin(), itd
+				= layer_dimensions.begin(); itp != layer_pattern.end(); itp++, itc++, itd++) {
 
 			ofs << "k ";
 			for (uint i = 0; i < (*itp).first.size(); i++)
@@ -257,6 +338,10 @@ public:
 				ofs << (*itp).second[i] << " ";
 			ofs << '\n';
 
+			ofs << "d ";
+			for (uint i = 0; i < (*itd).second.size(); i++)
+				ofs << (*itd).second[i] << " ";
+			ofs << '\n';
 		}
 		ofs.close();
 	}
@@ -267,7 +352,7 @@ public:
 		str = str.substr(2); // remove first char and space
 		char* c = (char*) str.c_str();
 		p = strtok(c, " ");
-		while(p != NULL) {
+		while (p != NULL) {
 			vec.push_back(atoi(p));
 			p = strtok(NULL, " ");
 		}
@@ -275,53 +360,66 @@ public:
 		return vec;
 	}
 
-	double deserialize_cost(std::string str) {
+	float deserialize_cost(std::string str) {
 		str = str.substr(2);
 		int i = atoi(str.c_str());
-		return (double) i;
+		return (float) i;
 	}
 
-	int importdb(const char* dirname) {
-		std::string dir;
-		dir.assign(dirname);
-		db_list = dir + "/db.txt";
-
+	int importdb() {
 		struct stat buf;
-		if(stat(db_list.c_str(), &buf) != 0) {
+		if (stat(db_list.c_str(), &buf) != 0) {
 			return 0;
 		}
 
-		std::cerr << "Found database at " << db_list << ". Importing..." << std::endl;
+		std::cerr << "Found database at " << db_list << ". Importing..."
+				<< std::endl;
 
 		std::ifstream ifs(db_list.c_str());
 		std::string str;
-		std::vector<int> key, pattern;
-		double cost;
+		std::vector<int> key, pattern, dimensions;
+		float cost;
 		int is_key = 0;
-		int is_cost= 0;
+		int is_cost = 0;
 		int is_pattern = 0;
+		int is_dims = 0;
 
-		while(ifs.good()) {
+		while (ifs.good()) {
 			char c = ifs.get();
-			if(c != '\n') {
+			if (c != '\n') {
 				str.push_back(c);
-			}
-			else {
+			} else {
 				switch (str.at(0)) {
-				case 'k': key = deserialize_vector(str); is_key = 1; break;
-				case 'c': cost = deserialize_cost(str); is_cost = 1; break;
-				case 'p': pattern = deserialize_vector(str); is_pattern = 1; break;
-				default: printf("error");
+				case 'k':
+					key = deserialize_vector(str);
+					is_key = 1;
+					break;
+				case 'c':
+					cost = deserialize_cost(str);
+					is_cost = 1;
+					break;
+				case 'p':
+					pattern = deserialize_vector(str);
+					is_pattern = 1;
+					break;
+				case 'd':
+					dimensions = deserialize_vector(str);
+					is_dims = 1;
+					break;
+				default:
+					printf("error");
 				}
 				str.clear();
 
-				if(is_key && is_cost && is_pattern) {
-					insert(key, pattern, cost);
+				if (is_key && is_cost && is_pattern && is_dims) {
+					insert(key, pattern, cost, dimensions);
 					key.clear();
 					pattern.clear();
+					dimensions.clear();
 					is_key = 0;
 					is_cost = 0;
 					is_pattern = 0;
+					is_dims = 0;
 				}
 			}
 		}
@@ -331,12 +429,13 @@ public:
 	}
 
 	void printdb() {
-		std::map<key, pattern>::iterator itp;
-		std::map<key, cost>::iterator itc;
+		std::multimap<key, pattern>::iterator itp;
+		std::multimap<key, pattern>::iterator itd;
+		std::multimap<key, cost>::iterator itc;
 
 		std::cout << "Database in record: " << std::endl;
-		for (itp = layer_pattern.begin(), itc = layer_cost.begin(); itp
-				!= layer_pattern.end(); itp++, itc++) {
+		for (itp = layer_pattern.begin(), itc = layer_cost.begin(), itd
+				= layer_dimensions.begin(); itp != layer_pattern.end(); itp++, itc++, itd++) {
 
 			for (uint i = 0; i < (*itp).first.size(); i++)
 				std::cout << (*itp).first[i] << " ";
@@ -346,6 +445,10 @@ public:
 			for (uint i = 0; i < (*itp).second.size(); i++)
 				std::cout << (*itp).second[i] << " ";
 
+			std::cout << '\t';
+
+			for (uint i = 0; i < (*itd).second.size(); i++)
+				std::cout << (*itd).second[i] << " ";
 			std::cout << '\n';
 		}
 		std::cout << "Database End." << std::endl;
@@ -360,8 +463,10 @@ public:
 class output {
 	std::vector<package> packlist;
 public:
-	output() {}
-	~output() {}
+	output() {
+	}
+	~output() {
+	}
 
 	void exportl(database db, const char* dirname) {
 		std::string dir;
@@ -374,12 +479,9 @@ public:
 		std::ofstream ofs;
 		ofs.open(output_list.c_str());
 		for (uint i = 0; i < packlist.size(); i++) {
-			ofs << packlist[i].id << "\t"
-					<< packlist[i].w << " "
-					<< packlist[i].h << " "
-					<< packlist[i].d << "\t"
-					<< packlist[i].x << " "
-					<< packlist[i].y << " "
+			ofs << packlist[i].id << "\t" << packlist[i].w << " "
+					<< packlist[i].h << " " << packlist[i].d << "\t"
+					<< packlist[i].x << " " << packlist[i].y << " "
 					<< packlist[i].z << " " << std::endl;
 		}
 		ofs.close();

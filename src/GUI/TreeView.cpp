@@ -108,9 +108,17 @@ void TreeView::CreateFromDatabase() {
 	wxTreeItemId hPrev = rootId;
 
 	std::map<key, pattern>::iterator itp;
-	for (itp = d.layer_pattern.begin(); itp	!= d.layer_pattern.end(); itp++) {
+	std::map<key, pattern>::iterator itd;
+	std::map<key, cost>::iterator itc;
+	itp = d.layer_pattern.begin();
+	itd = d.layer_dimensions.begin();
+	itc = d.layer_cost.begin();
+	for (; itp	!= d.layer_pattern.end(); itp++, itd++, itc++) {
 		ret = new TreeViewReturn;
 		ret->data = const_cast<std::vector<int>*> (&((*itp).first));
+		ret->data2 = const_cast<std::vector<int>*> (&((*itp).second));
+		ret->data3 = const_cast<std::vector<int>*> (&((*itd).second));
+		ret->data4 = const_cast<float*> (&((*itc).second));
 		ret->dType = Return_Type_Key;
 		string key;
 		for (uint i = 0; i < (*itp).first.size(); i++) {
