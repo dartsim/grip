@@ -1,6 +1,6 @@
 #include <iostream>
 #include <sstream>
-#include "3dbpp.h"
+#include <Tools/3dbpp.h>
 
 using namespace std;
 
@@ -129,7 +129,7 @@ void config_t::add(const config_t c) {
 }
 
 int config_t::get_height() {
-	return n_maxh;
+	return n_maxd;
 }
 
 int config_t::get_area() {

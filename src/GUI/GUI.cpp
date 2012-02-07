@@ -47,7 +47,7 @@ database d;
 input i;
 output o;
 config_t configCurrent;
-std::vector<config_t> packlistCurrent;
+packlist_ packlistCurrent;
 float keyScale = 4.0f;
 int keyChanged = 0;
 float c_red[10] = 	{0.5, 0.5, 0.0, 0.0, 0.0, 1.0};

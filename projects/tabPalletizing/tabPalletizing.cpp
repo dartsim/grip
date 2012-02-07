@@ -131,10 +131,11 @@ void PalletizingTab::GRIPStateChange() {
 		viewer->ResetGL();
 		break;
 	case Return_Type_Packlist:
-		p = reinterpret_cast<vector<config_t>*> (selectedTreeNode->data);
+		p = reinterpret_cast<packlist_*> (selectedTreeNode->data);
 		packlistCurrent = *p;
 		buf = "Selected Packlist";
 		keyChanged = 2;
+		viewer->ResetGL();
 		break;
 	default:
 		buf = "Object of unknown data type selected";

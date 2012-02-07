@@ -67,7 +67,7 @@ extern database d;
 extern input i;
 extern output o;
 extern config_t configCurrent;
-extern std::vector<config_t> packlistCurrent;
+extern packlist_ packlistCurrent;
 extern float keyScale;
 extern int keyChanged;
 extern float c_red[10], c_green[10], c_blue[10];

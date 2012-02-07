@@ -127,8 +127,16 @@ void TreeView::CreateFromDatabase() {
 		AppendItem(hPrev, wxString((*it).second.key_s().c_str(), wxConvUTF8), Tree_Icon_Object, -1, ret);
 	}
 
+	char pl_name[25];
 	hPrev = AppendItem(rootId, wxString("Packlists", wxConvUTF8), Tree_Icon_Robot, -1, NULL);
-
+	for (uint i = 0; i < o.packlist_vector.size(); i++) {
+		sprintf(pl_name, "Packlist %d", i);
+		ret = new TreeViewReturn;
+		ret->data = const_cast<packlist_*>(&(o.packlist_vector[i]));
+		ret->dType = Return_Type_Packlist;
+		ret->dString.assign(pl_name);
+		AppendItem(hPrev, wxString(pl_name, wxConvUTF8), Tree_Icon_Object, -1, ret);
+	}
 }
 
 /**

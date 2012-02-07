@@ -13,12 +13,14 @@
 using namespace std;
 
 class database;
+class config_t;
 
 typedef float cost;
 typedef vector<int> key_;
 typedef vector<int> pattern_;
 typedef vector<int> dimensions_;
 typedef vector<int> order_t;
+typedef vector<config_t> packlist_;
 
 static int hcf(int x, int y) {
     int tmp;
@@ -318,6 +320,10 @@ public:
 		dir.assign(dirname);
 	}
 
+	const char* get_dir() {
+		return dir.c_str();
+	}
+
 	void get_input(input i) {
 		package.clear();
 		bin_d.clear();
@@ -381,6 +387,7 @@ public:
 		config_map.insert(pair<key_, config_t> (key, config));
 		config_last = config;
 
+		int area = bin.w * bin.h;
 		if(config_last.is_layer()) {
 			layer_map.insert(pair<key_, config_t> (config_last.get_key(), config_last));
 		}
@@ -442,7 +449,7 @@ public:
 		ofs.close();
 	}
 
-	vector<int> deserialize_vector(string str) {
+	static vector<int> deserialize_vector(string str) {
 		vector<int> vec;
 		char* p;
 		str = str.substr(2); // remove first char and space
@@ -456,7 +463,7 @@ public:
 		return vec;
 	}
 
-	float deserialize_cost(string str) {
+	static float deserialize_cost(string str) {
 		str = str.substr(2);
 		int i = atoi	(str.c_str());
 		return (float) i;
@@ -641,8 +648,12 @@ public:
 };
 
 class output {
+	string dir;
+	database *db;
 	vector<config_t> packlist;
 public:
+	vector<packlist_> packlist_vector;
+
 	output() { }
 
 	~output() {	}
@@ -655,11 +666,20 @@ public:
 		packlist.clear();
 	}
 
-	void exportpl(database* db) {
-		string output_list = db->dir + "/pack_list.txt";
+	void set_database(database* _db) {
+		db = _db;
+		dir.assign(db->get_dir());
+	}
+
+	void exportpl() {
+		int n = packlist_vector.size() - 1;
+		packlist = packlist_vector[n];
+
+		char f_s[100];
+		sprintf(f_s, "%s/pack_list_%d.txt", dir.c_str(), n);
 
 		ofstream ofs;
-		ofs.open(output_list.c_str());
+		ofs.open(f_s);
 
 		vector<int> origin(3, 0);
 
@@ -675,6 +695,83 @@ public:
 		}
 
 		ofs.close();
+	}
+
+	void importpl() {
+		struct stat buf;
+		char f_s[100];
+
+		int count = 0;
+		while (1) {
+			sprintf(f_s, "%s/pack_list_%d.txt", dir.c_str(), count);;
+			if(stat(f_s, &buf) != 0) break;
+			cerr << "Found packlist at " << f_s << endl;
+
+			ifstream ifs(f_s);
+			string str;
+			key_ key;
+			pattern_ pattern;
+			dimensions_ dimensions;
+			float cost;
+			int is_key = 0;
+			int is_cost = 0;
+			int is_pattern = 0;
+			int is_dims = 0;
+
+			while (ifs.good()) {
+				char c = ifs.get();
+				if (c != '\n') {
+					str.push_back(c);
+				} else {
+					switch (str.at(0)) {
+					case 'k':
+						key = database::deserialize_vector(str);
+						is_key = 1;
+						break;
+					case 'c':
+						cost = database::deserialize_cost(str);
+						is_cost = 1;
+						break;
+					case 'p':
+						pattern = database::deserialize_vector(str);
+						is_pattern = 1;
+						break;
+					case 'd':
+						dimensions = database::deserialize_vector(str);
+						is_dims = 1;
+						break;
+					default:
+						printf("error");
+					}
+					str.clear();
+
+					if (is_key && is_cost && is_pattern && is_dims) {
+						config_t c;
+						c.set(db, key, pattern);
+						packlist.push_back(c);
+						if (c.get_dimensions() != dimensions) {
+							cerr << "Error while importing packlist at ";
+							for (uint i = 0; i < c.get_key().size(); i++) {
+								cerr << c.get_key()[i] << " ";
+							}
+							cerr << endl;
+						}
+						key.clear();
+						pattern.clear();
+						dimensions.clear();
+						is_key = 0;
+						is_cost = 0;
+						is_pattern = 0;
+						is_dims = 0;
+					}
+				}
+			}
+			ifs.close();
+
+			packlist_vector.push_back(packlist);
+			packlist.clear();
+			count++;
+		}
 	}
 
 	double find_com_height() {
@@ -697,6 +794,7 @@ public:
 
 		vector<int> pos(n, 0);
 		double t[n][n];
+		double a[n][n];
 
 		for (int i = 0; i < n; i++) {
 			pos.push_back(i);
@@ -750,6 +848,8 @@ public:
 
 			iterations--;
 			//cout << "Iteration " << iterations << " com: " << find_com_height() << endl;
+			packlist_vector.push_back(packlist);
+			exportpl();
 		}
 
 	}

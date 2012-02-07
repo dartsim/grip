@@ -333,6 +333,8 @@ void GRIPFrame::OnPalletLoad(wxCommandEvent& WXUNUSED(event)) {
 	SetStatusText(wxString("Pallet data imported", wxConvUTF8));
 
 	// d.printdb();
+	o.set_database(&d);
+	o.importpl();
 
 	treeView->CreateFromDatabase();
 	updateAllTabs();
