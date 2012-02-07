@@ -64,6 +64,8 @@ enum DataType
     Return_Type_Node,
 	Return_Type_Tree_Root,
 	Return_Type_Key,
+	Return_Type_Config,
+	Return_Type_Packlist,
 	Return_Type_Other
 };
 
@@ -83,9 +85,6 @@ public:
     TreeViewReturn(){}
 
 	void* data;
-	void* data2;
-	void* data3;
-	void* data4;
 	std::string dString;
 	DataType dType;
 };

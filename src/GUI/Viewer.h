@@ -51,6 +51,7 @@
 #include <kinematics/ShapeMesh.h>
 #include "../Tools/Collision.h"
 #include <GL/glut.h>
+#include <Tools/3dbpp.h>
 
 using namespace Eigen;
 
@@ -88,7 +89,8 @@ public:
 	void ResetGL();
 	void addGrid();
 
-	void drawCube();
+	void drawConfig(config_t);
+	void drawPacklist(vector<config_t>);
 	void drawWorld(); 
 	void drawModel( Model3DS* _model, Eigen::Transform<double, 3, Eigen::Affine> *_pose );
 

@@ -65,12 +65,11 @@ extern planning::World  *mWorld;
 extern Collision *mCollision;
 extern database d;
 extern input i;
-extern std::vector<int> keyCurrent;
-extern std::vector<int> patternCurrent;
-extern std::vector<int> dimensionsCurrent;
-extern float costCurrent;
-extern bool keyChanged;
+extern output o;
+extern config_t configCurrent;
+extern std::vector<config_t> packlistCurrent;
 extern float keyScale;
+extern int keyChanged;
 extern float c_red[10], c_green[10], c_blue[10];
 
 extern GRIPFrame*	frame;

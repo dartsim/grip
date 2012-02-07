@@ -55,15 +55,16 @@ extern bool check_for_collisions;
  * @brief Draw World and everything inside it: Robots + Objects
  */
 
-void Viewer::drawCube() {
-	if (!keyChanged)
-		return;
+void Viewer::drawConfig(config_t _c) {
+	pattern_ pattern = _c.get_pattern();
+	key_ key = _c.get_key();
+	dimensions_ dims = _c.get_dimensions();
 
 	glPushMatrix();
 	glColor3f(0.3f, 0.3f, 0.3f);
-	float b_w = d.bin_real.w / keyScale;
-	float b_h = d.bin_real.h / keyScale;
-	float b_d = d.bin_real.d / keyScale;
+	float b_w = d.bin.w / keyScale;
+	float b_h = d.bin.h / keyScale;
+	float b_d = d.bin.d / keyScale;
 	glTranslatef(b_w / 2.0, b_h / 2.0, -0.05);
 	glScalef(b_w, b_h, 0.1);
 	glutSolidCube(1.0f);
@@ -77,23 +78,22 @@ void Viewer::drawCube() {
 	glPopMatrix();
 
 	glPushMatrix();
-	b_w = dimensionsCurrent[0] / keyScale;
-	b_h = dimensionsCurrent[1] / keyScale;
-	b_d = dimensionsCurrent[2] / keyScale;
+	b_w = dims[0] / keyScale;
+	b_h = dims[1] / keyScale;
+	b_d = dims[2] / keyScale;
 	glColor3f(0.7f, 0.7f, 0.7f);
 	glTranslatef(b_w / 2.0, b_h / 2.0, b_d / 2.0);
 	glScalef(b_w+0.01, b_h+0.01, b_d+0.01);
 	glutWireCube(1.0f);
 	glPopMatrix();
 
-	std::vector<int> pattern = patternCurrent; //d.layer_pattern[keyCurrent];
 	int c = 0;
-	for (uint i = 0; i < keyCurrent.size(); i++) {
-		for (int j = 0; j < keyCurrent[i]; j++) {
+	for (uint i = 0; i < key.size(); i++) {
+		for (int j = 0; j < key[i]; j++) {
 			glPushMatrix();
-			float w = d.package_info[i].w / keyScale;
-			float h = d.package_info[i].h / keyScale;
-			float _d = d.package_info[i].d / keyScale;
+			float w = d.package[i].w / keyScale;
+			float h = d.package[i].h / keyScale;
+			float _d = d.package[i].d / keyScale;
 			float pos_x = pattern[c * 3 + 0] / keyScale;
 			float pos_y = pattern[c * 3 + 1] / keyScale;
 			float pos_z = pattern[c * 3 + 2] / keyScale;
@@ -111,6 +111,12 @@ void Viewer::drawCube() {
 		}
 	}
 
+}
+
+void Viewer::drawPacklist(vector<config_t> _pl) {
+	for (uint i = 0; i < _pl.size(); i++) {
+		drawConfig(_pl[i]);
+	}
 }
 
 void Viewer::drawWorld() {
@@ -289,7 +295,9 @@ void Viewer::UpdateCamera(void) {
 	if (mWorld != NULL) {
 		drawWorld();
 	}
-	drawCube();
+
+	if (keyChanged == 1) drawConfig(configCurrent);
+	else if (keyChanged == 2) drawPacklist(packlistCurrent);
 
 	glPopMatrix();
 

@@ -105,7 +105,7 @@ void PalletizingTab::OnButton(wxCommandEvent &evt) {
 	int button_num = evt.GetId();
 	switch (button_num) {
 	case be_refresh:
-		setNumOfLayers(d.layer_pattern.size());
+		setNumOfLayers(d.layer_map.size());
 		break;
 	}
 }
@@ -117,26 +117,24 @@ void PalletizingTab::GRIPStateChange() {
 		return;
 	}
 
-	std::vector<int> *k = new std::vector<int>;
-	std::vector<int> *k2 = new std::vector<int>;
-	std::vector<int> *k3 = new std::vector<int>;
-	float* f;
+	config_t *c;
+	vector<config_t>* p;
 	string buf;
 
 	switch (selectedTreeNode->dType) {
-	case Return_Type_Key:
-		k = reinterpret_cast<std::vector<int> *> (selectedTreeNode->data);
-		k2 = reinterpret_cast<std::vector<int> *> (selectedTreeNode->data2);
-		k3 = reinterpret_cast<std::vector<int> *> (selectedTreeNode->data3);
-		f = reinterpret_cast<float*> (selectedTreeNode->data4);
-		buf = "Selected " + selectedTreeNode->dString;
-		keyCurrent = *k;
-		patternCurrent = *k2;
-		dimensionsCurrent = *k3;
-		costCurrent = *f;
-		setCost(selectedTreeNode->dString.c_str(), costCurrent);
+	case Return_Type_Config:
+		c = reinterpret_cast<config_t*> (selectedTreeNode->data);
+		configCurrent = *c;
+		buf = "Selected " + configCurrent.key_s();
+		setCost(configCurrent.key_s().c_str(), (float) configCurrent.get_weight());
 		keyChanged = 1;
 		viewer->ResetGL();
+		break;
+	case Return_Type_Packlist:
+		p = reinterpret_cast<vector<config_t>*> (selectedTreeNode->data);
+		packlistCurrent = *p;
+		buf = "Selected Packlist";
+		keyChanged = 2;
 		break;
 	default:
 		buf = "Object of unknown data type selected";
