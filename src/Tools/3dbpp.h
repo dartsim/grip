@@ -52,7 +52,7 @@ static int fact(int n) {
 
 static int coin_flip(double p) {
 	int n = 10;
-	int x = rand()%n;
+	int x = n/2;
 
 	double y = (fact(n)/(fact(x)*fact(n-x))) * pow(p, x) * pow(1.0-p, n-x);
 	if (y > 0.5) return 1;
@@ -387,7 +387,6 @@ public:
 		config_map.insert(pair<key_, config_t> (key, config));
 		config_last = config;
 
-		int area = bin.w * bin.h;
 		if(config_last.is_layer()) {
 			layer_map.insert(pair<key_, config_t> (config_last.get_key(), config_last));
 		}
@@ -400,18 +399,14 @@ public:
 	}
 
 	config_t get_layer_from_name(string str) {
-		string alphas("abcdefghijklmnopqrstuvwxyz_.");
-		size_t found;
-		found = str.find_first_of(alphas);
-		while (found != string::npos) {
-			str[found] = '*';
-			found = str.find_first_of(alphas, found + 1);
-		}
-
+		str = str.substr(1);
 		int n = atoi(str.c_str());
 		multimap<key_, config_t>::iterator it;
 		it = layer_map.begin();
-		while (n > 0) ++it;
+		while (n > 0) {
+			it++;
+			n--;
+		}
 		return (*it).second;
 	}
 
@@ -663,6 +658,7 @@ public:
 	}
 
 	void clear() {
+		packlist_vector.push_back(packlist);
 		packlist.clear();
 	}
 
@@ -794,7 +790,6 @@ public:
 
 		vector<int> pos(n, 0);
 		double t[n][n];
-		double a[n][n];
 
 		for (int i = 0; i < n; i++) {
 			pos.push_back(i);
@@ -803,7 +798,7 @@ public:
 					t[i][j] = 8;
 					t[j][i] = 2;
 				}
-				else {
+				else if(packlist[i].get_weight() < packlist[j].get_weight()) {
 					t[i][j] = 2;
 					t[j][i] = 8;
 				}

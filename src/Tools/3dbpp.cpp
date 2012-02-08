@@ -1,6 +1,6 @@
 #include <iostream>
 #include <sstream>
-#include <Tools/3dbpp.h>
+#include "3dbpp.h"
 
 using namespace std;
 
@@ -33,7 +33,7 @@ void config_t::set(database* db, key_ k, pattern_ p) {
 
 	int c = 0;
 	for (uint i = 0; i < key.size(); i++) {
-		for (uint j = 0; j < key[i]; j++) {
+		for (int j = 0; j < key[i]; j++) {
 			int xn = pattern[c*3 + 0] + d->package[i].w;
 			int yn = pattern[c*3 + 1] + d->package[i].h;
 			int zn = pattern[c*3 + 2] + d->package[i].d;
@@ -108,14 +108,14 @@ void config_t::add(const config_t c) {
 	int c1 = 0, c2 = 0;
 
 	for (uint i = 0; i < key.size(); i++) {
-		for (uint j = 0; j < key[i]; j++) {
+		for (int j = 0; j < key[i]; j++) {
 			p.push_back(pattern[c1*3 + 0]);
 			p.push_back(pattern[c1*3 + 1]);
 			p.push_back(pattern[c1*3 + 2]);
 			c1++;
 		}
 
-		for (uint j = 0; j < c.key[i]; j++) {
+		for (int j = 0; j < c.key[i]; j++) {
 			p.push_back(c.pattern[c2*3 + 0]);
 			p.push_back(c.pattern[c2*3 + 1]);
 			p.push_back(c.pattern[c2*3 + 2]);
@@ -141,6 +141,7 @@ vector<int> config_t::get_corner(int i) {
 	case 0: return corner1;
 	case 1: return corner2;
 	case 2: return corner3;
+	default: return corner3;
 	}
 }
 
