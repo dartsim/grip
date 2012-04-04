@@ -13,6 +13,7 @@
 
 #include "GUI/GUI.h"
 #include "Parser.h"
+#include "ParserURDF.h"
 
 #define BSTATE 0
 #define RSTATE 1
@@ -70,8 +71,24 @@ planning::World* parseWorld( std::string _fullname )
 	    wstream >> robot->mPathName;
 	    fullpath = path;
 	    fullpath.append( robot->mPathName );
-	    parseRobot( fullpath, robot );
-	    world->addRobot( robot );
+
+		string ext = fullpath.substr(fullpath.find_last_of(".") + 1);
+
+		std::cout << "Robot extension: " << ext << endl;
+
+		if(ext == "rscene")
+		{
+			std::cout << "Parsing with rhsd parser" << endl;		
+			parseRobot( fullpath, robot );
+		}
+		else if(ext == "urdf")
+		{
+			std::cout << "Parsing with URDF parser" << endl;
+			ParserURDF parser;
+			parser.readURDFFile(fullpath.c_str(), robot);
+		}	    
+		
+		world->addRobot( robot );
 	    state = RSTATE;
 
         /// Read object specification
@@ -159,7 +176,7 @@ planning::World* parseWorld( std::string _fullname )
         /** READ OBJECT SPEC                  */
 	/** --------------------------------- */
 	else if (state == OSTATE) {
-            //kinematics::Joint *joint;
+            kinematics::Joint *joint;
 	    if (str == "POSITION") {
 	        Vector3d pos;
 		wstream >> pos(0);
