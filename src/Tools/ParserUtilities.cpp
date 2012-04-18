@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 
-void stringToVector3d(string &str, Vector3d &vector)
+void stringToVector3d(string str, Vector3d &vector)
 {
 	std::vector<string> substrings = split(str, ' ');
 
@@ -20,7 +20,7 @@ void stringToVector3d(string &str, Vector3d &vector)
 	}
 }
 
-void stringToVector4d(string &str, Vector4d &vector)
+void stringToVector4d(string str, Vector4d &vector)
 {
 	std::vector<string> substrings = split(str, ' ');
 
