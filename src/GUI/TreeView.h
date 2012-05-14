@@ -51,7 +51,7 @@
 ////
 #include <string.h>
 #include <kinematics/BodyNode.h>
-#include <Tools/3dbpp.h>
+#include <3dbpp.h>
 ///
 
 

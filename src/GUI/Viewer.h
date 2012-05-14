@@ -49,9 +49,9 @@
 #include <kinematics/Shape.h>
 #include <kinematics/BodyNode.h>
 #include <kinematics/ShapeMesh.h>
-#include "../Tools/Collision.h"
+#include <Tools/Collision.h>
 #include <GL/glut.h>
-#include <Tools/3dbpp.h>
+#include <3dbpp.h>
 
 using namespace Eigen;
 

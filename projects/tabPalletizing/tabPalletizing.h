@@ -43,7 +43,7 @@
 #include <Tabs/GRIPThread.h>
 #include <Tools/Constants.h>
 #include "GRIPServer.h"
-#include <Tools/3dbpp.h>
+#include <3dbpp.h>
 
 class PalletizingTab : public GRIPTab
 {

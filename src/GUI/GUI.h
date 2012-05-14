@@ -49,7 +49,7 @@
 #include <wx/notebook.h>
 #include <planning/World.h>
 #include <Tools/Collision.h>
-#include <Tools/3dbpp.h>
+#include <3dbpp.h>
 #include <vector>
 
 class GRIPFrame;

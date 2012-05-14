@@ -48,7 +48,7 @@ input i;
 output o;
 config_t configCurrent;
 packlist_ packlistCurrent;
-float keyScale = 4.0f;
+float keyScale = 40.0f;
 int keyChanged = 0;
 float c_red[10] = 	{0.5, 0.5, 0.0, 0.0, 0.0, 1.0};
 float c_green[10] = {0.0, 0.0, 0.0, 0.5, 1.0, 1.0};
