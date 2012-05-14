@@ -320,19 +320,17 @@ void GRIPFrame::OnPalletLoad(wxCommandEvent& WXUNUSED(event)) {
 
 	const wxString& dir = wxDirSelector(wxT("Choose a folder"));
 	if (!dir.empty()) {
+		palletLoadPath = dir.To8BitData();
 		i.load(dir.To8BitData());
 	}
 
-	// i.print();
 	d.get_input(i);
-	i.load(dir.To8BitData());
 
 	if (!d.importdb()) {
 		SetStatusText(wxString("Failed to import database", wxConvUTF8));
 	}
 	SetStatusText(wxString("Pallet data imported", wxConvUTF8));
 
-	// d.printdb();
 	o.set_database(&d);
 	o.importpl();
 

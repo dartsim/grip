@@ -68,6 +68,7 @@ extern input i;
 extern output o;
 extern config_t configCurrent;
 extern packlist_ packlistCurrent;
+extern string palletLoadPath;
 extern float keyScale;
 extern int keyChanged;
 extern float c_red[10], c_green[10], c_blue[10];

@@ -57,6 +57,7 @@ enum buttonEvents {
 
 BEGIN_EVENT_TABLE(PalletizingTab, wxPanel)
 EVT_COMMAND (wxID_ANY, wxEVT_COMMAND_BUTTON_CLICKED, PalletizingTab::OnButton)
+EVT_COMMAND (wxID_ANY, wxEVT_GRIP_SLIDER_CHANGE, PalletizingTab::OnSlider)
 END_EVENT_TABLE ()
 
 
@@ -83,14 +84,16 @@ PalletizingTab::PalletizingTab(wxWindow *parent, const wxWindowID id,
 	setNumOfPallets(0);
 	setCost("None selected", 0.0f);
 	wxButton* button_refresh = new wxButton(this, be_refresh, wxT("Refresh"));
+	scaleSlider = new GRIPSlider("Scale", 20, 200, 1, 40, 100, 500, this, SCALE_SLIDER);
 
-	sizerFull->Add(ss1BoxS, 1, wxEXPAND | wxALL, 6);
+	sizerFull->Add(ss1BoxS, 2, wxEXPAND | wxALL, 6);
 	sizerFull->Add(ss2BoxS, 3, wxEXPAND | wxALL, 6);
 	SetSizer(sizerFull);
 
 	ss1BoxS->Add(text1, 1, wxEXPAND | wxALL, 6);
 	ss1BoxS->Add(text2, 1, wxEXPAND | wxALL, 6);
-	ss1BoxS->Add(button_refresh, 3, wxEXPAND | wxALL, 6);
+	ss1BoxS->Add(scaleSlider, 1, wxEXPAND | wxALL, 6);
+	ss1BoxS->Add(button_refresh, 1, wxEXPAND | wxALL, 6);
 
 	ss2BoxS->Add(text3, 1, wxEXPAND | wxALL, 6);
 
@@ -105,9 +108,23 @@ void PalletizingTab::OnButton(wxCommandEvent &evt) {
 	int button_num = evt.GetId();
 	switch (button_num) {
 	case be_refresh:
+		d.cleandb();
+		i.load(palletLoadPath.c_str());
+		d.get_input(i);
+		d.importdb();
+		d.printdb_stat();
+		treeView->CreateFromDatabase();
+		frame->updateAllTabs();
 		setNumOfLayers(d.layer_map.size());
 		break;
 	}
+}
+
+void PalletizingTab::OnSlider(wxCommandEvent &evt) {
+	int sliderId = evt.GetId();
+	double sliderValue = *(double*)evt.GetClientData();
+	if (sliderId == SCALE_SLIDER)
+		keyScale = sliderValue;
 }
 
 // This function is called when an object is selected in the Tree View or other

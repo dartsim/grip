@@ -45,6 +45,10 @@
 #include "GRIPServer.h"
 #include <3dbpp.h>
 
+enum sliders {
+	SCALE_SLIDER = 1011
+};
+
 class PalletizingTab : public GRIPTab
 {
 
@@ -64,6 +68,7 @@ public:
 	wxStaticText* text2;
 	wxStaticText* text3;
 	wxSizer* sizerFull;
+	GRIPSlider* scaleSlider;
 
 	GRIPThread* thread;
 
@@ -72,6 +77,7 @@ public:
 	void onCompleteThread();
 
 	void OnButton(wxCommandEvent &evt);
+	void OnSlider(wxCommandEvent &evt);
 	void GRIPStateChange();
 	void setNumOfLayers(int);
 	void setNumOfPallets(int);
