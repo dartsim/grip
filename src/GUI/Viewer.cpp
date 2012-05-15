@@ -59,6 +59,7 @@ void Viewer::drawConfig(config_t _c) {
 	pattern_ pattern = _c.get_pattern();
 	key_ key = _c.get_key();
 	dimensions_ dims = _c.get_dimensions();
+	vector<int> orientation = _c.get_orientation();
 
 	glPushMatrix();
 	glColor3f(0.3f, 0.3f, 0.3f);
@@ -91,8 +92,17 @@ void Viewer::drawConfig(config_t _c) {
 	for (uint i = 0; i < key.size(); i++) {
 		for (int j = 0; j < key[i]; j++) {
 			glPushMatrix();
-			float w = d.package[i].w / keyScale;
-			float h = d.package[i].h / keyScale;
+			int pack_w = 0, pack_h = 0;
+			if (orientation[c] == 1) {
+				pack_w = d.package[i].h;
+				pack_h = d.package[i].w;
+			}
+			else {
+				pack_w = d.package[i].w;
+				pack_h = d.package[i].h;
+			}
+			float w = pack_w / keyScale;
+			float h = pack_h / keyScale;
 			float _d = d.package[i].d / keyScale;
 			float pos_x = pattern[c * 3 + 0] / keyScale;
 			float pos_y = pattern[c * 3 + 1] / keyScale;
