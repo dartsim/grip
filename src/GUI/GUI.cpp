@@ -49,11 +49,11 @@ output o;
 config_t configCurrent;
 packlist_ packlistCurrent;
 string palletLoadPath;
-float keyScale = 40.0f;
+float keyScale = 110.0f;
 int keyChanged = 0;
-float c_red[10] = 	{0.5, 0.5, 0.0, 0.0, 0.0, 1.0};
-float c_green[10] = {0.0, 0.0, 0.0, 0.5, 1.0, 1.0};
-float c_blue[10] = 	{0.0, 0.5, 0.5, 0.0, 1.0, 0.0};
+float c_red[10] = 	{0.5, 0.5, 0.0, 0.0, 0.0, 1.0, 0.0, 0.5, 0.3};
+float c_green[10] = {0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 0.5, 0.3, 0.7};
+float c_blue[10] = 	{0.0, 0.5, 0.5, 0.0, 1.0, 0.0, 0.5, 0.7, 0.0};
 
 GRIPFrame*	frame = 0;
 Viewer*		viewer = 0;

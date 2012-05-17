@@ -109,7 +109,7 @@ void PalletizingTab::OnButton(wxCommandEvent &evt) {
 	switch (button_num) {
 	case be_refresh:
 		d.cleandb();
-		i.load(palletLoadPath.c_str());
+		i.load_xml(palletLoadPath.c_str());
 		d.get_input(i);
 		d.importdb();
 		d.printdb_stat();

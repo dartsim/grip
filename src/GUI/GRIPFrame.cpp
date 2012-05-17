@@ -321,7 +321,7 @@ void GRIPFrame::OnPalletLoad(wxCommandEvent& WXUNUSED(event)) {
 	const wxString& dir = wxDirSelector(wxT("Choose a folder"));
 	if (!dir.empty()) {
 		palletLoadPath = dir.To8BitData();
-		i.load(dir.To8BitData());
+		i.load_xml(dir.To8BitData());
 	}
 
 	d.get_input(i);
