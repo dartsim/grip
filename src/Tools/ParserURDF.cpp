@@ -15,8 +15,9 @@ int ParserURDF::readURDFFile(const char* const filename, Robot *robot)
 	replace( fullPath.begin(), fullPath.end(), '\\', '/' );
 	dirPath = fullPath.substr(0, fullPath.rfind("/") + 1);
 
-	TiXmlDocument doc(filename);
-	if(!doc.LoadFile())
+	tinyxml2::XMLDocument doc;
+
+	if(doc.LoadFile(filename))
 	{
 		cout << "Could not load URDF file: " << filename << endl;
 		return 0;
@@ -24,7 +25,7 @@ int ParserURDF::readURDFFile(const char* const filename, Robot *robot)
 	
 	cout << "Loaded URDF file: " << filename << endl;
 
-	TiXmlElement *root = doc.RootElement();
+	XMLElement *root = doc.RootElement();
 
 	if(root == NULL)
 	{
@@ -42,9 +43,7 @@ int ParserURDF::readURDFFile(const char* const filename, Robot *robot)
 	string robotName(name);
 	
 	// Get links
-	//std::map<std::string, TiXmlElement *> links;
-
-	for (TiXmlElement* linkElement = root->FirstChildElement("link");
+	for (XMLElement* linkElement = root->FirstChildElement("link");
 		linkElement; linkElement = linkElement->NextSiblingElement("link"))
 	{
 		readLink(linkElement, robot);
@@ -54,61 +53,18 @@ int ParserURDF::readURDFFile(const char* const filename, Robot *robot)
 	Joint *worldJoint = new Joint(NULL, rootNode, "worldJoint");
 
 	// Get joints
-	//std::map<std::string, TiXmlElement *> joints;
-
-	for (TiXmlElement* jointElement = root->FirstChildElement("joint");
+	for (XMLElement* jointElement = root->FirstChildElement("joint");
 		jointElement; jointElement = jointElement->NextSiblingElement("joint"))
 	{
 		readJoint(jointElement, robot);
 	}
 
-	// Get materials	
-	//std::map<std::string, TiXmlElement *> materials;
-
-	for (TiXmlElement* materialElement = root->FirstChildElement("material");
+	// Get materials
+	for (XMLElement* materialElement = root->FirstChildElement("material");
 		materialElement; materialElement = materialElement->NextSiblingElement("material"))
 	{
 		readMaterial(materialElement);
 	}
-
-	// My code
-
-	/*if(0)
-	{
-		char buff[1024];
-
-		cout << root->ValueStr() << endl;
-
-		for(TiXmlAttribute *attribute = root->FirstAttribute();
-			attribute != NULL; attribute = attribute->Next())
-		{
-			cout << attribute->NameTStr() << ": " << attribute->ValueStr() << endl;
-		}
-
-		for(TiXmlElement *child = root->FirstChildElement();
-			child != NULL; child = child->NextSiblingElement())
-		{		
-			cout << "\t" << child->ValueStr() << endl;
-
-			for(TiXmlAttribute *attribute = child->FirstAttribute();
-			attribute != NULL; attribute = attribute->Next())
-			{
-				cout << "\t" << attribute->NameTStr() << ": " << attribute->ValueStr() << endl;
-			}
-
-			for(TiXmlElement *grandChild = child->FirstChildElement();
-				grandChild != NULL; grandChild = grandChild->NextSiblingElement())
-			{
-				cout << "\t" << "\t" << grandChild->ValueStr() << endl;
-
-				for(TiXmlAttribute *attribute = grandChild->FirstAttribute();
-					attribute != NULL; attribute = attribute->Next())
-				{				
-					cout << "\t" << "\t" << attribute->NameTStr() << ": " << attribute->ValueStr() << endl;
-				}
-			}
-		}
-	}*/
 
 	// add the nodes to the robot
 	map<string, BodyNode*>::iterator it;
@@ -120,7 +76,7 @@ int ParserURDF::readURDFFile(const char* const filename, Robot *robot)
 	}
 
 	// Add models to the robot
-	map<BodyNode*, Model3DS*>::iterator it2;
+	map<BodyNode*, Model*>::iterator it2;
 	for(it2 = models.begin(); it2 != models.end(); it2++)
 	{
 		// add the node to the robot
@@ -134,7 +90,7 @@ int ParserURDF::readURDFFile(const char* const filename, Robot *robot)
 	return 1;
 }
 
-int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
+int ParserURDF::readLink(XMLElement *link, Robot *robot)
 {
 	// get link name
 	const char *name = link->Attribute("name");
@@ -162,12 +118,12 @@ int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
 	Matrix3d inertiaMatrix = Matrix3d::Identity();
 
 	// inertia data
-	TiXmlElement *inertiaElement = link->FirstChildElement("inertia");
+	XMLElement *inertiaElement = link->FirstChildElement("inertia");
 	if (inertiaElement)
 	{
 		cout << "Link has inertial data. Loading..." << endl;
 
-		TiXmlElement *originElement = inertiaElement->FirstChildElement("origin");
+		XMLElement *originElement = inertiaElement->FirstChildElement("origin");
 		if(originElement)
 		{
 			cout << "Link has an inertial origin element." << endl;
@@ -197,7 +153,7 @@ int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
 			cout << "Link has no inertial origin element. Defaulting to identities." << endl;
 		}
 
-		TiXmlElement *massElement = inertiaElement->FirstChildElement("mass");
+		XMLElement *massElement = inertiaElement->FirstChildElement("mass");
 		if(originElement)
 		{
 			cout << "Link has a mass element." << endl;
@@ -223,7 +179,7 @@ int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
 			cout << "Link has no mass element." << endl;
 		}
 
-		TiXmlElement *inertiaElement = inertiaElement->FirstChildElement("inertia");
+		XMLElement *inertiaElement = inertiaElement->FirstChildElement("inertia");
 		if(originElement)
 		{
 			cout << "Link has an inertia element." << endl;
@@ -344,12 +300,12 @@ int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
 	}
 
 	// visual data
-	TiXmlElement *visualElement = link->FirstChildElement("visual");
+	XMLElement *visualElement = link->FirstChildElement("visual");
 	if(visualElement)
 	{
 		cout << "Link has visual data. Loading..." << endl;
 		
-		TiXmlElement *originElement = visualElement->FirstChildElement("origin");
+		XMLElement *originElement = visualElement->FirstChildElement("origin");
 		if(originElement)
 		{
 			cout << "Link has a visual origin element." << endl;
@@ -379,12 +335,12 @@ int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
 			cout << "Link has no visual origin element. Defaulting to identities." << endl;
 		}
 
-		TiXmlElement *geometryElement = visualElement->FirstChildElement("geometry");
+		XMLElement *geometryElement = visualElement->FirstChildElement("geometry");
 		if(geometryElement)
 		{
 			cout << "Link has a geometry element." << endl;
 
-			TiXmlElement *boxElement = geometryElement->FirstChildElement("box");
+			XMLElement *boxElement = geometryElement->FirstChildElement("box");
 			if(boxElement)
 			{
 				cout << "Box element found." << endl;
@@ -411,7 +367,7 @@ int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
 				cout << "No box element found." << endl;
 			}
 
-			TiXmlElement *cylinderElement = geometryElement->FirstChildElement("cylinder");
+			XMLElement *cylinderElement = geometryElement->FirstChildElement("cylinder");
 			if(cylinderElement)
 			{
 				cout << "Cylinder element found." << endl;
@@ -458,7 +414,7 @@ int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
 				cout << "No cylinder element found." << endl;
 			}
 
-			TiXmlElement *sphereElement = geometryElement->FirstChildElement("sphere");
+			XMLElement *sphereElement = geometryElement->FirstChildElement("sphere");
 			if(sphereElement)
 			{
 				cout << "Sphere element found." << endl;
@@ -485,9 +441,9 @@ int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
 				cout << "No Sphere element found." << endl;
 			}
 
-			Model3DS* model = NULL;
+			Model* model = NULL;
 
-			TiXmlElement *meshElement = geometryElement->FirstChildElement("mesh");
+			XMLElement *meshElement = geometryElement->FirstChildElement("mesh");
 			if(meshElement)
 			{
 				cout << "Mesh element found." << endl;
@@ -523,7 +479,7 @@ int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
 			cout << "Link has no geometry element." << endl;
 		}
 
-		TiXmlElement *materialElement = visualElement->FirstChildElement("material");
+		XMLElement *materialElement = visualElement->FirstChildElement("material");
 		if(materialElement)
 		{
 			cout << "Link has a material element." << endl;
@@ -531,7 +487,7 @@ int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
 			const char* name = materialElement->Attribute("name");
 			Vector4d rgba(1, 1, 1, 0);
 
-			TiXmlElement *colorElement = materialElement->FirstChildElement("color");
+			XMLElement *colorElement = materialElement->FirstChildElement("color");
 			if(colorElement)
 			{
 				cout << "Color element found." << endl;
@@ -550,7 +506,7 @@ int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
 				cout << "No color element found." << endl;
 			}
 
-			TiXmlElement *textureElement = materialElement->FirstChildElement("texture");
+			XMLElement *textureElement = materialElement->FirstChildElement("texture");
 			if(colorElement)
 			{
 				cout << "Texture element found." << endl;
@@ -589,7 +545,7 @@ int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
 	}
     
 	// collision data
-	TiXmlElement *collisionElement = link->FirstChildElement("collision");
+	XMLElement *collisionElement = link->FirstChildElement("collision");
 	if(collisionElement)
 	{
 		cout << "Link has inertial data. Loading..." << endl;
@@ -611,7 +567,7 @@ int ParserURDF::readLink(TiXmlElement *link, Robot *robot)
 
 }
 
-int ParserURDF::readJoint(TiXmlElement *joint, Robot *robot)
+int ParserURDF::readJoint(XMLElement *joint, Robot *robot)
 {
 	// Get Joint Name
 	const char *buff = joint->Attribute("name");
@@ -628,7 +584,7 @@ int ParserURDF::readJoint(TiXmlElement *joint, Robot *robot)
 	Vector3d position(0, 0, 0);
 	Vector3d orientation(0, 0, 0);
 
-	TiXmlElement *originElement = joint->FirstChildElement("origin");
+	XMLElement *originElement = joint->FirstChildElement("origin");
 	if (!originElement)
 	{
 		cout << "Joint has no origin, using identity transform." << endl;
@@ -659,7 +615,7 @@ int ParserURDF::readJoint(TiXmlElement *joint, Robot *robot)
 
 	// Get Parent Link
 	string parentName("");
-	TiXmlElement *parentElement = joint->FirstChildElement("parent");
+	XMLElement *parentElement = joint->FirstChildElement("parent");
 	if (parentElement)
 	{
 		buff = parentElement->Attribute("link");
@@ -675,7 +631,7 @@ int ParserURDF::readJoint(TiXmlElement *joint, Robot *robot)
 
 	// Get Child Link
 	string childName("");
-	TiXmlElement *childElement = joint->FirstChildElement("child");
+	XMLElement *childElement = joint->FirstChildElement("child");
 	if(childElement)
 	{
 		buff = childElement->Attribute("link");
@@ -784,7 +740,7 @@ int ParserURDF::readJoint(TiXmlElement *joint, Robot *robot)
 	Vector3d axis(0, 0, 0);
 
 	// axis
-	TiXmlElement *axisElement = joint->FirstChildElement("axis");
+	XMLElement *axisElement = joint->FirstChildElement("axis");
 	if (!axisElement)
 	{
 		cout << "No axis element for Joint link " << jointName << " defaulting to (1,0,0) axis." << endl;
@@ -818,7 +774,7 @@ int ParserURDF::readJoint(TiXmlElement *joint, Robot *robot)
 	double upper = 0.0;
 
 	// Get limit
-	TiXmlElement *limitElement = joint->FirstChildElement("limit");
+	XMLElement *limitElement = joint->FirstChildElement("limit");
 	if (limitElement)
 	{
 		// Get lower joint limit
@@ -910,7 +866,7 @@ int ParserURDF::readJoint(TiXmlElement *joint, Robot *robot)
 	//}
 
 	//// Get safety
-	//TiXmlElement *safety_xml = config->FirstChildElement("safety_controller");
+	//XMLElement *safety_xml = config->FirstChildElement("safety_controller");
 	//if (safety_xml)
 	//{
 	//	safety.reset(new JointSafety);
@@ -923,7 +879,7 @@ int ParserURDF::readJoint(TiXmlElement *joint, Robot *robot)
 	//}
 
 	//// Get calibration
-	//TiXmlElement *calibration_xml = config->FirstChildElement("calibration");
+	//XMLElement *calibration_xml = config->FirstChildElement("calibration");
 	//if (calibration_xml)
 	//{
 	//	calibration.reset(new JointCalibration);
@@ -936,7 +892,7 @@ int ParserURDF::readJoint(TiXmlElement *joint, Robot *robot)
 	//}
 
 	//// Get Joint Mimic
-	//TiXmlElement *mimic_xml = config->FirstChildElement("mimic");
+	//XMLElement *mimic_xml = config->FirstChildElement("mimic");
 	//if (mimic_xml)
 	//{
 	//	mimic.reset(new JointMimic);
@@ -949,7 +905,7 @@ int ParserURDF::readJoint(TiXmlElement *joint, Robot *robot)
 	//}
 
 	//// Get Dynamics
-	//TiXmlElement *prop_xml = config->FirstChildElement("dynamics");
+	//XMLElement *prop_xml = config->FirstChildElement("dynamics");
 	//if (prop_xml)
 	//{
 	//	dynamics.reset(new JointDynamics);
@@ -1016,12 +972,12 @@ int ParserURDF::readJoint(TiXmlElement *joint, Robot *robot)
 	return 1;
 }
 
-int ParserURDF::readMaterial(TiXmlElement *material)
+int ParserURDF::readMaterial(XMLElement *material)
 {
 	return 1;
 }
 
-int ParserURDF::readTransformMatrix(TiXmlElement *element, Matrix4d &matrix)
+int ParserURDF::readTransformMatrix(XMLElement *element, Matrix4d &matrix)
 {
 	if(!element)
 	{
