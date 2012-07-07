@@ -10,6 +10,16 @@ SET(CPACK_PACKAGE_NAME "grip")
 SET(CPACK_SYSTEM_NAME "i386")
 SET(CPACK_DEBIAN_PACKAGE_DEPENDS "dart (>= 0.1), libwxgtk2.8-dev (>= 2.8)")
 
+####################################
+# Add definition to run Parser
+SET( PARSER_URDF OFF )
+if( PARSER_URDF )
+   message("Adding PARSER_URDF definition -- C++ files ")
+   add_definitions( -DPARSER_URDF=1 )
+else( PARSER_URDF )
+   message("Not adding PARSER_URDF definition -- C++ files ")
+endif()
+
 #####################################
 # Global Variables
 set (CMAKE_VERBOSE_MAKEFILE OFF)

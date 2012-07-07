@@ -1,8 +1,37 @@
 project(gtools)
 
-# Search all header and source files
-file (GLOB tools_srcs "*.cpp")
-file (GLOB tools_hdrs "*.h")
+# Parser URDF
+if ( PARSER_URDF )
+  message( "Parser URDF ON -- Adding corresponding source and header files")
+  file (GLOB tools_srcs Collision.cpp
+		   GLTools.cpp
+		   Parser.cpp
+                   ParserUtilities.cpp
+	           utils.cpp
+                   ParserURDF.cpp )
+
+  file (GLOB tools_hdrs Collision.h
+		   GLTools.h
+		   Parser.h
+                   ParserUtilities.h
+	           utils.h
+                   Constants.h
+                   ParserURDF.h  )
+else ( PARSER_URDF )
+  message( "Parser URDF OFF -- No adding source and header files")
+  file (GLOB tools_srcs Collision.cpp
+		   GLTools.cpp
+		   Parser.cpp
+                   ParserUtilities.cpp
+	           utils.cpp )
+  file (GLOB tools_hdrs Collision.h
+		   GLTools.h
+		   Parser.h
+                   ParserUtilities.h
+	           utils.h
+                   Constants.h  )
+endif ( PARSER_URDF )
+
 
 set (srcs
 GL/glcommon.h

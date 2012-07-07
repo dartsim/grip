@@ -95,6 +95,7 @@ void GRIPTimeSlice::SetToWorld( planning::World* _w ) {
 
         _w->mObjects[i]->setPositionXYZ( objectsXYZ[i](0), objectsXYZ[i](1), objectsXYZ[i](2) );
         _w->mObjects[i]->setRotationRPY( objectsRPY[i](0), objectsRPY[i](1), objectsRPY[i](2) );
+	_w->mObjects[i]->initSkel(); // equivalent to update for robots -- achq 2012/07/06
     }
     for(unsigned int i = 0; i < _w->mRobots.size(); i++ ) {
 

@@ -13,7 +13,11 @@
 
 #include "GUI/GUI.h"
 #include "Parser.h"
+
+// PARSER_URDF is defined in CMakeList
+#ifdef PARSER_URDF
 #include "ParserURDF.h"
+#endif
 
 #define BSTATE 0
 #define RSTATE 1
@@ -76,16 +80,18 @@ planning::World* parseWorld( std::string _fullname )
 
 		std::cout << "Robot extension: " << ext << endl;
 
-		if(ext == "rscene")
+		if(ext == "rsdh")
 		{
 			std::cout << "Parsing with rhsd parser" << endl;		
 			parseRobot( fullpath, robot );
 		}
 		else if(ext == "urdf")
 		{
+			#ifdef PARSER_URDF
 			std::cout << "Parsing with URDF parser" << endl;
 			ParserURDF parser;
 			parser.readURDFFile(fullpath.c_str(), robot);
+			#endif
 		}	    
 		
 		world->addRobot( robot );
