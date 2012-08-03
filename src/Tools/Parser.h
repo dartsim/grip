@@ -8,10 +8,12 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include <cstddef>
 #include <fstream>
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include <string>
+
 #include <Tools/Constants.h>
 #include <kinematics/ShapeMesh.h>
 #include <planning/Robot.h>
