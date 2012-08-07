@@ -20,7 +20,7 @@
 
 // planning stuff
 #include <planning/Robot.h>
-#include <planning/Model3DS.h>
+#include <planning/Model3D.h>
 #include <planning/ParserUtilities.h>
 
 // XML stuff

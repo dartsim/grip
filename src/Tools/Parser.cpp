@@ -241,9 +241,9 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
     kinematics::BodyNode *node;
     kinematics::Transformation* trans;
 
-    std::vector<Model3DS*> models;
+    std::vector<Model3D*> models;
     std::vector<int> modelsInd;
-    Model3DS* model;
+    Model3D* model;
 
     std::cout<< "--> Parsing robot "<< _robot->mName << std::endl;
 
@@ -471,7 +471,7 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
  */
 int parseObject( string _filename, planning::Object *_object )
 {
-    Model3DS* model;
+    Model3D* model;
     _object->mMovable = false;
 
     if( _filename != "NOMODEL" ) {

@@ -194,7 +194,7 @@ void Collision::UpdateCollisionModel( int _mEntityIndex ) {
 int Collision::CreateCollisionEntity( CollisionType _type, 
                                        int _id, 
                                        int _nodeId, 
-                                       Model3DS *_model, 
+                                       Model3D *_model, 
                                        const Eigen::MatrixXd &_pose ) {
 
   CollisionEntity *coll = new CollisionEntity();
@@ -211,8 +211,8 @@ int Collision::CreateCollisionEntity( CollisionType _type,
   coll->mTrans[2][0] = _pose(2,0); coll->mTrans[2][1] = _pose(2,1); coll->mTrans[2][2] = _pose(2,2); coll->mTrans[2][3] = _pose(2,3);
   coll->mTrans[3][0] = _pose(3,0); coll->mTrans[3][1] = _pose(3,1); coll->mTrans[3][2] = _pose(3,2); coll->mTrans[3][3] = _pose(3,3);
   
-  std::vector<Model3DS::Triangle> *trigs = new std::vector<Model3DS::Triangle>;
-  _model->ReportTriangles( trigs );
+  std::vector<Model3D::Triangle> *trigs = new std::vector<Model3D::Triangle>;
+  _model->getTriangles( *trigs );
 
 
   int collCounter;

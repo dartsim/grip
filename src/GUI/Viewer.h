@@ -45,7 +45,7 @@
 #include <Eigen/Geometry>
 #include <wx/wx.h>
 #include <wx/glcanvas.h>
-#include <planning/Model3DS.h>
+#include <planning/Model3D.h>
 #include <kinematics/Shape.h>
 #include <kinematics/BodyNode.h>
 #include <kinematics/ShapeMesh.h>
@@ -85,7 +85,7 @@ public:
 	void addGrid();
 
 	void drawWorld(); 
-	void drawModel( Model3DS* _model, Eigen::Transform<double, 3, Eigen::Affine> *_pose );
+	void drawModel( Model3D* _model, Eigen::Transform<double, 3, Eigen::Affine> *_pose );
 
 	long x, y, xInit, yInit;
 	int w, h;

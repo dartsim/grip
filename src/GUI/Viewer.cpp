@@ -92,7 +92,7 @@ void Viewer::drawWorld() {
 /**
  * @function drawModel
  */
-void Viewer::drawModel( Model3DS* _model, Transform<double, 3, Affine> *_pose )
+void Viewer::drawModel( Model3D* _model, Transform<double, 3, Affine> *_pose )
 {
    if( _model == NULL ) return;
 
@@ -118,8 +118,7 @@ void Viewer::drawModel( Model3DS* _model, Transform<double, 3, Affine> *_pose )
 	}
 */
    if( _model != NULL ) {
-     glCallList(_model->modelDL);
-     //glCallList(model->colDL);  // For testing collision model
+       _model->drawScene();
    }
 
    glDisable(GL_POLYGON_STIPPLE);

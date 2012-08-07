@@ -10,7 +10,7 @@
 #include <Eigen/Geometry>
 #include <vector>
 #include <VCollide/VCollide.h>
-#include <planning/Model3DS.h>
+#include <planning/Model3D.h>
 #include <Tools/Constants.h>
 
 enum CollisionType {
@@ -33,7 +33,7 @@ public:
   int mBodyNodeId; /**< Index of BodyNode in Skeleton (again, of Robot or Object) */
   double mTrans[4][4]; /**< Transformation */
   bool mCollisionFlag; /**< Collision Flag */
-  Model3DS* model;
+  Model3D* model;
 
   int mEid; /** Index in vcollide */
 
@@ -64,7 +64,7 @@ public:
   int CreateCollisionEntity( CollisionType _type, 
                               int _id, 
                               int _nodeId, 
-                              Model3DS *_model, 
+                              Model3D *_model, 
                               const Eigen::MatrixXd &_pose );
   bool CheckCollisions();
   void ClearCollisions();

@@ -76,7 +76,7 @@ int ParserURDF::readURDFFile(const char* const filename, Robot *robot)
 	}
 
 	// Add models to the robot
-	map<BodyNode*, Model3DS*>::iterator it2;
+	map<BodyNode*, Model3D*>::iterator it2;
 	for(it2 = models.begin(); it2 != models.end(); it2++)
 	{
 		// add the node to the robot
@@ -441,7 +441,7 @@ int ParserURDF::readLink(XMLElement *link, Robot *robot)
 				cout << "No Sphere element found." << endl;
 			}
 
-			Model3DS* model = NULL;
+			Model3D* model = NULL;
 
 			XMLElement *meshElement = geometryElement->FirstChildElement("mesh");
 			if(meshElement)
