@@ -196,7 +196,12 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     Show();
 #endif
     {
-        int attrib[] = { WX_GL_DOUBLEBUFFER, 0 };
+        int attrib[] = {
+            WX_GL_DOUBLEBUFFER,
+            WX_GL_RGBA,
+            WX_GL_DEPTH_SIZE, 16,
+            0
+        };
         viewer = new Viewer(this, -1, wxPoint(0, 0), wxSize(prefViewerWidth, prefViewerHeight),
                             wxFULL_REPAINT_ON_RESIZE | wxSUNKEN_BORDER, _T("GLCanvas"), attrib);
     }
