@@ -195,8 +195,11 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 #ifndef WIN32 // Weird hack to make wxWidgets work in Linux
     Show();
 #endif
-    viewer = new Viewer(this, -1, wxPoint(0, 0), wxSize(prefViewerWidth, prefViewerHeight), wxFULL_REPAINT_ON_RESIZE | wxSUNKEN_BORDER);
-
+    {
+        int attrib[] = { WX_GL_DOUBLEBUFFER, 0 };
+        viewer = new Viewer(this, -1, wxPoint(0, 0), wxSize(prefViewerWidth, prefViewerHeight),
+                            wxFULL_REPAINT_ON_RESIZE | wxSUNKEN_BORDER, _T("GLCanvas"), attrib);
+    }
 
 #ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
     viewer->MSWSetOldWndProc((WXFARPROC)DefWindowProc);
