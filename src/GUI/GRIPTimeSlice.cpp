@@ -43,35 +43,35 @@
  * @function GRIPTimeSlice
  * @brief Constructor
  */
-GRIPTimeSlice::GRIPTimeSlice( planning::World *_w ) {
+GRIPTimeSlice::GRIPTimeSlice( robotics::World *_w ) {
 	
 	objectsXYZ.clear(); objectsRPY.clear();
 	robotsXYZ.clear(); robotsRPY.clear();
         robotBodyNodesPoses.clear(); 
-
+	
         double x, y, z;
         double roll, pitch, yaw;
      
         /// Get Objects Poses
-	for(unsigned int i = 0; i < _w->mObjects.size(); i++ ) {
-            _w->mObjects[i]->getPositionXYZ( x, y, z);                
+	for(unsigned int i = 0; i < _w->getNumObjects(); i++ ) {
+            _w->getObject(i)->getPositionXYZ( x, y, z);                
 	    objectsXYZ.push_back( Eigen::Vector3d( x, y, z ) );
 
-            _w->mObjects[i]->getRotationRPY( roll, pitch, yaw );                
+            _w->getObject(i)->getRotationRPY( roll, pitch, yaw );                
 	    objectsRPY.push_back( Eigen::Vector3d( roll, pitch, yaw ) );
 	}
    
         /// Get Robot Poses
-	for(unsigned int i = 0; i < _w->mRobots.size(); i++ ) {
-            _w->mRobots[i]->getPositionXYZ( x, y, z);                
+	for(unsigned int i = 0; i < _w->getNumRobots(); i++ ) {
+            _w->getRobot(i)->getPositionXYZ( x, y, z);                
 	    robotsXYZ.push_back( Eigen::Vector3d( x, y, z ) );
 
-            _w->mRobots[i]->getRotationRPY( roll, pitch, yaw );                
+            _w->getRobot(i)->getRotationRPY( roll, pitch, yaw );                
 	    robotsRPY.push_back( Eigen::Vector3d( roll, pitch, yaw ) );
 
             /// Get Node DOFs values
 	    Eigen::VectorXd RJointVec;
-            RJointVec = _w->mRobots[i]->getQuickDofs();
+            RJointVec = _w->getRobot(i)->getQuickDofs();
 	    robotBodyNodesPoses.push_back( RJointVec );
 
 	}
@@ -89,20 +89,20 @@ GRIPTimeSlice::~GRIPTimeSlice() {
 /**
  * @function SetToWorld
  */
-void GRIPTimeSlice::SetToWorld( planning::World* _w ) {
+void GRIPTimeSlice::SetToWorld( robotics::World* _w ) {
 	
-    for(unsigned int i = 0; i < _w->mObjects.size(); i++ ) {
+    for(unsigned int i = 0; i < _w->getNumObjects(); i++ ) {
 
-        _w->mObjects[i]->setPositionXYZ( objectsXYZ[i](0), objectsXYZ[i](1), objectsXYZ[i](2) );
-        _w->mObjects[i]->setRotationRPY( objectsRPY[i](0), objectsRPY[i](1), objectsRPY[i](2) );
-	_w->mObjects[i]->initSkel(); // equivalent to update for robots -- achq 2012/07/06
+        _w->getObject(i)->setPositionXYZ( objectsXYZ[i](0), objectsXYZ[i](1), objectsXYZ[i](2) );
+        _w->getObject(i)->setRotationRPY( objectsRPY[i](0), objectsRPY[i](1), objectsRPY[i](2) );
+	_w->getObject(i)->initSkel(); // equivalent to update for robots -- achq 2012/07/06
     }
-    for(unsigned int i = 0; i < _w->mRobots.size(); i++ ) {
+    for(unsigned int i = 0; i < _w->getNumRobots(); i++ ) {
 
-        _w->mRobots[i]->setPositionXYZ( robotsXYZ[i](0), robotsXYZ[i](1), robotsXYZ[i](2) );
-        _w->mRobots[i]->setRotationRPY( robotsRPY[i](0), robotsRPY[i](1), robotsRPY[i](2) );
-        _w->mRobots[i]->setQuickDofs( robotBodyNodesPoses[i] );         
-        _w->mRobots[i]->update();
+        _w->getRobot(i)->setPositionXYZ( robotsXYZ[i](0), robotsXYZ[i](1), robotsXYZ[i](2) );
+        _w->getRobot(i)->setRotationRPY( robotsRPY[i](0), robotsRPY[i](1), robotsRPY[i](2) );
+        _w->getRobot(i)->setQuickDofs( robotBodyNodesPoses[i] );         
+        _w->getRobot(i)->update();
     }
  
 }

@@ -42,15 +42,15 @@
 //#include <Eigen/StdVector>  // http://eigen.tuxfamily.org/dox/StlContainers.html
 #include <Eigen/Core>
 #include <vector>
-#include <planning/World.h>
+#include <robotics/World.h>
 
 class GRIPTimeSlice
 {
 public:
-	GRIPTimeSlice( planning::World* _world );
+	GRIPTimeSlice( robotics::World* _world );
 	~GRIPTimeSlice();
 
-	void SetToWorld( planning::World* _world );
+	void SetToWorld( robotics::World* _world );
 
 	std::vector<Eigen::VectorXd> objectsXYZ; std::vector<Eigen::VectorXd> objectsRPY;
 	std::vector<Eigen::VectorXd> robotsXYZ; std::vector<Eigen::VectorXd> robotsRPY;

@@ -117,35 +117,39 @@ void TreeView::CreateFromWorld()
     wxTreeItemId hPrev = rootId;
 
     ///-- Add objects to the tree
-    for ( unsigned int i = 0; i < mWorld->mObjects.size(); i++ )
+    for ( unsigned int i = 0; i < mWorld->getNumObjects(); i++ )
     {
         ret = new TreeViewReturn;
-	ret->data = mWorld->mObjects[i];
+	ret->data = mWorld->getObject(i);
 	ret->dType = Return_Type_Object;
-	mWorld->mObjects[i]->mGripID = hPrev = AppendItem( rootId,
-                                                           wxString( mWorld->mObjects[i]->mName.c_str(), wxConvUTF8),
+  int tempID;
+	tempID = hPrev = AppendItem( rootId,
+                                                           wxString( ( mWorld->getObject(i)->getName() ).c_str(), wxConvUTF8),
                                                            Tree_Icon_Object,
                                                            -1,
                                                            ret );
+	mWorld->getObject(i)->setGripID( tempID );
     }
 
     ///-- Add robot(s) to the tree
-    for ( unsigned int i = 0; i < mWorld->mRobots.size(); i++ )
+    for ( unsigned int i = 0; i < mWorld->getNumRobots(); i++ )
     {
         ret = new TreeViewReturn;
-	ret->data = mWorld->mRobots[i];
+	ret->data = mWorld->getRobot(i);
 	ret->dType = Return_Type_Robot;
-	mWorld->mRobots[i]->mGripID = hPrev = AppendItem( rootId,
-                                                          wxString( mWorld->mRobots[i]->mName.c_str(),wxConvUTF8),
+	int tempID;
+	tempID = hPrev = AppendItem( rootId,
+                                                          wxString( ( mWorld->getRobot(i)->getName() ).c_str(),wxConvUTF8),
                                                           Tree_Icon_Robot,
                                                           -1,
                                                           ret );
+	mWorld->getRobot(i)->setGripID( tempID );
         ///-- Add body nodes ( AKA Links ) as sub-trees
-	for (int j = 0; j < mWorld->mRobots[i]->getNumNodes(); j++ )
+	for (int j = 0; j < mWorld->getRobot(i)->getNumNodes(); j++ )
 	{
             // Get the first bodyNode (do not consider the 6 default DOF! )
-            if ( mWorld->mRobots[i]->getNode(j)->getParentNode() ==  mWorld->mRobots[i]->getRoot() ) {
-	        hPrev = AddNodeTree( mWorld->mRobots[i]->getNode(j), hPrev, hPrev, false );
+            if ( mWorld->getRobot(i)->getNode(j)->getParentNode() ==  mWorld->getRobot(i)->getRoot() ) {
+	        hPrev = AddNodeTree( (dynamics::BodyNodeDynamics*)mWorld->getRobot(i)->getNode(j), hPrev, hPrev, false );
 	    }
         }
     }
@@ -156,7 +160,7 @@ void TreeView::CreateFromWorld()
  * @brief Add sub-tree from node of Robot
  * @date 2011-10-13
  */
-wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hPrev, wxTreeItemId hParent, bool inChain )
+wxTreeItemId TreeView::AddNodeTree( dynamics::BodyNodeDynamics* _node, wxTreeItemId hPrev, wxTreeItemId hParent, bool inChain )
 {
 
 	TreeViewReturn* ret;
@@ -198,7 +202,7 @@ wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hP
                                                    -1,
                                                    ret );
             }
-	    hPrev=AddNodeTree( _node->getChildNode(0), hPrev, newParent, true );
+	    hPrev=AddNodeTree( (dynamics::BodyNodeDynamics*)( _node->getChildNode(0) ), hPrev, newParent, true );
 
 	}else {
 	    ret = new TreeViewReturn;
@@ -210,7 +214,7 @@ wxTreeItemId TreeView::AddNodeTree( kinematics::BodyNode* _node, wxTreeItemId hP
                                             -1,
                                             ret );
 	    for (int i = 0; i < _node->getNumChildJoints(); i++)
-      	    {    /*_node->idNum = */hPrev=AddNodeTree( _node->getChildNode(i), 
+      	    {    /*_node->idNum = */hPrev=AddNodeTree( (dynamics::BodyNodeDynamics*)( _node->getChildNode(i) ), 
                                                   hPrev, 
                                                   newParent, 
                                                   false );

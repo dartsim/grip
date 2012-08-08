@@ -8,9 +8,9 @@
 #include "utils.h"
 #include <fstream>
 #include "../GUI/GUI.h"
-#include <planning/Robot.h>
-#include <planning/Object.h>
-#include <kinematics/BodyNode.h>
+#include <robotics/Robot.h>
+#include <robotics/Object.h>
+#include <dynamics/BodyNodeDynamics.h>
 #include <kinematics/Joint.h>
 #include <kinematics/Dof.h>
 
@@ -28,23 +28,23 @@ int saveRscene( std::string filename ) {
 
 
     /// Save Robots
-    if( mWorld->mRobots.size() > 0 ) {
+    if( mWorld->getNumRobots() > 0 ) {
 
         wstream << "##### ROBOTS #####" << endl;
 	wstream << endl;
 	unsigned int i = 0;
-	while( i < mWorld->mRobots.size() ) {
+	while( i < mWorld->getNumRobots() ) {
 
 	    wstream << "##### ROBOT " << i+1 << " #####" << endl;
 	    wstream << endl;
-            wstream << "> \t" << "ROBOT " << mWorld->mRobots[i]->getName() << " " << mWorld->mRobots[i]->getPathName() << endl;
+            wstream << "> \t" << "ROBOT " << mWorld->getRobot(i)->getName() << " " << mWorld->getRobot(i)->getPathName() << endl;
            
             double x; double y; double z;
-            mWorld->mRobots[i]->getPositionXYZ( x, y, z);
+            mWorld->getRobot(i)->getPositionXYZ( x, y, z);
 	    wstream << "> \t" << "POSITION " << x << " " << y << " " << z << endl;
 		
             double roll; double pitch; double yaw;
-            mWorld->mRobots[i]->getRotationRPY( roll, pitch, yaw);	
+            mWorld->getRobot(i)->getRotationRPY( roll, pitch, yaw);	
             wstream << "> \t" << "ORIENTATION " << RAD2DEG(roll) << " " << RAD2DEG(pitch) << " " << RAD2DEG(yaw) << endl;
 	    wstream << endl;
 
@@ -52,10 +52,10 @@ int saveRscene( std::string filename ) {
 	    wstream << endl;
            
             Eigen::VectorXd dof_vals;
-            dof_vals = mWorld->mRobots[i]->getQuickDofs();
+            dof_vals = mWorld->getRobot(i)->getQuickDofs();
 
             Eigen::VectorXi dof_ind;
-            dof_ind = mWorld->mRobots[i]->getQuickDofsIndices();
+            dof_ind = mWorld->getRobot(i)->getQuickDofsIndices();
 
             if( dof_vals.size() != dof_ind.size() ) {
                 printf(" --(!) Something really wrong is going on here. Check Robot class in DART...Exiting \n");
@@ -64,7 +64,7 @@ int saveRscene( std::string filename ) {
 
             int lnum = 0;
 	    while( lnum < dof_vals.size() ) {
-	        wstream << "> \t" << "INIT " << mWorld->mRobots[i]->getDof(dof_ind(lnum))->getJoint()->getChildNode()->getName() << " " << dof_vals(lnum) << endl;
+	        wstream << "> \t" << "INIT " << mWorld->getRobot(i)->getDof(dof_ind(lnum))->getJoint()->getChildNode()->getName() << " " << dof_vals(lnum) << endl;
 		lnum++;
 	    }
 	    wstream << endl;
@@ -73,23 +73,23 @@ int saveRscene( std::string filename ) {
     }
 
     /// Save Objects
-    if( mWorld->mObjects.size() > 0 ) {
+    if( mWorld->getNumObjects() > 0 ) {
  
         wstream << "##### OBJECTS #####" << endl;
 	wstream << endl;
 	unsigned int i = 0;
-	while( i < mWorld->mObjects.size() ) {
+	while( i < mWorld->getNumObjects() ) {
 
 	    wstream << "##### OBJECT " << i+1 << " #####" << endl;
 	    wstream << endl;
-	    wstream << "> \t" << "OBJECT " << mWorld->mObjects[i]->getName() << " " << mWorld->mObjects[i]->getPathName() << endl;
+	    wstream << "> \t" << "OBJECT " << mWorld->getObject(i)->getName() << " " << mWorld->getObject(i)->getPathName() << endl;
 
             double x; double y; double z;
-            mWorld->mObjects[i]->getPositionXYZ( x, y, z);
+            mWorld->getObject(i)->getPositionXYZ( x, y, z);
 	    wstream << "> \t" << "POSITION " << x << " " << y << " " << z << endl;
 
             double roll; double pitch; double yaw;
-            mWorld->mObjects[i]->getRotationRPY( roll, pitch, yaw);	 
+            mWorld->getObject(i)->getRotationRPY( roll, pitch, yaw);	 
             wstream << "> \t" << "ORIENTATION " << RAD2DEG(roll) << " " << RAD2DEG(pitch) << " " << RAD2DEG(yaw) << endl;
 	    wstream << endl;
 	    i++;

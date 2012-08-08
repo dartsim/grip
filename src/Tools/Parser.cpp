@@ -4,8 +4,8 @@
  * @author A. Huaman
  */
 
-#include "kinematics/Skeleton.h"
-#include "kinematics/BodyNode.h"
+#include "dynamics/SkeletonDynamics.h"
+#include "dynamics/BodyNodeDynamics.h"
 #include "kinematics/Joint.h"
 #include "kinematics/Dof.h"
 #include "kinematics/TrfmRotateEuler.h"
@@ -34,9 +34,9 @@ using namespace Eigen;
  * @function ParseWorld
  * @brief Read a RSDH file. Spits out a World object
  */
-planning::World* parseWorld( std::string _fullname )
+robotics::World* parseWorld( std::string _fullname )
 {
-    planning::World *world = new planning::World();
+    robotics::World *world = new robotics::World();
 
     string worldPath( _fullname );
 
@@ -52,8 +52,8 @@ planning::World* parseWorld( std::string _fullname )
 
     int state = BSTATE;
 
-    planning::Robot *robot;
-    planning::Object* object;
+    robotics::Robot *robot;
+    robotics::Object* object;
 
     /// Read .rscene file
     while (!wstream.eof()) {
@@ -69,12 +69,15 @@ planning::World* parseWorld( std::string _fullname )
 
         /// Read .rsdh Robot description file
 	if (str == "ROBOT") {
-	    robot = new planning::Robot();
-	    wstream >> robot->mName;
-	    std::cout << "--> Loading: " << robot->mName << std::endl;
-	    wstream >> robot->mPathName;
+	    std::string temp;
+	    robot = new robotics::Robot();
+	    wstream >> temp;
+		  robot->setName(temp);
+	    std::cout << "--> Loading: " << robot->getName() << std::endl;
+	    wstream >> temp;
+      robot->setPathName(temp);
 	    fullpath = path;
-	    fullpath.append( robot->mPathName );
+	    fullpath.append( robot->getPathName() );
 
 		string ext = fullpath.substr(fullpath.find_last_of(".") + 1);
 
@@ -99,13 +102,16 @@ planning::World* parseWorld( std::string _fullname )
 
         /// Read object specification
         } else if (str == "OBJECT") {
-            object = new planning::Object();
-	    wstream >> object->mName;
-	    std::cout << "--> Loading: " << object->mName << std::endl;
-	    wstream >> object->mPathName;
+            object = new robotics::Object();
+						std::string temp;
+	    wstream >> temp;
+      object->setName(temp);
+	    std::cout << "--> Loading: " << object->getName() << std::endl;
+	    wstream >> temp;
+       object->setPathName(temp);
  
             fullpath = path;
-            fullpath.append( object->mPathName );
+            fullpath.append( object->getPathName() );
             parseObject( fullpath, object );
             world->addObject( object );
 	    state = OSTATE;
@@ -162,7 +168,7 @@ planning::World* parseWorld( std::string _fullname )
 		wstream >> buf;
                 char* name = (char*) buf.c_str();
                 cout<< "Name:" << name << endl;
-		kinematics::BodyNode *node = robot->getNode( name );
+		dynamics::BodyNodeDynamics *node = (dynamics::BodyNodeDynamics* )robot->getNode( name );
 
                 if( node )
                 { 
@@ -204,7 +210,7 @@ planning::World* parseWorld( std::string _fullname )
 	    } else if (str == "TYPE") {
 		string buf;
 		wstream >> buf;
-		if (buf == "MOVABLE") {  object->mMovable = true; }
+		if (buf == "MOVABLE") {  object->setMovable( true ); }
 	    }
            
 	} else {
@@ -217,12 +223,12 @@ planning::World* parseWorld( std::string _fullname )
     } /// end of while
     wstream.close();
 
-    for (unsigned int i = 0; i < world->mRobots.size(); i++) {
-        world->mRobots[i]->initSkel();
+    for (unsigned int i = 0; i < world->getNumRobots(); i++) {
+        world->getRobot(i)->initSkel();
     }
 
-    for (unsigned int i = 0; i < world->mObjects.size(); i++) {
-        world->mObjects[i]->initSkel();
+    for (unsigned int i = 0; i < world->getNumObjects(); i++) {
+        world->getObject(i)->initSkel();
     }
 
     cout << "--(v) Finished Loading!" << endl;
@@ -235,17 +241,17 @@ planning::World* parseWorld( std::string _fullname )
  * @function parseRobot
  * @brief Load robot from RSDH file
  */
-int parseRobot( string _fullname, planning::Robot *_robot ) {
+int parseRobot( string _fullname, robotics::Robot *_robot ) {
 
     kinematics::Joint* joint;
-    kinematics::BodyNode *node;
+    dynamics::BodyNodeDynamics *node;
     kinematics::Transformation* trans;
 
     std::vector<Model3D*> models;
     std::vector<int> modelsInd;
     Model3D* model;
 
-    std::cout<< "--> Parsing robot "<< _robot->mName << std::endl;
+    std::cout<< "--> Parsing robot "<< _robot->getName() << std::endl;
 
     std::string path, line, str, filename;    
     path = _fullname.substr( 0, _fullname.rfind("/") + 1 );
@@ -256,7 +262,7 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
     int lnum = 0;
 
     //-- Set the containers for the bodyNodes and joints for the robot
-    std::vector< kinematics::BodyNode* > bodyNodes(0);
+    std::vector< dynamics::BodyNodeDynamics* > bodyNodes(0);
     std::vector< kinematics::Joint* > joints(0);
 
 
@@ -276,7 +282,7 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
 	    if( str == "LINK" ) {
           char name[30];
 	        rstream >> name; 
-          node = _robot->createBodyNode( name );
+          node = (dynamics::BodyNodeDynamics *)_robot->createBodyNode( name );
 	        rstream >> filename;
 
   	      if(filename != "NOMODEL") {
@@ -469,10 +475,10 @@ int parseRobot( string _fullname, planning::Robot *_robot ) {
  * @function parseObject
  * @brief Load object
  */
-int parseObject( string _filename, planning::Object *_object )
+int parseObject( string _filename, robotics::Object *_object )
 {
     Model3D* model;
-    _object->mMovable = false;
+    _object->setMovable( false );
 
     if( _filename != "NOMODEL" ) {
 

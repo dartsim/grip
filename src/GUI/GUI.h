@@ -47,7 +47,7 @@
 // FiGRIP some declarations of variable types
 
 #include <wx/notebook.h>
-#include <planning/World.h>
+#include <robotics/World.h>
 #include <Tools/Collision.h>
 
 class GRIPFrame;
@@ -59,7 +59,7 @@ class TemplateTab;
 
 // The actual variables that are global to GUI elements
 
-extern planning::World  *mWorld;
+extern robotics::World  *mWorld;
 extern Collision *mCollision;
 
 extern GRIPFrame*	frame;

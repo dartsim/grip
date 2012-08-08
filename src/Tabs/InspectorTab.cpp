@@ -46,11 +46,11 @@
 #include <GUI/GRIPSlider.h>
 #include <GUI/GRIPFrame.h>
 
-#include <kinematics/BodyNode.h>
+#include <dynamics/BodyNodeDynamics.h>
 #include <kinematics/Joint.h>
 #include <kinematics/Dof.h>
-#include <planning/Robot.h>
-#include <planning/Object.h>
+#include <robotics/Robot.h>
+#include <robotics/Object.h>
 
 using namespace std;
 using namespace Eigen;
@@ -127,9 +127,9 @@ InspectorTab::InspectorTab(wxWindow *parent, const wxWindowID id,
  */
 void InspectorTab::OnSlider(wxCommandEvent &evt) {
 
-    planning::Object* pObject;
-    kinematics::BodyNode* pBodyNode;
-    planning::Robot* pRobot;
+    robotics::Object* pObject;
+    dynamics::BodyNodeDynamics* pBodyNode;
+    robotics::Robot* pRobot;
 
     int slnum = evt.GetId();
     double pos = *(double*)evt.GetClientData();
@@ -142,7 +142,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
   
     //-- If selected : OBJECT
     if(selected == Return_Type_Object){
-        pObject = (planning::Object*)(selectedTreeNode->data);
+        pObject = (robotics::Object*)(selectedTreeNode->data);
 
         switch(slnum) {
 	    case X_SLIDER:
@@ -171,7 +171,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
 
     //-- If selected : NODE
     else if( selected == Return_Type_Node ){
-        pBodyNode = (kinematics::BodyNode*)(selectedTreeNode->data);
+        pBodyNode = (dynamics::BodyNodeDynamics*)(selectedTreeNode->data);
 
         switch(slnum) {
             //-- Change joint value
@@ -194,7 +194,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
     }
     //-- If selected : ROBOT
     else if(selected == Return_Type_Robot){
-        pRobot = (planning::Robot*)(selectedTreeNode->data);
+        pRobot = (robotics::Robot*)(selectedTreeNode->data);
 
         switch(slnum) {
 	    case X_SLIDER:
@@ -242,9 +242,9 @@ void InspectorTab::GRIPStateChange() {
 	return;
     }
 
-    planning::Object* pObject;
-    kinematics::BodyNode* pBodyNode;
-    planning::Robot* pRobot;
+    robotics::Object* pObject;
+    dynamics::BodyNodeDynamics* pBodyNode;
+    robotics::Robot* pRobot;
 
     double x; double y; double z; 
     double roll; double pitch; double yaw;
@@ -256,7 +256,7 @@ void InspectorTab::GRIPStateChange() {
 
     //-- Return type Object
     if(selected == Return_Type_Object){
-        pObject = (planning::Object*)(selectedTreeNode->data);
+        pObject = (robotics::Object*)(selectedTreeNode->data);
 
 	statusBuf = " Selected Object: " + pObject->getName();
 	buf = "Object: " + pObject->getName();
@@ -274,15 +274,15 @@ void InspectorTab::GRIPStateChange() {
 
    //-- Return type Node
     else if(selected == Return_Type_Node){
-        pBodyNode = (kinematics::BodyNode*)(selectedTreeNode->data);
+        pBodyNode = (dynamics::BodyNodeDynamics*)(selectedTreeNode->data);
 
-	statusBuf = " Selected Node: " + string( pBodyNode->getName() ) + " of Robot: " + string( ((planning::Robot*) pBodyNode->getSkel())->getName() );
+	statusBuf = " Selected Node: " + string( pBodyNode->getName() ) + " of Robot: " + string( ((robotics::Robot*) pBodyNode->getSkel())->getName() );
 	buf = "Node: " + string( pBodyNode->getName() );
 	itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
 
         /** A normal body Node */
 	if( pBodyNode->getParentNode() != pBodyNode->getSkel()->getRoot() ) {
-	    buf2 = "Parent Node: " + string( pBodyNode->getParentNode()->getName() ) + "   Robot: " + string( ((planning::Robot*) pBodyNode->getSkel())->getName() );
+	    buf2 = "Parent Node: " + string( pBodyNode->getParentNode()->getName() ) + "   Robot: " + string( ((robotics::Robot*) pBodyNode->getSkel())->getName() );
         
 
             /** If joint is hinge */
@@ -330,7 +330,7 @@ void InspectorTab::GRIPStateChange() {
     //-- Return type Robot
     else if(selected == Return_Type_Robot) {
 
-        pRobot = (planning::Robot*)(selectedTreeNode->data);
+        pRobot = (robotics::Robot*)(selectedTreeNode->data);
 
 	statusBuf = " Selected Robot: " + pRobot->getName();
 	buf = "Robot: " + pRobot->getName();

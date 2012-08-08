@@ -368,7 +368,7 @@ void GRIPFrame::DeleteWorld() {
     timeVector.clear();
 
     if( mWorld != NULL) {
-        planning::World* w = mWorld;
+        robotics::World* w = mWorld;
 	mWorld = 0;
 	selectedTreeNode = 0;
 	treeView->DeleteAllItems();
@@ -611,7 +611,7 @@ void GRIPFrame::OnTimeScroll(wxScrollEvent& event) {
  * @brief 
  * @date 2011-10-13
  */
-void GRIPFrame::AddWorld( planning::World* _world) {
+void GRIPFrame::AddWorld( robotics::World* _world) {
     GRIPTimeSlice* tsnew = new GRIPTimeSlice( _world );
     timeVector.push_back(tsnew);
     tMax += tIncrement;

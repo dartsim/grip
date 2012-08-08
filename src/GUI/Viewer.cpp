@@ -61,29 +61,29 @@ void Viewer::drawWorld() {
   }
 
   // Draw Objects    
-  for( unsigned int i = 0; i < mWorld->mObjects.size(); i++ ) {
+  for( unsigned int i = 0; i < mWorld->getNumObjects(); i++ ) {
 
-    for( int j = 0; j < mWorld->mObjects[i]->getNumNodes(); j++ ) {
+    for( int j = 0; j < mWorld->getObject(i)->getNumNodes(); j++ ) {
         
-      Eigen::Matrix4d poseMatrix =mWorld->mObjects[i]->getNode(j)->getWorldTransform();         
+      Eigen::Matrix4d poseMatrix =mWorld->getObject(i)->getNode(j)->getWorldTransform();         
       Transform<double,3,Affine> pose;
       pose.setIdentity();
       pose.matrix() = poseMatrix;  
-      drawModel( mWorld->mObjects[i]->mModels[0], &pose );
+      drawModel( mWorld->getObject(i)->getModel(0), &pose );
     }
   }
 
   // Draw Robot     
-  for( unsigned int i = 0; i < mWorld->mRobots.size(); i++ ) {
+  for( unsigned int i = 0; i < mWorld->getNumRobots(); i++ ) {
 
-    for( unsigned int j = 0; j < mWorld->mRobots[i]->mModels.size(); j++ ) {
+    for( unsigned int j = 0; j < mWorld->getRobot(i)->getNumModels(); j++ ) {
        
-      int ind = mWorld->mRobots[i]->mModelIndices[j]; 
-      Eigen::Matrix4d poseMatrix =mWorld->mRobots[i]->getNode( ind )->getWorldTransform();   
+      int ind = mWorld->getRobot(i)->getModelIndex(j); 
+      Eigen::Matrix4d poseMatrix =mWorld->getRobot(i)->getNode( ind )->getWorldTransform();   
       
       Transform<double,3,Affine> pose;
       pose.matrix() = poseMatrix;  
-      drawModel( mWorld->mRobots[i]->mModels[j], &pose );
+      drawModel( mWorld->getRobot(i)->getModel(j), &pose );
     }
   }  
 

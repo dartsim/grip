@@ -16,14 +16,14 @@
 
 #include <Tools/Constants.h>
 #include <kinematics/ShapeMesh.h>
-#include <planning/Robot.h>
-#include <planning/Object.h>
-#include <planning/World.h>
-#include <planning/Model3D.h>
+#include <robotics/Robot.h>
+#include <robotics/Object.h>
+#include <robotics/World.h>
+#include <robotics/Model3D.h>
 
 
-planning::World* parseWorld( std::string filename );
-int parseRobot( std::string _filename, planning::Robot *_robot );
-int parseObject( std::string _filename, planning::Object *_object );
+robotics::World* parseWorld( std::string filename );
+int parseRobot( std::string _filename, robotics::Robot *_robot );
+int parseObject( std::string _filename, robotics::Object *_object );
 
 #endif /** PARSER_H */

@@ -5,7 +5,7 @@
 
 #include "Collision.h"
 #include <GUI/GUI.h>
-#include <kinematics/BodyNode.h>
+#include <dynamics/BodyNodeDynamics.h>
 
 /**
  * @function Collision
@@ -28,24 +28,24 @@ Collision::~Collision() {
 /**
  * @function InitFromWorld
  */  
-void Collision::InitFromWorld( planning::World* _world ) {
+void Collision::InitFromWorld( robotics::World* _world ) {
 
   printf("Reading robots Collision \n");
 
   // Reading robots
-  mRobotsEid.resize( _world->mRobots.size() );
+  mRobotsEid.resize( _world->getNumRobots() );
 
   /// For every robot
-  for( unsigned int i = 0; i < _world->mRobots.size(); i++ ) {
+  for( unsigned int i = 0; i < _world->getNumRobots(); i++ ) {
 
-    std::vector<int> mod( _world->mRobots[i]->mModels.size() );
+    std::vector<int> mod( _world->getRobot(i)->getNumModels() );
     /// Read every model into a CollisionEntity
-    for( unsigned int j = 0; j < _world->mRobots[i]->mModels.size(); j++ ) {
+    for( unsigned int j = 0; j < _world->getRobot(i)->getNumModels(); j++ ) {
        
-      int ind = _world->mRobots[i]->mModelIndices[j]; 
-      Eigen::MatrixXd poseMatrix = _world->mRobots[i]->getNode( ind )->getWorldTransform();   
+      int ind = _world->getRobot(i)->getModelIndex(j); 
+      Eigen::MatrixXd poseMatrix = _world->getRobot(i)->getNode( ind )->getWorldTransform();   
 
-      int k = CreateCollisionEntity( COLLISION_ROBOT, i, ind, _world->mRobots[i]->mModels[j], poseMatrix );
+      int k = CreateCollisionEntity( COLLISION_ROBOT, i, ind, _world->getRobot(i)->getModel(j), poseMatrix );
       mod[j] = k;      
     }
     /// Save the indices
@@ -56,18 +56,18 @@ void Collision::InitFromWorld( planning::World* _world ) {
 
 
   // Reading objects
-  mObjectsEid.resize( _world->mObjects.size() );
+  mObjectsEid.resize( _world->getNumObjects() );
 
-  for( unsigned int i = 0; i < _world->mObjects.size(); i++ ) {
+  for( unsigned int i = 0; i < _world->getNumObjects(); i++ ) {
     
-    std::vector<int> mod( _world->mObjects[i]->mModels.size() );
+    std::vector<int> mod( _world->getObject(i)->getNumModels() );
     /// Read every model into a CollisionEntity
-    for( unsigned int j = 0; j < _world->mObjects[i]->mModels.size(); j++ ) {
+    for( unsigned int j = 0; j < _world->getObject(i)->getNumModels(); j++ ) {
   
-      int ind = _world->mObjects[i]->mModelIndices[j];        
-      Eigen::MatrixXd poseMatrix = _world->mObjects[i]->getNode( ind )->getWorldTransform();         
+      int ind = _world->getObject(i)->getModelIndex(j);        
+      Eigen::MatrixXd poseMatrix = _world->getObject(i)->getNode( ind )->getWorldTransform();         
 
-      int k = CreateCollisionEntity( COLLISION_OBJECT, i, ind, _world->mObjects[i]->mModels[j], poseMatrix );
+      int k = CreateCollisionEntity( COLLISION_OBJECT, i, ind, _world->getObject(i)->getModel(j), poseMatrix );
       mod[j] = k;
     }
     /// Save the indices
@@ -138,8 +138,8 @@ void Collision::DetectCollisions() {
  */
 void Collision::UpdateAllCollisionModels() {
 
-    for( unsigned int i = 0; i < mWorld->mRobots.size(); i++ )
-    { mWorld->mRobots[i]->update(); }
+    for( unsigned int i = 0; i < mWorld->getNumRobots(); i++ )
+    { mWorld->getRobot(i)->update(); }
 
     /// Update all the models ( objects + robots )
     for( unsigned int i = 0; i < mEntities.size(); i++ ) {
@@ -171,10 +171,10 @@ void Collision::UpdateCollisionModel( int _mEntityIndex ) {
   Eigen::MatrixXd pose;
 
   if( mEntities[_mEntityIndex]->mType == COLLISION_ROBOT )
-  {  pose = mWorld->mRobots[mind]->getNode(bind)->getWorldTransform(); }
+  {  pose = mWorld->getRobot(mind)->getNode(bind)->getWorldTransform(); }
 
   else
-  {  pose = mWorld->mObjects[mind]->getNode(bind)->getWorldTransform(); }
+  {  pose = mWorld->getObject(mind)->getNode(bind)->getWorldTransform(); }
 
 	double newTrans[4][4] =
 	{ {pose(0,0), pose(0,1), pose(0,2), pose(0,3)},

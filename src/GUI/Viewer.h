@@ -45,7 +45,7 @@
 #include <Eigen/Geometry>
 #include <wx/wx.h>
 #include <wx/glcanvas.h>
-#include <planning/Model3D.h>
+#include <robotics/Model3D.h>
 #include <kinematics/Shape.h>
 #include <kinematics/BodyNode.h>
 #include <kinematics/ShapeMesh.h>

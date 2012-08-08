@@ -5,12 +5,12 @@
 #ifndef _GRIP_COLLISION_
 #define _GRIP_COLLISION_
 
-#include <planning/World.h>
+#include <robotics/World.h>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <vector>
 #include <VCollide/VCollide.h>
-#include <planning/Model3D.h>
+#include <robotics/Model3D.h>
 #include <Tools/Constants.h>
 
 enum CollisionType {
@@ -60,7 +60,7 @@ public:
   bool mFlag;
 
   // Member functions
-  void InitFromWorld( planning::World* _world );
+  void InitFromWorld( robotics::World* _world );
   int CreateCollisionEntity( CollisionType _type, 
                               int _id, 
                               int _nodeId, 

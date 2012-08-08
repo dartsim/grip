@@ -41,7 +41,7 @@
 //   loaded files, robot, planners, and other intentions w.r.t. the GUI
 //---------------------------------------------------------------------
 
-planning::World* mWorld = 0;
+robotics::World* mWorld = 0;
 Collision* mCollision=0;
 
 GRIPFrame*	frame = 0;

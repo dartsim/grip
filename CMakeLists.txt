@@ -59,6 +59,10 @@ add_subdirectory (src)
 set (srcs src/GRIP.cpp)
 set (hdrs src/GRIPApp.h)
 
+######################################
+# Adding robotics library temporarily until it is part of DART
+######################################
+set ( ROBOTICS_LIB ${CMAKE_INSTALL_PREFIX}/lib/librobotics.a )
 
 set (wxWidgets_USE_LIBS base core gl)
 find_package (wxWidgets)
@@ -67,7 +71,7 @@ if (wxWidgets_FOUND)
   add_library (grip ${srcs} ${hdrs})
   target_link_libraries (grip ggui gtools gtabs gvcollide ticpp )
   TARGET_LINK_LIBRARIES(grip ${OPENGL_LIBRARIES} ${GLUT_glut_LIBRARY} ${GLU_LIBRARIES})
-  target_link_libraries (grip ${DART_LIBRARIES})
+  target_link_libraries (grip ${ROBOTICS_LIB} ${DART_LIBRARIES} )
   set_target_properties (grip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
   install (FILES ${hdrs} DESTINATION include/grip)
   install (TARGETS grip ARCHIVE DESTINATION lib)

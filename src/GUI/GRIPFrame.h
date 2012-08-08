@@ -46,7 +46,7 @@ class GRIPTimeSlice;
 
 #include "TreeView.h"
 #include <Tools/Parser.h>
-#include <planning/World.h>
+#include <robotics/World.h>
 
 #include <string>
 using namespace std;
@@ -101,7 +101,7 @@ public:
     void OnCameraReset(wxCommandEvent& event);
 
     void InitTimer(string title, double period);
-    void AddWorld( planning::World* world );
+    void AddWorld( robotics::World* world );
 
     vector<GRIPTimeSlice*> timeVector;
     double tCurrent;
