@@ -1,3 +1,5 @@
+# Edited for DART - AHQ 2012-08-07
+
 cmake_minimum_required (VERSION 2.6)
 project (grip_all)
 
