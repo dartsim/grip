@@ -42,11 +42,7 @@ else ()
    set (CMAKE_CXX_FLAGS "-g -O0 -Wall -Wextra -Wpointer-arith -fno-default-inline -fno-implicit-inline-templates -DwxUSE_THREADS")
 endif()
 
-#include (${CMAKE_CURRENT_SOURCE_DIR}/../dart-mdutton3/DART_config.cmake)
-Find_Package(DART)
-if(NOT DEFINED DART_FOUND)
-    MESSAGE(FATAL_ERROR "DART NOT FOUND. Set DART_DIR to the directory containing DARTConfig.cmake")
-endif(NOT DEFINED DART_FOUND)
+Find_Package(DART REQUIRED CONFIG)
 INCLUDE_DIRECTORIES( ${DART_INCLUDE_DIRS} )
 
 Find_Package(OpenGL REQUIRED)
@@ -62,19 +58,16 @@ add_subdirectory (src)
 set (srcs src/GRIP.cpp)
 set (hdrs src/GRIPApp.h)
 
-######################################
-# Adding robotics library temporarily until it is part of DART
-######################################
-set ( ROBOTICS_LIB ${CMAKE_INSTALL_PREFIX}/lib/librobotics.a )
 
-set (wxWidgets_USE_LIBS base core gl)
+set (wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
+set (wxWidgets_USE_LIBS base core gl png tiff jpeg)
 find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
   add_library (grip ${srcs} ${hdrs})
   target_link_libraries (grip ggui gtools gtabs gvcollide ticpp )
   TARGET_LINK_LIBRARIES(grip ${OPENGL_LIBRARIES} ${GLUT_glut_LIBRARY} ${GLU_LIBRARIES})
-  target_link_libraries (grip ${ROBOTICS_LIB} ${DART_LIBRARIES} )
+  target_link_libraries (grip ${DART_LIBRARIES} )
   set_target_properties (grip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
   install (FILES ${hdrs} DESTINATION include/grip)
   install (TARGETS grip ARCHIVE DESTINATION lib)

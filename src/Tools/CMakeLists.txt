@@ -39,7 +39,8 @@ GL/GLTexture.cpp
 GL/GLTexture.h)
 
 # Library 
-set (wxWidgets_USE_LIBS base core gl)
+set (wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
+set (wxWidgets_USE_LIBS base core gl png tiff jpeg)
 find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
