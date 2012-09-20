@@ -5,6 +5,9 @@ project (grip_all)
 
 message (STATUS "Creating Makefile for the GRIP project")
 
+
+include (${CMAKE_INSTALL_PREFIX}/share/dart/DARTConfig.cmake)
+
 SET(CPACK_PACKAGE_VERSION_MAJOR "0")
 SET(CPACK_PACKAGE_VERSION_MINOR "1")
 SET(CPACK_PACKAGE_VERSION_PATCH "3")

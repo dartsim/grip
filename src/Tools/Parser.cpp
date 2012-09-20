@@ -291,8 +291,8 @@ int parseRobot( string _fullname, robotics::Robot *_robot ) {
               //-- TODO Create a ShapeMesh from the 3DS Model
               model = _robot->loadModel( fullpath );
                 
-              kinematics::ShapeMesh *p = new kinematics::ShapeMesh( Vector3d(0, 0, 0), 0 );
-		          node->setShape( p );
+              kinematics::ShapeMesh *p = new kinematics::ShapeMesh( Vector3d(1, 1, 1), 0, NULL );
+	      node->setShape( p );
 	        } else {
 	            model = 0;
 	        }
@@ -484,7 +484,7 @@ int parseObject( string _filename, robotics::Object *_object )
 
       //-- TODO Create a ShapeMesh from the 3DS Model
       model = _object->loadModel( _filename );                
-      kinematics::ShapeMesh *p = new kinematics::ShapeMesh( Vector3d(0, 0, 0), 0 );
+      kinematics::ShapeMesh *p = new kinematics::ShapeMesh( Vector3d(1, 1, 1), 0, NULL );
       _object->getRoot()->setShape( p );
     }
             
