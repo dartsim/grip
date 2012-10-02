@@ -44,7 +44,6 @@
 #include <Tools/GL/glcommon.h>
 #include <Tools/Constants.h>
 #include <Tools/Collision.h>
-
 #include <iostream>
 
 using namespace std;
@@ -69,7 +68,7 @@ void Viewer::drawWorld() {
       Transform<double,3,Affine> pose;
       pose.setIdentity();
       pose.matrix() = poseMatrix;  
-      drawModel( mWorld->getObject(i)->getModel(0), &pose );
+      drawModel( mWorld->getObject(i)->getModel(0), &pose, false );  // TODO: pass in whether object is in collision
     }
   }
 
@@ -83,7 +82,7 @@ void Viewer::drawWorld() {
       
       Transform<double,3,Affine> pose;
       pose.matrix() = poseMatrix;  
-      drawModel( mWorld->getRobot(i)->getModel(j), &pose );
+      drawModel( mWorld->getRobot(i)->getModel(j), &pose, false );  // TODO: Pass in whether link is in collision
     }
   }  
 
@@ -92,11 +91,11 @@ void Viewer::drawWorld() {
 /**
  * @function drawModel
  */
-void Viewer::drawModel( Model3D* _model, Transform<double, 3, Affine> *_pose )
+void Viewer::drawModel( const aiScene* _model, Transform<double, 3, Affine> *_pose, bool collisionFlag )
 {
    if( _model == NULL ) return;
 
-   if(check_for_collisions && _model->collisionFlag){
+   if(check_for_collisions && collisionFlag){
 		glDisable(GL_TEXTURE_2D);
 		glColor3f(1.0f, .1f, .1f);
 	}
@@ -117,8 +116,9 @@ void Viewer::drawModel( Model3D* _model, Transform<double, 3, Affine> *_pose )
 		glColor3d(0.20f,0.20f,0.20f);
 	}
 */
+   glEnable( GL_TEXTURE_2D );
    if( _model != NULL ) {
-       _model->drawScene();
+       renderer.drawMesh(Vector3d::Ones(), _model);
    }
 
    glDisable(GL_POLYGON_STIPPLE);

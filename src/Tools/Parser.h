@@ -19,8 +19,6 @@
 #include <robotics/Robot.h>
 #include <robotics/Object.h>
 #include <robotics/World.h>
-#include <robotics/Model3D.h>
-
 
 robotics::World* parseWorld( std::string filename );
 int parseRobot( std::string _filename, robotics::Robot *_robot );

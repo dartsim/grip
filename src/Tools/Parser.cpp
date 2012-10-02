@@ -247,9 +247,9 @@ int parseRobot( string _fullname, robotics::Robot *_robot ) {
     dynamics::BodyNodeDynamics *node;
     kinematics::Transformation* trans;
 
-    std::vector<Model3D*> models;
+    std::vector<const aiScene*> models;
     std::vector<int> modelsInd;
-    Model3D* model;
+    const aiScene* model;
 
     std::cout<< "--> Parsing robot "<< _robot->getName() << std::endl;
 
@@ -477,7 +477,7 @@ int parseRobot( string _fullname, robotics::Robot *_robot ) {
  */
 int parseObject( string _filename, robotics::Object *_object )
 {
-    Model3D* model;
+    const aiScene* model;
     _object->setMovable( false );
 
     if( _filename != "NOMODEL" ) {

@@ -6,6 +6,7 @@
 #include "Collision.h"
 #include <GUI/GUI.h>
 #include <dynamics/BodyNodeDynamics.h>
+#include <assimp/scene.h>
 
 /**
  * @function Collision
@@ -91,8 +92,6 @@ bool Collision::CheckCollisions() {
 		    // Object* object2 = entities[report.obj2ID(j)];
 		    mEntities[report.obj1ID(j)]->mCollisionFlag = true;
 		    mEntities[report.obj2ID(j)]->mCollisionFlag = true;
-			mEntities[report.obj1ID(j)]->model->collisionFlag = true;
-		    mEntities[report.obj2ID(j)]->model->collisionFlag = true;
 			//cout << "COLLIDED " <<  mEntities[report.obj1ID(j)]->mId << " " <<  mEntities[report.obj2ID(j)]->mId << endl;
 		    //cout << "COLL: "   << entities[report.obj1ID(j)].object->name<< " : " << entities[report.obj2ID(j)].object->name<<endl;
     }
@@ -106,7 +105,6 @@ bool Collision::CheckCollisions() {
 void Collision::ClearCollisions() {
     for (unsigned int i = 0; i < mEntities.size(); i++) {
 		    mEntities[i]->mCollisionFlag = false;
-			mEntities[i]->model->collisionFlag = false;
     }
 }
 
@@ -126,8 +124,6 @@ void Collision::DetectCollisions() {
 		    // Object* object2 = entities[report.obj2ID(j)];
 		    mEntities[report.obj1ID(j)]->mCollisionFlag = true;
 		    mEntities[report.obj2ID(j)]->mCollisionFlag = true;
-			mEntities[report.obj1ID(j)]->model->collisionFlag = true;
-			mEntities[report.obj2ID(j)]->model->collisionFlag = true;
 		    //cout << "COLL: "   << entities[report.obj1ID(j)].object->name<< " : " << entities[report.obj2ID(j)].object->name<<endl;
     }
 }
@@ -184,7 +180,6 @@ void Collision::UpdateCollisionModel( int _mEntityIndex ) {
 
 	vcollide.UpdateTrans( eid, newTrans );
 	mEntities[_mEntityIndex]->mCollisionFlag = false;
-	mEntities[_mEntityIndex]->model->collisionFlag = false;
 }
 
 
@@ -194,7 +189,7 @@ void Collision::UpdateCollisionModel( int _mEntityIndex ) {
 int Collision::CreateCollisionEntity( CollisionType _type, 
                                        int _id, 
                                        int _nodeId, 
-                                       Model3D *_model, 
+                                       const aiScene *_model, 
                                        const Eigen::MatrixXd &_pose ) {
 
   CollisionEntity *coll = new CollisionEntity();
@@ -204,29 +199,31 @@ int Collision::CreateCollisionEntity( CollisionType _type,
   coll->mBodyNodeId = _nodeId;
   coll->mCollisionFlag = true;
   coll->model = _model;
-  coll->model->collisionFlag = false;
 
   coll->mTrans[0][0] = _pose(0,0); coll->mTrans[0][1] = _pose(0,1); coll->mTrans[0][2] = _pose(0,2); coll->mTrans[0][3] = _pose(0,3);
   coll->mTrans[1][0] = _pose(1,0); coll->mTrans[1][1] = _pose(1,1); coll->mTrans[1][2] = _pose(1,2); coll->mTrans[1][3] = _pose(1,3);
   coll->mTrans[2][0] = _pose(2,0); coll->mTrans[2][1] = _pose(2,1); coll->mTrans[2][2] = _pose(2,2); coll->mTrans[2][3] = _pose(2,3);
   coll->mTrans[3][0] = _pose(3,0); coll->mTrans[3][1] = _pose(3,1); coll->mTrans[3][2] = _pose(3,2); coll->mTrans[3][3] = _pose(3,3);
   
-  std::vector<Model3D::Triangle> *trigs = new std::vector<Model3D::Triangle>;
-  _model->getTriangles( *trigs );
-
-
   int collCounter;
   vcollide.NewObject( &collCounter );
 	printf( "--> Creating Collision entity: %d \n", collCounter );
 
-	for(unsigned int i = 0; i < trigs->size(); i++) {
-		vcollide.AddTri((*trigs)[i].v1,(*trigs)[i].v2,(*trigs)[i].v3,collCounter);
+	for(unsigned int i = 0; i < _model->mNumMeshes; i++) {
+		for(unsigned int j = 0; j < _model->mMeshes[i]->mNumFaces; j++) {
+			double vertices[3][3];
+			for(unsigned int k = 0; k < 3; k++) {
+				const aiVector3D& vertex = _model->mMeshes[i]->mVertices[_model->mMeshes[i]->mFaces[j].mIndices[k]];
+				vertices[k][0] = vertex.x;
+				vertices[k][1] = vertex.y;
+				vertices[k][2] = vertex.z;
+			}
+			vcollide.AddTri(vertices[0], vertices[1], vertices[2]);
+		}
 	}
+
 	vcollide.EndObject();
 	vcollide.ActivateObject( collCounter );
-
-	trigs->clear();
-	delete trigs;
 
 	//MUST BE TRUE
 	assert( (int)mEntities.size() == collCounter);

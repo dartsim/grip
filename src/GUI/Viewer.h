@@ -45,11 +45,11 @@
 #include <Eigen/Geometry>
 #include <wx/wx.h>
 #include <wx/glcanvas.h>
-#include <robotics/Model3D.h>
 #include <kinematics/Shape.h>
 #include <kinematics/BodyNode.h>
 #include <kinematics/ShapeMesh.h>
 #include "../Tools/Collision.h"
+#include <renderer/OpenGLRenderInterface.h>
 
 using namespace Eigen;
 
@@ -60,15 +60,19 @@ public:
 
 	Matrix3d camRotT;
 	Vector3d worldV, prevWorldV;
+	renderer::OpenGLRenderInterface renderer;
 
 	Viewer( wxWindow * parent, wxWindowID id, const wxPoint & pos,
 		const wxSize& size, long style = 0, const wxString & name =
 					_("GLCanvas"), int * attribList = 0,
 		const wxPalette & palette = wxNullPalette) :
-		wxGLCanvas(parent, id, pos, size, style, name, attribList, palette) {
+		wxGLCanvas(parent, id, pos, size, style, name, attribList, palette)
+	{
+		renderer.initialize();
 	}
 
 	virtual ~Viewer() {
+		renderer.destroy();
 	}
 
 
@@ -85,7 +89,7 @@ public:
 	void addGrid();
 
 	void drawWorld(); 
-	void drawModel( Model3D* _model, Eigen::Transform<double, 3, Eigen::Affine> *_pose );
+	void drawModel( const aiScene* _model, Eigen::Transform<double, 3, Eigen::Affine> *_pose, bool collisionFlag );
 
 	long x, y, xInit, yInit;
 	int w, h;

@@ -10,8 +10,9 @@
 #include <Eigen/Geometry>
 #include <vector>
 #include <VCollide/VCollide.h>
-#include <robotics/Model3D.h>
 #include <Tools/Constants.h>
+
+class aiScene;
 
 enum CollisionType {
     COLLISION_OBJECT = 0,
@@ -33,7 +34,7 @@ public:
   int mBodyNodeId; /**< Index of BodyNode in Skeleton (again, of Robot or Object) */
   double mTrans[4][4]; /**< Transformation */
   bool mCollisionFlag; /**< Collision Flag */
-  Model3D* model;
+  const aiScene* model;
 
   int mEid; /** Index in vcollide */
 
@@ -64,7 +65,7 @@ public:
   int CreateCollisionEntity( CollisionType _type, 
                               int _id, 
                               int _nodeId, 
-                              Model3D *_model, 
+                              const aiScene *_model, 
                               const Eigen::MatrixXd &_pose );
   bool CheckCollisions();
   void ClearCollisions();
