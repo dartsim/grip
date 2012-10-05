@@ -60,7 +60,7 @@ set (hdrs src/GRIPApp.h)
 
 
 set (wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
-set (wxWidgets_USE_LIBS base core gl png tiff jpeg)
+set (wxWidgets_USE_LIBS base core gl )
 find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})

@@ -10,7 +10,7 @@ file (GLOB srcs "*.cpp")
 file (GLOB hdrs "*.h")
 
 set (wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
-set (wxWidgets_USE_LIBS base core gl png tiff jpeg zlib)
+set (wxWidgets_USE_LIBS base core gl )
 find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
