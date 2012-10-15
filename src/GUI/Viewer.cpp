@@ -43,21 +43,17 @@
 
 #include <Tools/GL/glcommon.h>
 #include <Tools/Constants.h>
-#include <Tools/Collision.h>
 #include <iostream>
 
 using namespace std;
 
-extern bool check_for_collisions;
 /**
  * @function drawWorld
  * @brief Draw World and everything inside it: Robots + Objects
  */
 void Viewer::drawWorld() { 
 
-  if(check_for_collisions){
-	  mCollision->UpdateAllCollisionModels();
-  }
+  // TODO: detect links that are in collision
 
   // Draw Objects    
   for( unsigned int i = 0; i < mWorld->getNumObjects(); i++ ) {
@@ -68,21 +64,18 @@ void Viewer::drawWorld() {
       Transform<double,3,Affine> pose;
       pose.setIdentity();
       pose.matrix() = poseMatrix;  
-      drawModel( mWorld->getObject(i)->getModel(0), &pose, false );  // TODO: pass in whether object is in collision
+	  drawModel( mWorld->getObject(i)->getNode(0)->getShape()->getVizMesh(), &pose, false );  // TODO: pass in whether object is in collision
     }
   }
 
   // Draw Robot     
   for( unsigned int i = 0; i < mWorld->getNumRobots(); i++ ) {
 
-    for( unsigned int j = 0; j < mWorld->getRobot(i)->getNumModels(); j++ ) {
-       
-      int ind = mWorld->getRobot(i)->getModelIndex(j); 
-      Eigen::Matrix4d poseMatrix =mWorld->getRobot(i)->getNode( ind )->getWorldTransform();   
-      
+    for( unsigned int j = 0; j < mWorld->getRobot(i)->getNumNodes(); j++ ) {
+      Eigen::Matrix4d poseMatrix =mWorld->getRobot(i)->getNode(j)->getWorldTransform();   
       Transform<double,3,Affine> pose;
       pose.matrix() = poseMatrix;  
-      drawModel( mWorld->getRobot(i)->getModel(j), &pose, false );  // TODO: Pass in whether link is in collision
+      drawModel( mWorld->getRobot(i)->getNode(j)->getShape()->getVizMesh(), &pose, false );  // TODO: Pass in whether link is in collision
     }
   }  
 

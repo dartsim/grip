@@ -247,10 +247,6 @@ int parseRobot( string _fullname, robotics::Robot *_robot ) {
     dynamics::BodyNodeDynamics *node;
     kinematics::Transformation* trans;
 
-    std::vector<const aiScene*> models;
-    std::vector<int> modelsInd;
-    const aiScene* model;
-
     std::cout<< "--> Parsing robot "<< _robot->getName() << std::endl;
 
     std::string path, line, str, filename;    
@@ -285,21 +281,20 @@ int parseRobot( string _fullname, robotics::Robot *_robot ) {
           node = (dynamics::BodyNodeDynamics *)_robot->createBodyNode( name );
 	        rstream >> filename;
 
-  	      if(filename != "NOMODEL") {
-	            string fullpath( path );
-		          fullpath.append( filename );
-              //-- TODO Create a ShapeMesh from the 3DS Model
-              model = _robot->loadModel( fullpath );
-                
-              kinematics::ShapeMesh *p = new kinematics::ShapeMesh( Vector3d(1, 1, 1), 0, NULL );
-	      node->setShape( p );
-	        } else {
-	            model = 0;
-	        }
-            
-          models.push_back( model );
-	        bodyNodes.push_back( node );
-          modelsInd.push_back( bodyNodes.size() );
+			kinematics::Shape *shape;
+			if(filename != "NOMODEL") {
+				string fullpath( path );
+				fullpath.append( filename );
+				const aiScene* model = kinematics::ShapeMesh::loadMesh( fullpath );
+				shape = new kinematics::ShapeMesh(Eigen::Vector3d(1.0, 1.0, 1.0), 0.0, model);
+				shape->setVizMesh(model);
+				shape->setCollisionMesh(model);
+			}
+			else {
+				shape = new kinematics::Shape();
+			}
+			node->setShape(shape);
+			bodyNodes.push_back(node);
 	    }
 
       /// Set Center of Mass of the Node
@@ -457,13 +452,6 @@ int parseRobot( string _fullname, robotics::Robot *_robot ) {
         _robot->addNode( bodyNodes[i] ); 
     }
 
-    for( unsigned int i = 0; i < models.size(); i++ ) {
-      if( models[i] != 0 ) {
-          _robot->addModel( models[i], modelsInd[i] );
-          printf("Mode: %d Model Ind: %d \n", i, modelsInd[i]);
-      }
-    }
-
 
     //-- Init the object
     _robot->initSkel();
@@ -477,19 +465,15 @@ int parseRobot( string _fullname, robotics::Robot *_robot ) {
  */
 int parseObject( string _filename, robotics::Object *_object )
 {
-    const aiScene* model;
     _object->setMovable( false );
 
     if( _filename != "NOMODEL" ) {
-
-      //-- TODO Create a ShapeMesh from the 3DS Model
-      model = _object->loadModel( _filename );                
-      kinematics::ShapeMesh *p = new kinematics::ShapeMesh( Vector3d(1, 1, 1), 0, NULL );
-      _object->getRoot()->setShape( p );
+        const aiScene* model = kinematics::ShapeMesh::loadMesh(_filename);
+        kinematics::ShapeMesh* shape = new kinematics::ShapeMesh(Vector3d(1.0, 1.0, 1.0), 0.0, model);
+        shape->setVizMesh(model);
+        shape->setCollisionMesh(model);
+        _object->getRoot()->setShape(shape);
     }
-            
-    //-- Assume an object : a unique body node
-    _object->addModel( model, 0 );
 
     //-- Init the object
     _object->initSkel();

@@ -13,6 +13,7 @@
 #include <dynamics/BodyNodeDynamics.h>
 #include <kinematics/Joint.h>
 #include <kinematics/Dof.h>
+#include <Tools/Constants.h>
 
 using namespace std;
 

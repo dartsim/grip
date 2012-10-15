@@ -60,12 +60,12 @@ set (hdrs src/GRIPApp.h)
 
 
 set (wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
-set (wxWidgets_USE_LIBS base core gl )
+set (wxWidgets_USE_LIBS base core gl png tiff jpeg zlib)
 find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
   add_library (grip ${srcs} ${hdrs})
-  target_link_libraries (grip ggui gtools gtabs gvcollide ticpp )
+  target_link_libraries (grip ggui gtools gtabs ticpp )
   TARGET_LINK_LIBRARIES(grip ${OPENGL_LIBRARIES} ${GLUT_glut_LIBRARY} ${GLU_LIBRARIES})
   target_link_libraries (grip ${DART_LIBRARIES} )
   set_target_properties (grip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
@@ -94,7 +94,7 @@ INSTALL(FILES ${GRIP_CONFIG} DESTINATION share/grip)
 #####################################
 # Build Projects
 set (GRIP_HEADERS ${CMAKE_SOURCE_DIR}/src)
-set (GRIP_LIBRARIES grip ggui gtabs gtools gvcollide ticpp ${DART_LIBRARIES})
+set (GRIP_LIBRARIES grip ggui gtabs gtools ticpp ${DART_LIBRARIES})
 set (GRIP_LIBDIR ${CMAKE_SOURCE_DIR}/lib)
 add_subdirectory (projects/tabEmpty)
 add_subdirectory (projects/tabTemplate)

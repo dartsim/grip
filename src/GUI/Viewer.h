@@ -48,7 +48,6 @@
 #include <kinematics/Shape.h>
 #include <kinematics/BodyNode.h>
 #include <kinematics/ShapeMesh.h>
-#include "../Tools/Collision.h"
 #include <renderer/OpenGLRenderInterface.h>
 
 using namespace Eigen;

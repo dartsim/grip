@@ -40,7 +40,6 @@
 #include <fstream>
 
 #include "GUI.h"
-#include <Tools/Collision.h>
 #include "GRIPFrame.h"
 #include "Viewer.h"
 #include "TreeView.h"
@@ -329,9 +328,6 @@ void GRIPFrame::DoLoad(string filename){
   
         mWorld = parseWorld( string(filename) );
         mWorld->printInfo();
-        // Create Collision
-        mCollision = new Collision(); 
-        mCollision->InitFromWorld( mWorld );
 
         // UpdateTreeView();
 	cout << "--(v) Done Parsing World information (v)--" << endl;
