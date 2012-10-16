@@ -5,9 +5,6 @@ project (grip_all)
 
 message (STATUS "Creating Makefile for the GRIP project")
 
-
-include (${CMAKE_INSTALL_PREFIX}/share/dart/DARTConfig.cmake)
-
 SET(CPACK_PACKAGE_VERSION_MAJOR "0")
 SET(CPACK_PACKAGE_VERSION_MINOR "1")
 SET(CPACK_PACKAGE_VERSION_PATCH "3")
@@ -15,22 +12,12 @@ SET(CPACK_PACKAGE_NAME "grip")
 SET(CPACK_SYSTEM_NAME "i386")
 SET(CPACK_DEBIAN_PACKAGE_DEPENDS "dart (>= 0.1), libwxgtk2.8-dev (>= 2.8)")
 
-####################################
-# Add definition to run Parser
-SET( PARSER_URDF OFF )
-if( PARSER_URDF )
-   message("Adding PARSER_URDF definition -- C++ files ")
-   add_definitions( -DPARSER_URDF=1 )
-else( PARSER_URDF )
-   message("Not adding PARSER_URDF definition -- C++ files ")
-endif()
-
 #####################################
 # Global Variables
 set (CMAKE_VERBOSE_MAKEFILE OFF)
 
 if(WIN32)
-	set (CMAKE_INSTALL_PREFIX "C:/Golems" )
+	set (CMAKE_INSTALL_PREFIX "C:/Golems" CACHE PATH "Install prefix" FORCE)
     message (STATUS "Setup Visual Studio Specific Flags")
 	set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd /Zi /GL /Gy /W1 /EHsc")
 	set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD /Zi /GL /Gy /W1 /EHsc")
@@ -42,6 +29,19 @@ else ()
    set (CMAKE_CXX_FLAGS "-g -O0 -Wall -Wextra -Wpointer-arith -fno-default-inline -fno-implicit-inline-templates -DwxUSE_THREADS")
 endif()
 
+include (${CMAKE_INSTALL_PREFIX}/share/dart/DARTConfig.cmake)
+
+####################################
+# Add definition to run Parser
+SET( PARSER_URDF OFF )
+if( PARSER_URDF )
+   message("Adding PARSER_URDF definition -- C++ files ")
+   add_definitions( -DPARSER_URDF=1 )
+else( PARSER_URDF )
+   message("Not adding PARSER_URDF definition -- C++ files ")
+endif()
+
+
 Find_Package(DART REQUIRED CONFIG)
 INCLUDE_DIRECTORIES( ${DART_INCLUDE_DIRS} )
 
@@ -51,6 +51,7 @@ INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIRS} )
 MESSAGE(STATUS "${GLUT_glut_LIBRARY}")
 
 
+
 #####################################
 include_directories (src)
 add_subdirectory (src)
@@ -58,9 +59,12 @@ add_subdirectory (src)
 set (srcs src/GRIP.cpp)
 set (hdrs src/GRIPApp.h)
 
-
-set (wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
-set (wxWidgets_USE_LIBS base core gl png tiff jpeg zlib)
+if(WIN32)
+  set (wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
+  set (wxWidgets_USE_LIBS base core gl png tiff jpeg zlib)
+else(WIN32)
+  set (wxWidgets_USE_LIBS base core gl)
+endif(WIN32)
 find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
