@@ -71,6 +71,8 @@ robotics::World* parseWorld( std::string _fullname )
 	if (str == "ROBOT") {
 	    std::string temp;
 	    robot = new robotics::Robot();
+			robot->addDefaultRootNode();
+
 	    wstream >> temp;
 		  robot->setName(temp);
 	    std::cout << "--> Loading: " << robot->getName() << std::endl;
@@ -103,6 +105,7 @@ robotics::World* parseWorld( std::string _fullname )
         /// Read object specification
         } else if (str == "OBJECT") {
             object = new robotics::Object();
+			      object->addDefaultRootNode();
 						std::string temp;
 	    wstream >> temp;
       object->setName(temp);
