@@ -122,13 +122,11 @@ void TreeView::CreateFromWorld()
         ret = new TreeViewReturn;
 	ret->data = mWorld->getObject(i);
 	ret->dType = Return_Type_Object;
-  int tempID;
-	tempID = hPrev = AppendItem( rootId,
+	hPrev = AppendItem( rootId,
                                                            wxString( ( mWorld->getObject(i)->getName() ).c_str(), wxConvUTF8),
                                                            Tree_Icon_Object,
                                                            -1,
                                                            ret );
-	mWorld->getObject(i)->setGripID( tempID );
     }
 
     ///-- Add robot(s) to the tree
@@ -137,13 +135,11 @@ void TreeView::CreateFromWorld()
         ret = new TreeViewReturn;
 	ret->data = mWorld->getRobot(i);
 	ret->dType = Return_Type_Robot;
-	int tempID;
-	tempID = hPrev = AppendItem( rootId,
+	hPrev = AppendItem( rootId,
                                                           wxString( ( mWorld->getRobot(i)->getName() ).c_str(),wxConvUTF8),
                                                           Tree_Icon_Robot,
                                                           -1,
                                                           ret );
-	mWorld->getRobot(i)->setGripID( tempID );
         ///-- Add body nodes ( AKA Links ) as sub-trees
 	for (int j = 0; j < mWorld->getRobot(i)->getNumNodes(); j++ )
 	{
