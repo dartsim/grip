@@ -1,29 +1,11 @@
 project(gtools)
 
-# Parser URDF
-if ( PARSER_URDF )
-  message( "Parser URDF ON -- Adding corresponding source and header files")
-  file (GLOB tools_srcs Parser.cpp
-                   ParserUtilities.cpp
-	           utils.cpp
-                   ParserURDF.cpp )
+file (GLOB tools_srcs 
+  utils.cpp )
 
-  file (GLOB tools_hdrs Parser.h
-                   ParserUtilities.h
-	           utils.h
-                   Constants.h
-                   ParserURDF.h  )
-else ( PARSER_URDF )
-  message( "Parser URDF OFF -- No adding source and header files")
-  file (GLOB tools_srcs Parser.cpp
-                   ParserUtilities.cpp
-	           utils.cpp )
-  file (GLOB tools_hdrs Parser.h
-                   ParserUtilities.h
-	           utils.h
-                   Constants.h  )
-endif ( PARSER_URDF )
-
+file (GLOB tools_hdrs
+  utils.h
+  Constants.h )
 
 set (srcs
 GL/glcommon.h)

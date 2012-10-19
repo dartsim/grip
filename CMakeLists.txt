@@ -31,16 +31,6 @@ endif()
 
 include (${CMAKE_INSTALL_PREFIX}/share/dart/DARTConfig.cmake)
 
-####################################
-# Add definition to run Parser
-SET( PARSER_URDF OFF )
-if( PARSER_URDF )
-   message("Adding PARSER_URDF definition -- C++ files ")
-   add_definitions( -DPARSER_URDF=1 )
-else( PARSER_URDF )
-   message("Not adding PARSER_URDF definition -- C++ files ")
-endif()
-
 
 Find_Package(DART REQUIRED CONFIG)
 INCLUDE_DIRECTORIES( ${DART_INCLUDE_DIRS} )
