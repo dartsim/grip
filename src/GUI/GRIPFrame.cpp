@@ -62,7 +62,7 @@
 #include "icons/clock.xpm"
 
 // Parser
-#include <utils/Parser/dartParser/dartParser.h>
+#include <utils/Parser/dartParser/DartLoader.h>
 
 #define ID_TOOLBAR 1257
 #define ID_TIMESLIDER 1258
