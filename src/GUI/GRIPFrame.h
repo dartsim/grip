@@ -45,7 +45,6 @@ class GRIPTimeSlice;
 #include <vector>
 
 #include "TreeView.h"
-#include <Tools/Parser.h>
 #include <robotics/World.h>
 
 #include <string>

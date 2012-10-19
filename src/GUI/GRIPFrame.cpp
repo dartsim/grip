@@ -61,6 +61,9 @@
 #include "icons/film.xpm"
 #include "icons/clock.xpm"
 
+// Parser
+#include <utils/Parser/dartParser/dartParser.h>
+
 #define ID_TOOLBAR 1257
 #define ID_TIMESLIDER 1258
 
@@ -293,7 +296,7 @@ void GRIPFrame::OnSaveRobot(wxCommandEvent& WXUNUSED(event)) {
 void GRIPFrame::OnLoad(wxCommandEvent& WXUNUSED(event)){
     viewer->loading=true;
     wxString filename = wxFileSelector(wxT("Choose a file to open"),wxT("../scene/"),wxT(""),wxT(""), // -- default extension
-                                       wxT("*.rscene"), 0);
+                                       wxT("*.urdf"), 0);
     if ( !filename.empty() ) {
         DoLoad(string(filename.mb_str()));
     }
@@ -325,8 +328,8 @@ void GRIPFrame::OnQuickLoad(wxCommandEvent& WXUNUSED(event)) {
 void GRIPFrame::DoLoad(string filename){
 
 	DeleteWorld();
-  
-        mWorld = parseWorld( string(filename) );
+  			DartLoader dl;
+        mWorld = dl.parseWorld( filename.c_str() );
         mWorld->printInfo();
 
         // UpdateTreeView();
