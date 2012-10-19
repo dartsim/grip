@@ -81,7 +81,7 @@ FILE(APPEND ${GRIP_CONFIG} "\nINCLUDE_DIRECTORIES(${CMAKE_INSTALL_PREFIX}/includ
 FILE(APPEND ${GRIP_CONFIG} "\nSET(GRIP_HEADERS ${CMAKE_INSTALL_PREFIX}/include/grip)")
 FILE(APPEND ${GRIP_CONFIG} "\n\nLINK_DIRECTORIES(${CMAKE_INSTALL_PREFIX}/lib)")
 FILE(APPEND ${GRIP_CONFIG} "\nSET(GRIP_LIBDIR ${CMAKE_INSTALL_PREFIX}/lib)")
-FILE(APPEND ${GRIP_CONFIG} "\nSET(GRIP_LIBRARIES optimized grip optimized ggui optimized gtabs optimized gtools optimized gvcollide optimized ticpp debug gripd debug gguid debug gtabsd debug gtoolsd debug gvcollided debug ticpp)")
+FILE(APPEND ${GRIP_CONFIG} "\nSET(GRIP_LIBRARIES optimized grip optimized ggui optimized gtabs optimized gtools debug gripd debug gguid debug gtabsd debug gtoolsd )")
 FILE(APPEND ${GRIP_CONFIG} "\n\n")
 INSTALL(FILES ${GRIP_CONFIG} DESTINATION share/grip)
 
