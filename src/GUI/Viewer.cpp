@@ -64,7 +64,7 @@ void Viewer::drawWorld() {
       Transform<double,3,Affine> pose;
       pose.setIdentity();
       pose.matrix() = poseMatrix;  
-	  drawModel( mWorld->getObject(i)->getNode(0)->getShape()->getVizMesh(), &pose, false );  // TODO: pass in whether object is in collision
+	  drawModel( mWorld->getObject(i)->getNode(j)->getShape()->getVizMesh(), &pose, false );  // TODO: pass in whether object is in collision
     }
   }
 
