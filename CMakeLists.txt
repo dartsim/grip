@@ -88,7 +88,7 @@ INSTALL(FILES ${GRIP_CONFIG} DESTINATION share/grip)
 #####################################
 # Build Projects
 set (GRIP_HEADERS ${CMAKE_SOURCE_DIR}/src)
-set (GRIP_LIBRARIES grip ggui gtabs gtools ticpp ${DART_LIBRARIES})
+set (GRIP_LIBRARIES grip ggui gtabs gtools ${DART_LIBRARIES})
 set (GRIP_LIBDIR ${CMAKE_SOURCE_DIR}/lib)
 add_subdirectory (projects/tabEmpty)
 add_subdirectory (projects/tabTemplate)
