@@ -164,9 +164,9 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
 		sprintf(numBuf,"Angle Change: %7.4f", pos);
 		break;
 	    default:
-	        return;
+	        return; break;
         }
-        pObject->initSkel();
+        pObject->update();
     }
 
     //-- If selected : NODE
@@ -186,9 +186,10 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
 	    default:
                 printf("None, you are supposed to show this \n");
 	        return;
+					break;
 	}
         /// Update the robot or object (both Skeletons)
-        pBodyNode->getSkel()->initSkel();
+    ( (robotics::Robot*) pBodyNode->getSkel() )->update();
 	sprintf(numBuf,"Joint Change: %7.4f", pos);
 
     }
@@ -217,8 +218,9 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
 		break;
 	    default:
 	        return;
+					break;
 	}
-        pRobot->initSkel();
+        pRobot->update();
     }
   
     if(frame!=NULL) frame->SetStatusText(wxString(numBuf,wxConvUTF8));
