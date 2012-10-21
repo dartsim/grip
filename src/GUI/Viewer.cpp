@@ -522,6 +522,7 @@ void Viewer::addGrid(){
 	glColor3f(1.0f,1.0f,1.0f);
 	glEnable(GL_LIGHTING);
 	glDisable(GL_FOG);
+	glDisable(GL_COLOR_MATERIAL);
 }
 
 
