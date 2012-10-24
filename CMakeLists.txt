@@ -31,16 +31,8 @@ endif()
 
 include (${CMAKE_INSTALL_PREFIX}/share/dart/DARTConfig.cmake)
 
-
-Find_Package(DART REQUIRED CONFIG)
 INCLUDE_DIRECTORIES( ${DART_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${DART_LIBRARY_DIRS} )
-
-Find_Package(OpenGL REQUIRED)
-Find_Package(GLUT REQUIRED)
-INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIRS} )
-MESSAGE(STATUS "${GLUT_glut_LIBRARY}")
-
 
 
 #####################################
@@ -61,7 +53,6 @@ if (wxWidgets_FOUND)
   include (${wxWidgets_USE_FILE})
   add_library (grip ${srcs} ${hdrs})
   target_link_libraries (grip ggui gtools gtabs )
-  TARGET_LINK_LIBRARIES(grip ${OPENGL_LIBRARIES} ${GLUT_glut_LIBRARY} ${GLU_LIBRARIES})
   target_link_libraries (grip ${DART_LIBRARIES} )
   set_target_properties (grip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
   install (FILES ${hdrs} DESTINATION include/grip)
