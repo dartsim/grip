@@ -48,6 +48,16 @@ Viewer*		viewer = 0;
 TreeView*	treeView = 0;
 wxNotebook*	tabView = 0;
 
+int vgaW = 640;
+int vgaH = 480;
+int xgaW = 1024;
+int xgaH = 768;
+int hd720W = 1280;
+int hd720H = 720;
+
+int renderW = xgaW;
+int renderH = xgaH;
+
 TreeViewReturn* selectedTreeNode = 0;
 
 bool reverseLinkOrder = false;

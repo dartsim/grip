@@ -60,6 +60,8 @@ class TemplateTab;
 
 extern robotics::World  *mWorld;
 
+extern int renderW,renderH,vgaW,vgaH,xgaW,xgaH,hd720W,hd720H;
+
 extern GRIPFrame*	frame;
 extern Viewer*		viewer;
 extern TreeView*	treeView;

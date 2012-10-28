@@ -223,6 +223,8 @@ int Viewer::DrawGLScene()
  * @brief 
  */
 void Viewer::resized(wxSizeEvent& evt){
+	if(!handleEvents) return;
+
 	if(!IsShown() || !GetParent()->IsShown()) return;
 	wxGLCanvas::OnSize(evt);
     int w, h;
@@ -248,6 +250,7 @@ void Viewer::resized(wxSizeEvent& evt){
  * @brief Update the radius of the camera (rotation) according to the mouse's wheel
  */
 void Viewer::mouseWheelMoved(wxMouseEvent& evt){
+	if(!handleEvents) return;
 	SetFocus();
 	int wheelRot = evt.GetWheelRotation();
 
@@ -269,6 +272,7 @@ void Viewer::OnCaptureLost(wxMouseCaptureLostEvent& WXUNUSED(evt)){
  * @function OnMouse
  */
 void Viewer::OnMouse(wxMouseEvent& evt){
+	if(!handleEvents) return;
 	evt.GetPosition(&x,&y);
 
 	if(evt.ButtonUp() && mouseCaptured){

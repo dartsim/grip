@@ -97,6 +97,7 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     wxMenu *fileMenu = new wxMenu;
     wxMenu *helpMenu = new wxMenu;
     wxMenu *settingsMenu = new wxMenu;
+	wxMenu *renderMenu = new wxMenu;
     wxMenu *bgMenu = new wxMenu;
     //wxMenu *saveMenu = new wxMenu;
 
@@ -112,6 +113,10 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     bgMenu->Append(MenuBgWhite, wxT("White"));
     bgMenu->Append(MenuBgBlack, wxT("Black"));
 
+	renderMenu->Append(MenuRenderXGA, wxT("XGA 1024x768"));
+	renderMenu->Append(MenuRenderVGA, wxT("VGA 640x480"));
+	renderMenu->Append(MenuRenderHD, wxT("HD 1280x720"));
+
     settingsMenu->AppendSubMenu(bgMenu, wxT("Background"));
     settingsMenu->Append(MenuCameraReset, wxT("Reset Camera"));
 
@@ -120,6 +125,7 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     wxMenuBar *menuBar = new wxMenuBar();
     menuBar->Append(fileMenu, wxT("&File"));
     menuBar->Append(settingsMenu, wxT("&Settings"));
+	menuBar->Append(renderMenu, wxT("&Render"));
     menuBar->Append(helpMenu, wxT("&Help"));
     SetMenuBar(menuBar);
 
@@ -408,34 +414,66 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
     string path = string(dirname.mb_str());
 
     char *buf = new char[1000];
-    int w,h;
+
+	//Create a new Viewer Window
+	wxFrame *movieFrame = new wxFrame(NULL,wxID_ANY, wxT("MovieWindow"),wxPoint(0, 0), wxSize(renderW,renderH),wxDEFAULT_FRAME_STYLE & ~ (wxRESIZE_BORDER | wxRESIZE_BOX | wxMAXIMIZE_BOX));
+	//#ifndef WIN32 // Weird hack to make wxWidgets work in Linux
+	movieFrame->Show();
+	//#endif
+
+	int attrib[] = {WX_GL_DOUBLEBUFFER,WX_GL_RGBA,	WX_GL_DEPTH_SIZE, 16,0};
+	Viewer *movieViewer = new Viewer(movieFrame,wxID_ANY, wxPoint(0, 0), wxSize(renderW, renderH),NULL, _T("MovieWindow"), attrib);
+	
+	//movieFrame.AddChild(
+	#ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
+	movieViewer->MSWSetOldWndProc((WXFARPROC)DefWindowProc);
+	#endif
+
+	int w,h;
+
+	movieViewer->Show(true);
+    movieViewer->Freeze();
+    wxClientDC dc2(movieViewer);
+    dc2.GetSize(&w, &h);
+	movieViewer->SetCurrent();
+    movieViewer->InitGL();
+    movieViewer->ResetGL();
+    movieViewer->Thaw();
+	movieViewer->handleEvents = false;
+	movieViewer->Show(true);
+
+	movieViewer->camT = viewer->camT;
+	movieViewer->prevCamT = viewer->prevCamT;
+	movieViewer->camRotT = viewer->camRotT;
+	movieViewer->camRadius = viewer->camRadius;
 
     double step = 1.0;//.03333/tIncrement;
     int count = 0;
-	
-    wxClientDC dc2(viewer);
-    dc2.GetSize(&w, &h);
 
     for( double s=0; s < timeVector.size(); s+= step) {
-        int i = (int)s;
+         int i = (int)s;
 
-	timeVector[i]->SetToWorld( mWorld );
-	viewer->UpdateCamera();
-	wxYield();
+		timeVector[i]->SetToWorld( mWorld );
+		movieViewer->UpdateCamera();
+		wxYield();
 
-	unsigned char* imageData = (unsigned char*) malloc(w * h * 3);
-	glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, imageData);
-	wxImage img_ud(w,h,imageData);
-	wxImage img = img_ud.Mirror(false);
+		unsigned char* imageData = (unsigned char*) malloc(w * h * 3);
+		glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+		wxImage img_ud(w,h,imageData);
+		wxImage img = img_ud.Mirror(false);
 
-	sprintf(buf, "%s/%06d.png",path.c_str(),count);
+		sprintf(buf, "%s/%06d.png",path.c_str(),count);
 
-	wxString fname = wxString(buf,wxConvUTF8);
-	cout << "Saving:" << buf << ":" << endl;
-	img.SaveFile(fname, wxBITMAP_TYPE_PNG);
+		wxString fname = wxString(buf,wxConvUTF8);
+		cout << "Saving:" << buf << ":" << endl;
+		img.SaveFile(fname, wxBITMAP_TYPE_PNG);
 
-	count++;
+		count++;
     }
+
+	delete movieViewer;
+	delete movieFrame;
+	viewer->SetCurrent();
 
     delete buf;
     event.Skip();
@@ -673,6 +711,37 @@ void GRIPFrame::OnBlack(wxCommandEvent& WXUNUSED(event)) {
 }
 
 /**
+ * @function OnVGA
+ * @brief Set rendering to XGA
+ * @date 2011-10-13
+ */
+void GRIPFrame::OnVGA(wxCommandEvent& WXUNUSED(event)){
+    renderW = vgaW;
+	renderH = vgaH;
+}
+
+
+/**
+ * @function OnXGA
+ * @brief Set rendering to XGA
+ * @date 2011-10-13
+ */
+void GRIPFrame::OnXGA(wxCommandEvent& WXUNUSED(event)){
+    renderW = xgaW;
+	renderH = xgaH;
+}
+
+/**
+ * @function OnHD
+ * @brief Set rendering to 720p HD
+ * @date 2011-10-13
+ */
+void GRIPFrame::OnHD(wxCommandEvent& WXUNUSED(event)){
+    renderW = hd720W;
+	renderH = hd720H;
+}
+
+/**
  * @function OnCameraReset 
  * @brief 
  * @date 2011-10-13
@@ -697,6 +766,10 @@ EVT_MENU(MenuAbout, GRIPFrame::OnAbout)
 EVT_MENU(MenuBgWhite,  GRIPFrame::OnWhite)
 EVT_MENU(MenuBgBlack, GRIPFrame::OnBlack)
 EVT_MENU(MenuCameraReset, GRIPFrame::OnCameraReset)
+
+EVT_MENU(MenuRenderVGA,  GRIPFrame::OnVGA)
+EVT_MENU(MenuRenderXGA,  GRIPFrame::OnXGA)
+EVT_MENU(MenuRenderHD, GRIPFrame::OnHD)
 
 EVT_MENU(wxID_OPEN, GRIPFrame::OnLoad)
 EVT_MENU(Tool_quickload, GRIPFrame::OnQuickLoad)

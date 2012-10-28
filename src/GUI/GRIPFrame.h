@@ -97,6 +97,9 @@ public:
 
     void OnWhite(wxCommandEvent& event);
     void OnBlack(wxCommandEvent& event); 
+	void OnVGA(wxCommandEvent& event);
+    void OnXGA(wxCommandEvent& event);
+    void OnHD(wxCommandEvent& event); 
     void OnCameraReset(wxCommandEvent& event);
 
     void InitTimer(string title, double period);
@@ -130,6 +133,9 @@ enum
     MenuClose,
     MenuBgWhite,
     MenuBgBlack,
+	MenuRenderXGA,
+	MenuRenderVGA,
+	MenuRenderHD,
     MenuCameraReset,
 
     MenuQuit = wxID_EXIT,
