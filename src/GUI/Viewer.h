@@ -68,6 +68,7 @@ public:
 		wxGLCanvas(parent, id, pos, size, style, name, attribList, palette)
 	{
 		renderer.initialize();
+		handleEvents = true;
 	}
 
 	virtual ~Viewer() {
@@ -92,6 +93,8 @@ public:
 
 	long x, y, xInit, yInit;
 	int w, h;
+
+	bool handleEvents;
 
 	bool existsUpdate;
 	bool doCollisions;
