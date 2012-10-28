@@ -225,6 +225,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
   
     if(frame!=NULL) frame->SetStatusText(wxString(numBuf,wxConvUTF8));
 
+    mWorld->checkCollision(true);
     viewer->UpdateCamera();
 }
 

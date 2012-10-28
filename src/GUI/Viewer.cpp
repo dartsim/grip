@@ -64,7 +64,7 @@ void Viewer::drawWorld() {
       Transform<double,3,Affine> pose;
       pose.setIdentity();
       pose.matrix() = poseMatrix;  
-	  drawModel( mWorld->getObject(i)->getNode(j)->getShape()->getVizMesh(), &pose, false );  // TODO: pass in whether object is in collision
+      drawModel( mWorld->getObject(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getObject(i)->getNode(j)->getColliding() );
     }
   }
 
@@ -75,7 +75,7 @@ void Viewer::drawWorld() {
       Eigen::Matrix4d poseMatrix =mWorld->getRobot(i)->getNode(j)->getWorldTransform();   
       Transform<double,3,Affine> pose;
       pose.matrix() = poseMatrix;  
-      drawModel( mWorld->getRobot(i)->getNode(j)->getShape()->getVizMesh(), &pose, false );  // TODO: Pass in whether link is in collision
+      drawModel( mWorld->getRobot(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getRobot(i)->getNode(j)->getColliding() );
     }
   }  
 
@@ -90,34 +90,20 @@ void Viewer::drawModel( const aiScene* _model, Transform<double, 3, Affine> *_po
 
    if(check_for_collisions && collisionFlag){
 		glDisable(GL_TEXTURE_2D);
+		glEnable(GL_COLOR_MATERIAL);
 		glColor3f(1.0f, .1f, .1f);
 	}
 
    glPushMatrix();
    glMultMatrixd( _pose->data() );
-/*
-   if(comFlag){
-		glPushMatrix();
-		glColor3f(0.0f, 1.0f, 0.0f);
-		glTranslated(COM(0),COM(1),COM(2));
-		DrawSphere(0.02f, 10, 10);
-		glPopMatrix();
 
-	    glEnable(GL_POLYGON_STIPPLE);
-		glPolygonStipple(halftone);
-		glDisable(GL_TEXTURE_2D);
-		glColor3d(0.20f,0.20f,0.20f);
-	}
-*/
-   glEnable( GL_TEXTURE_2D );
    if( _model != NULL ) {
        renderer.drawMesh(Vector3d::Ones(), _model);
    }
 
-   glDisable(GL_POLYGON_STIPPLE);
-	
    glColor3f(1.0f,1.0f,1.0f);
    glEnable( GL_TEXTURE_2D );
+   glDisable(GL_COLOR_MATERIAL);
    glPopMatrix(); 
   
 }
