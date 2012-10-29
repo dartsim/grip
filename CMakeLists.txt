@@ -5,12 +5,12 @@ project (grip_all)
 
 message (STATUS "Creating Makefile for the GRIP project")
 
-SET(CPACK_PACKAGE_VERSION_MAJOR "0")
-SET(CPACK_PACKAGE_VERSION_MINOR "1")
-SET(CPACK_PACKAGE_VERSION_PATCH "3")
+SET(CPACK_PACKAGE_VERSION_MAJOR "2")
+SET(CPACK_PACKAGE_VERSION_MINOR "0")
+SET(CPACK_PACKAGE_VERSION_PATCH "0")
 SET(CPACK_PACKAGE_NAME "grip")
 SET(CPACK_SYSTEM_NAME "i386")
-SET(CPACK_DEBIAN_PACKAGE_DEPENDS "dart (>= 0.1), libwxgtk2.8-dev (>= 2.8)")
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "dart (>= 2.0), libwxgtk2.8-dev (>= 2.8)")
 
 #####################################
 # Global Variables
