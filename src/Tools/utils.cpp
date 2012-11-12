@@ -15,6 +15,7 @@
 #include <kinematics/Dof.h>
 #include <Tools/Constants.h>
 #include "../GUI/Viewer.h"
+#include <robotics/World.h>
 
 using namespace std;
 

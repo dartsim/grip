@@ -46,6 +46,8 @@
 
 // FiGRIP some declarations of variable types
 
+#include <wx/notebook.h>
+
 class GRIPFrame;
 class Viewer;
 class TreeView;
@@ -53,7 +55,6 @@ class TreeViewReturn;
 class InspectorTab;
 class TemplateTab;
 namespace robotics { class World; };
-class wxNotebook;
 
 // The actual variables that are global to GUI elements
 
