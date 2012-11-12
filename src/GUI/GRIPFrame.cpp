@@ -250,7 +250,7 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     Show();
     viewer->Freeze();
     viewer->InitGL();
-    viewer->ResetGL();
+    viewer->DrawGLScene();
     viewer->Thaw();
 }
 
@@ -267,13 +267,6 @@ void GRIPFrame::OnSaveScene( wxCommandEvent& WXUNUSED(event) ) {
 			                         _("*.rscene"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition );
 
     if (SaveDialog->ShowModal() == wxID_OK) {
-
-    mCamRadius = viewer->camRadius;
-	mCamRotT = viewer->camRotT;
-	mWorldV = viewer->worldV;
-	mBackColor = viewer->backColor;
-	mGridColor = viewer->gridColor;
-
 
 	filepath = SaveDialog->GetPath();
 	filename = string(filepath.mb_str());
@@ -300,7 +293,6 @@ void GRIPFrame::OnSaveRobot(wxCommandEvent& WXUNUSED(event)) {
  * @function OnLoad
  */
 void GRIPFrame::OnLoad(wxCommandEvent& WXUNUSED(event)){
-    viewer->loading=true;
     wxString filename = wxFileSelector(wxT("Choose a file to open"),wxT("../scene/"),wxT(""),wxT(""), // -- default extension
                                        wxT("*.urdf"), 0);
     if ( !filename.empty() ) {
@@ -314,7 +306,6 @@ void GRIPFrame::OnLoad(wxCommandEvent& WXUNUSED(event)){
  */
 void GRIPFrame::OnQuickLoad(wxCommandEvent& WXUNUSED(event)) {
 
-    viewer->loading=true;
     ifstream lastloadFile;
     lastloadFile.open(".lastload", ios::in);
     if(lastloadFile.fail()){
@@ -342,7 +333,6 @@ void GRIPFrame::DoLoad(string filename){
 	cout << "--(v) Done Parsing World information (v)--" << endl;
 	treeView->CreateFromWorld();
 	cout << "--(v) Done Updating TreeView (v)--" << endl;
-	// viewer->ResetGL();
 	SetStatusText(wxT("--(i) Done Loading and updating the View (i)--"));
 
 	/// Extract path to executable & save "lastload" there
@@ -354,7 +344,7 @@ void GRIPFrame::DoLoad(string filename){
 	treeView->ExpandAll();
 	updateAllTabs();
 
-	viewer->ResetGL();
+	viewer->DrawGLScene();
 }
 
 /**
@@ -435,17 +425,15 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
     movieViewer->Freeze();
     wxClientDC dc2(movieViewer);
     dc2.GetSize(&w, &h);
-	movieViewer->SetCurrent();
     movieViewer->InitGL();
-    movieViewer->ResetGL();
     movieViewer->Thaw();
 	movieViewer->handleEvents = false;
 	movieViewer->Show(true);
 
 	movieViewer->camT = viewer->camT;
-	movieViewer->prevCamT = viewer->prevCamT;
 	movieViewer->camRotT = viewer->camRotT;
 	movieViewer->camRadius = viewer->camRadius;
+	movieViewer->worldV = viewer->worldV;
 
     double step = 1.0;//.03333/tIncrement;
     int count = 0;
@@ -454,7 +442,7 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
          int i = (int)s;
 
 		timeVector[i]->SetToWorld( mWorld );
-		movieViewer->UpdateCamera();
+		movieViewer->DrawGLScene();
 		wxYield();
 
 		unsigned char* imageData = (unsigned char*) malloc(w * h * 3);
@@ -473,7 +461,7 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
 
 	delete movieViewer;
 	delete movieFrame;
-	viewer->SetCurrent();
+	viewer->InitGL();
 
     delete buf;
     event.Skip();
@@ -694,7 +682,7 @@ void GRIPFrame::OnWhite(wxCommandEvent& WXUNUSED(event)){
     viewer->backColor = Vector3d(1,1,1);
     viewer->gridColor = Vector3d(.8,.8,1);
     viewer->setClearColor();
-    viewer->UpdateCamera();
+    viewer->DrawGLScene();
 }
 
 /**
@@ -707,7 +695,7 @@ void GRIPFrame::OnBlack(wxCommandEvent& WXUNUSED(event)) {
     viewer->backColor = Vector3d(0,0,0);
     viewer->gridColor = Vector3d(.5,.5,0);
     viewer->setClearColor();
-    viewer->UpdateCamera();
+    viewer->DrawGLScene();
 }
 
 /**
@@ -747,7 +735,11 @@ void GRIPFrame::OnHD(wxCommandEvent& WXUNUSED(event)){
  * @date 2011-10-13
  */
 void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)) {
-    viewer->ResetGL();
+	viewer->camRotT = AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0));
+	viewer->worldV = Vector3d(0.0, 0.0, 0.0);
+	viewer->camRadius = 10.0;
+	viewer->UpdateCamera();
+	viewer->DrawGLScene();
 }
 
 BEGIN_EVENT_TABLE(GRIPFrame, wxFrame)

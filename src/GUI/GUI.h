@@ -46,15 +46,14 @@
 
 // FiGRIP some declarations of variable types
 
-#include <wx/notebook.h>
-#include <robotics/World.h>
-
 class GRIPFrame;
 class Viewer;
 class TreeView;
 class TreeViewReturn;
 class InspectorTab;
 class TemplateTab;
+namespace robotics { class World };
+class wxNotebook;
 
 // The actual variables that are global to GUI elements
 
@@ -65,35 +64,21 @@ extern int renderW,renderH,vgaW,vgaH,xgaW,xgaH,hd720W,hd720H;
 extern GRIPFrame*	frame;
 extern Viewer*		viewer;
 extern TreeView*	treeView;
+extern TreeViewReturn* selectedTreeNode;
 extern wxNotebook*	tabView;
 
-extern TreeViewReturn* selectedTreeNode;
 
 extern bool reverseLinkOrder;
 extern bool check_for_collisions;
 
-// Camera position
-extern Eigen::Matrix3d mCamRotT;
-extern Eigen::Vector3d mWorldV;
-extern double mCamRadius;
-// World colors
-extern Eigen::Vector3d mGridColor;
-extern Eigen::Vector3d mBackColor;
-
 
 // Please don't change these constants - they are important to GUI functionality
 static const int toolBarHeight = 30;
-
-//#ifdef __APPLE__
-//static const int prefViewerWidth = 644;
-//#else
 static const int prefViewerWidth = 644;
-//#endif
 static const int prefViewerHeight = 484;
 static const int prefTreeViewWidth = 210;
 static const int prefTabsHeight = 200;
 static const int statusBarHeight = 22;
-static const double defaultCamRadius = 10.f;
 static const double CAMERASPEED = 0.003f;
 
 

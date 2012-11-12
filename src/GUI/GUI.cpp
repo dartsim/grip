@@ -64,15 +64,5 @@ bool reverseLinkOrder = false;
 bool check_for_collisions = false;
 int stateChangeType = 0;
 
-// Camera position
-Eigen::Matrix3d mCamRotT;
-Eigen::Vector3d mWorldV = Eigen::Vector3d(1, 0, 0);
-double mCamRadius = 0;
-// World colors
-Eigen::Vector3d mGridColor = Eigen::Vector3d(1, 0, 0);
-Eigen::Vector3d mBackColor = Eigen::Vector3d(1, 0, 0);
-
-
-
 DEFINE_EVENT_TYPE(wxEVT_GRIP_STATE_CHANGE)
 

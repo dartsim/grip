@@ -53,8 +53,6 @@ using namespace std;
  */
 void Viewer::drawWorld() { 
 
-  // TODO: detect links that are in collision
-
   // Draw Objects    
   for( unsigned int i = 0; i < mWorld->getNumObjects(); i++ ) {
 
@@ -122,17 +120,15 @@ void Viewer::shown(wxShowEvent& WXUNUSED(evt)){
         SetCurrent();
         glViewport(0, 0, (GLint) w, (GLint) h);
     }
-	UpdateCamera();
+	DrawGLScene();
 }
 
 /**
  * @function UpdateCamera
  */
 void Viewer::UpdateCamera(void){
-	SetCurrent();
 	camT = camRotT;
 	camT.translate(Vector3d(camRadius, 0, 0));
-	DrawGLScene();
 }
 
 /**
@@ -140,13 +136,10 @@ void Viewer::UpdateCamera(void){
  */
 int Viewer::DrawGLScene()
 {
-	redrawFlag = true;
-	glLoadIdentity();
 	glPolygonMode (GL_FRONT, GL_FILL);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -162,12 +155,9 @@ int Viewer::DrawGLScene()
 	glEnable(GL_TEXTURE_2D);
 	glColor4f(1.0f,1.0f,1.0f,0.0f);
 
-	glPushMatrix();
-
 	glEnable(GL_LIGHTING);
 	glDisable(GL_LIGHT1);
 	glEnable(GL_LIGHT2);
-	glPushMatrix();
 
 	float no_mat[] = {0.0f, 0.0f, 0.0f, 1.0f};
 	float diffuse[] = {.7f, .7f, .7f, .7f};
@@ -185,9 +175,6 @@ int Viewer::DrawGLScene()
 	glLightfv(GL_LIGHT2, GL_SPECULAR, HeadlightSpc);
 	glLightfv(GL_LIGHT2, GL_POSITION, position);
 
-
-	glPopMatrix();
-
 	glTranslated(worldV[0],worldV[1],worldV[2]);
 
 	float ambRefl[] = {0.2f, 0.2f, 0.2f, 1.0f}; // default
@@ -204,14 +191,9 @@ int Viewer::DrawGLScene()
 	//USUALLY BAD
 	glDisable(GL_FOG);
 
-	glPushMatrix();
 	if( mWorld != NULL ) { 
             drawWorld(); 
         }
-
-	glPopMatrix();
-
-	glPopMatrix();
 
 	glFlush();
 	SwapBuffers();
@@ -238,10 +220,7 @@ void Viewer::resized(wxSizeEvent& evt){
     }
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glPolygonMode (GL_FRONT, GL_FILL);
-	gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,100.0f);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,15.0f);//100.0f);
 	DrawGLScene();
 }
 
@@ -258,6 +237,7 @@ void Viewer::mouseWheelMoved(wxMouseEvent& evt){
 	if(camR > .05){
 		camRadius = camR;
 		UpdateCamera();
+		DrawGLScene();
 	}
 }
 
@@ -300,6 +280,7 @@ void Viewer::OnMouse(wxMouseEvent& evt){
 		if(camR > .05)
 			camRadius = camR;
 		UpdateCamera();
+		DrawGLScene();
 	}else if(evt.LeftIsDown()){
 		double theta,phi;
 		theta = -(dx/90.f);
@@ -314,18 +295,15 @@ void Viewer::OnMouse(wxMouseEvent& evt){
 		drot *= pm;
 		camRotT = drot;
 
-		existsUpdate = true;
 		UpdateCamera();
-
+		DrawGLScene();
 	}else if(evt.MiddleIsDown() || evt.RightIsDown()){
 
 		Vector3d dispV = camRotT*Vector3d(0,(double)dx * CAMERASPEED , -(double)dy * CAMERASPEED);
 		worldV = prevWorldV+dispV;
-		existsUpdate = false;
 		UpdateCamera();
+		DrawGLScene();
 	}
-
-	if(loading){ loading=false; ResetGL(); }
 }
 
 /**
@@ -344,23 +322,11 @@ void Viewer::render(wxPaintEvent& WXUNUSED(evt)){
  * @brief Init 
  */
 void Viewer::InitGL(){
-	loading=false;
-	existsUpdate=false;
 	doCollisions=false;
-	Move=false;
-	pflag=false;
-	threadCounter=0;
-	gridActive=true;
-	redrawFlag = true;
 	gridActive = true;
-	mouseLDown = false;
-	mouseRDown = false;
-	mouseMDown = false;
 	mouseCaptured = false;
 
 	xInit=0; yInit=0; x=0; y=0;
-
-	redrawCount=0;
 
     GetClientSize(&w, &h);
 	#ifndef __WXMOTIF__
@@ -392,58 +358,7 @@ void Viewer::InitGL(){
 	gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,15.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	UpdateCamera();
-}
-
-/**
- * @function ResetGL
- * @brief Reset the Viewer
- */
-void Viewer::ResetGL() {
-
-    GetClientSize(&w, &h);
-    SetCurrent();
-    glViewport(0, 0, (GLint) w, (GLint) h);
-
-    glFlush();
-    glFinish();
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glPolygonMode (GL_FRONT, GL_FILL);
-    gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,15.0f);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-        
-    //-- If we loaded the values
-    if( mCamRadius != 0 ) {    
-        camRadius = mCamRadius;
-	camRotT = mCamRotT;
-	camT = mCamRotT;
-	camT.translate(Vector3d(mCamRadius, 0, 0));
-	worldV = mWorldV;
-
-	prevCamT = camT;
-	prevWorldV = worldV;
-
-	gridColor = mGridColor;
-	backColor = mBackColor;
-
-	cout << "Viewer: " << worldV[0] << " " << worldV[1] << " " << worldV[2] << endl;
-    
-    }else {
-        camRotT = AngleAxis<double> (DEG2RAD(-30), Vector3d(0, 1, 0));
-	prevCamT = camRotT;
-	worldV = Vector3d(0, 0, 0);
-	prevWorldV = worldV;
-	camRadius = defaultCamRadius;
-
-	backColor = Vector3d(0,0,0);
-	gridColor = Vector3d(.5,.5,.0);
-    }
-        
-    setClearColor();
-    UpdateCamera();
+	setClearColor();
 }
 
 /**

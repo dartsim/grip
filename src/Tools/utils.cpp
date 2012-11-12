@@ -14,6 +14,7 @@
 #include <kinematics/Joint.h>
 #include <kinematics/Dof.h>
 #include <Tools/Constants.h>
+#include "../GUI/Viewer.h"
 
 using namespace std;
 
@@ -100,17 +101,17 @@ int saveRscene( std::string filename ) {
     /// Output Camera and Colors
     wstream << "##### SCENE INFO" << endl << endl;
     wstream << "> CAMERA" << endl;
-    double roll = atan2( mCamRotT(2,1), mCamRotT(2,2) );
-    double pitch = -asin( mCamRotT(2,0) );
-    double yaw = atan2( mCamRotT(1,0), mCamRotT(0,0) );
+    double roll = atan2( viewer->camRotT(2,1), viewer->camRotT(2,2) );
+    double pitch = -asin( viewer->camRotT(2,0) );
+    double yaw = atan2( viewer->camRotT(1,0), viewer->camRotT(0,0) );
 
     wstream << "ROT " << RAD2DEG(roll) << " " << RAD2DEG(pitch) << " " << RAD2DEG(yaw) << endl;
-    wstream << "WRT " << mWorldV[0] << " " << mWorldV[1] << " " << mWorldV[2] << endl;
-    wstream << "RAD " << mCamRadius << endl << endl;
+    wstream << "WRT " << viewer->worldV[0] << " " << viewer->worldV[1] << " " << viewer->worldV[2] << endl;
+    wstream << "RAD " << viewer->camRadius << endl << endl;
 
     wstream << "> COLORS" << endl;
-    wstream << "BACK " << mBackColor[0] << " " << mBackColor[1] << " " << mBackColor[2] << endl;
-    wstream << "GRID " << mGridColor[0] << " " << mGridColor[1] << " " << mGridColor[2] << endl;
+    wstream << "BACK " << viewer->backColor[0] << " " << viewer->backColor[1] << " " << viewer->backColor[2] << endl;
+    wstream << "GRID " << viewer->gridColor[0] << " " << viewer->gridColor[1] << " " << viewer->gridColor[2] << endl;
 
     wstream.close();
     return 0;

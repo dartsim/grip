@@ -49,6 +49,7 @@
 #include <kinematics/BodyNode.h>
 #include <kinematics/ShapeMesh.h>
 #include <renderer/OpenGLRenderInterface.h>
+#include <Tools/Constants.h>
 
 using namespace Eigen;
 
@@ -65,10 +66,14 @@ public:
 		const wxSize& size, long style = 0, const wxString & name =
 					_("GLCanvas"), int * attribList = 0,
 		const wxPalette & palette = wxNullPalette) :
-		wxGLCanvas(parent, id, pos, size, style, name, attribList, palette)
+		wxGLCanvas(parent, id, pos, size, style, name, attribList, palette),
+		backColor(0.0, 0.0, 0.0), gridColor(0.5, 0.5, 0.0),
+		camRotT(AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0))),
+		worldV(0.0, 0.0, 0.0),
+		camRadius(10.0)
 	{
-		renderer.initialize();
 		handleEvents = true;
+		UpdateCamera();
 	}
 
 	virtual ~Viewer() {
@@ -85,7 +90,6 @@ public:
 	void setClearColor();
 	void UpdateCamera();
 	int  DrawGLScene();
-	void ResetGL();
 	void addGrid();
 
 	void drawWorld(); 
@@ -96,25 +100,9 @@ public:
 
 	bool handleEvents;
 
-	bool existsUpdate;
 	bool doCollisions;
-	bool Move;
-	bool pflag;
-	int threadCounter;
 	bool gridActive;
 	double camRadius;
-	bool keys[256];
-	bool active;
-	bool renderLoopActive;
-	bool redrawFlag;
-	bool showSpheres;
-	bool fullscreen;
-	///////////////////////
-	bool mouseLDown;
-	bool mouseRDown;
-	bool mouseMDown;
-	int redrawCount;
-	bool loading;
 
 	Vector3d gridColor;     /**< Grid color*/
 	Vector3d backColor;	/**< Background color */
