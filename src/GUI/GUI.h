@@ -52,7 +52,7 @@ class TreeView;
 class TreeViewReturn;
 class InspectorTab;
 class TemplateTab;
-namespace robotics { class World };
+namespace robotics { class World; };
 class wxNotebook;
 
 // The actual variables that are global to GUI elements
