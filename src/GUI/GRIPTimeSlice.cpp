@@ -38,6 +38,8 @@
 
 #include "GRIPTimeSlice.h"
 #include <iostream>
+#include <robotics/Object.h>
+#include <robotics/Robot.h>
 
 /**
  * @function GRIPTimeSlice

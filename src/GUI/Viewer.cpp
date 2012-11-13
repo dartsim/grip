@@ -45,6 +45,8 @@
 #include <Tools/Constants.h>
 #include <iostream>
 #include <robotics/World.h>
+#include <robotics/Object.h>
+#include <robotics/Robot.h>
 
 using namespace std;
 
