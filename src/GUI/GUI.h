@@ -64,6 +64,7 @@ extern int renderW,renderH,vgaW,vgaH,xgaW,xgaH,hd720W,hd720H;
 
 extern GRIPFrame*	frame;
 extern Viewer*		viewer;
+extern Viewer*		camera;
 extern TreeView*	treeView;
 extern TreeViewReturn* selectedTreeNode;
 extern wxNotebook*	tabView;

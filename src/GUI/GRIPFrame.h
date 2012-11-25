@@ -64,6 +64,12 @@ using namespace std;
  */
 class GRIPFrame : public wxFrame
 {
+    /// The menu bar for settings. Need to be class variable 
+    /// to change its name at OnVision callback.
+    wxMenu *settingsMenu;					
+    wxSizer *sizerFull;            ///< The full sizer that controls the frame layout
+    wxSizer *sizerTop;             ///< The sizer for the top of the frame
+
 public:
     GRIPFrame(const wxString& title);
 
@@ -97,10 +103,11 @@ public:
 
     void OnWhite(wxCommandEvent& event);
     void OnBlack(wxCommandEvent& event); 
-	void OnVGA(wxCommandEvent& event);
+    void OnVGA(wxCommandEvent& event);
     void OnXGA(wxCommandEvent& event);
     void OnHD(wxCommandEvent& event); 
     void OnCameraReset(wxCommandEvent& event);
+    void OnVision(wxCommandEvent& event);
 
     void InitTimer(string title, double period);
     void AddWorld( robotics::World* world );
@@ -137,6 +144,7 @@ enum
 	MenuRenderVGA,
 	MenuRenderHD,
     MenuCameraReset,
+		MenuVision,
 
     MenuQuit = wxID_EXIT,
     MenuAbout = wxID_ABOUT

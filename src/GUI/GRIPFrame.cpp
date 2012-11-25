@@ -100,7 +100,7 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 
     wxMenu *fileMenu = new wxMenu;
     wxMenu *helpMenu = new wxMenu;
-    wxMenu *settingsMenu = new wxMenu;
+    settingsMenu = new wxMenu;
 		wxMenu *renderMenu = new wxMenu;
     wxMenu *bgMenu = new wxMenu;
     //wxMenu *saveMenu = new wxMenu;
@@ -127,6 +127,7 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 		// Create the settings menu
     settingsMenu->AppendSubMenu(bgMenu, wxT("Background"));
     settingsMenu->Append(MenuCameraReset, wxT("Reset Camera"));
+    settingsMenu->Append(MenuVision, wxT("Show Vision"));
 
 		// Create the help menu
     helpMenu->Append(MenuAbout, wxT("&About...\tF1"), wxT("Show about dialog"));
@@ -209,8 +210,8 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 		// F. Create the layout: treeView, tabView and 3D viewer.
 
     // Create sizers - these will manage the layout/resizing of the frame elements
-    wxSizer *sizerFull = new wxBoxSizer(wxVERTICAL);
-    wxSizer *sizerTop = new wxBoxSizer(wxHORIZONTAL);
+    sizerFull = new wxBoxSizer(wxVERTICAL);
+    sizerTop = new wxBoxSizer(wxHORIZONTAL);
     wxSizer *sizerRight = new wxBoxSizer(wxVERTICAL);
     wxSizer *sizerRightH = new wxBoxSizer(wxHORIZONTAL);
     wxSizer *sizerBottom = new wxBoxSizer(wxHORIZONTAL);
@@ -240,7 +241,32 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     sizerTop->Add(viewer, 1, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
 
 		// ********************************************
-		// F1b. Create the RHS of the top sizer
+		// F1b. Create the middle: camera visualization
+ 
+		// Create the 3D viewer
+		#ifndef WIN32 // Weird hack to make wxWidgets work in Linux
+    	Show();
+		#endif
+    {
+        int attrib[] = {
+            WX_GL_DOUBLEBUFFER,
+            WX_GL_RGBA,
+            WX_GL_DEPTH_SIZE, 16,
+            0
+        };
+        camera = new Viewer(this, -1, wxPoint(0, 0), wxSize(prefViewerWidth, prefViewerHeight),
+                            wxFULL_REPAINT_ON_RESIZE | wxSUNKEN_BORDER, _T("GLCanvas"), attrib);
+    }
+		#ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
+    	camera->MSWSetOldWndProc((WXFARPROC)DefWindowProc);
+		#endif
+
+		// Add the viewer to the sizer and hide it by default
+    sizerTop->Add(camera, 0, wxALIGN_LEFT | wxALL, 0);
+		sizerTop->Hide(camera, true);
+
+		// ********************************************
+		// F1c. Create the RHS of the top sizer
  
 		// Create the treeview that will go to the right handside of the top sizer. kHackOffset is referenced below.
 		static const size_t kHackOffset = 30;
@@ -303,7 +329,14 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     viewer->DrawGLScene();
     viewer->Thaw();
 
+		// The menu bar has to be set at the end for windows. See wxMenuBar documentation.
     SetMenuBar(menuBar);
+		
+/*
+		sizerTop->Hide(camera, true);
+		sizerFull->Layout();
+		settingsMenu->SetLabel(MenuVision, wxT("Show Vision"));	
+*/
 }
 
 /**
@@ -793,6 +826,29 @@ void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)) {
 	viewer->UpdateCamera();
 	viewer->DrawGLScene();
 }
+/**
+ * @function OnVision
+ * @brief Toggles the visibility of the vision window. 
+ * @date 2012-11-24
+ */
+void GRIPFrame::OnVision(wxCommandEvent& WXUNUSED(event)) {
+
+	// Show the vision sizer if hidden; otw, hide it.
+	static bool hidden = true;
+	if(!hidden) {
+		sizerTop->Hide(camera, true);
+		settingsMenu->SetLabel(MenuVision, wxT("Show Vision"));	
+	}
+	else {
+		sizerTop->Show(camera, true, true);
+		settingsMenu->SetLabel(MenuVision, wxT("Hide Vision"));	
+	}
+
+	// Toggle the control variable and update the window size
+	hidden = !hidden; 
+	Fit();
+	Layout();
+}
 
 BEGIN_EVENT_TABLE(GRIPFrame, wxFrame)
 EVT_COMMAND_SCROLL(1009, GRIPFrame::OnTimeScroll)
@@ -810,6 +866,7 @@ EVT_MENU(MenuAbout, GRIPFrame::OnAbout)
 EVT_MENU(MenuBgWhite,  GRIPFrame::OnWhite)
 EVT_MENU(MenuBgBlack, GRIPFrame::OnBlack)
 EVT_MENU(MenuCameraReset, GRIPFrame::OnCameraReset)
+EVT_MENU(MenuVision, GRIPFrame::OnVision)
 
 EVT_MENU(MenuRenderVGA,  GRIPFrame::OnVGA)
 EVT_MENU(MenuRenderXGA,  GRIPFrame::OnXGA)
