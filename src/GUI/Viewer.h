@@ -39,8 +39,6 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
-//#define EIGEN_DONT_ALIGN
-// TODO Fix Eigen Alignment issues: http://eigen.tuxfamily.org/dox/UnalignedArrayAssert.html
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <wx/wx.h>
