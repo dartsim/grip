@@ -243,7 +243,7 @@ void Viewer::mouseWheelMoved(wxMouseEvent& evt){
 	if(camR > .05){
 		camRadius = camR;
 		UpdateCamera();
-		DrawGLScene();
+		//DrawGLScene();
 	}
 }
 
@@ -289,7 +289,7 @@ void Viewer::OnMouse(wxMouseEvent& evt){
 		if(camR > .05)
 			camRadius = camR;
 		UpdateCamera();
-		DrawGLScene();
+		//DrawGLScene();
 	}else if(evt.LeftIsDown()){
 		double theta,phi;
 		theta = -(dx/90.f);
@@ -305,13 +305,13 @@ void Viewer::OnMouse(wxMouseEvent& evt){
 		camRotT = drot;
 
 		UpdateCamera();
-		DrawGLScene();
+	//	DrawGLScene();
 	}else if(evt.MiddleIsDown() || evt.RightIsDown()){
 
 		Vector3d dispV = camRotT*Vector3d(0,(double)dx * CAMERASPEED , -(double)dy * CAMERASPEED);
 		worldV = prevWorldV+dispV;
 		UpdateCamera();
-		DrawGLScene();
+	//	DrawGLScene();
 	}
 }
 
