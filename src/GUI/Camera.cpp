@@ -117,8 +117,6 @@ void Camera::shown(wxShowEvent& WXUNUSED(evt)){
 		SetCurrent();
 		glViewport(0, 0, (GLint) width, (GLint) height);
 	}
-	//printf("Camera shown\n");
-	//sceneChanged = true;
 	DrawGLScene();
 }
 
@@ -130,18 +128,17 @@ int Camera::DrawGLScene()
 	// Handle the run conditions
 	if(!IsShown() || !GetParent()->IsShown()) return false;
 	else if(mWorld == NULL) {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		SwapBuffers();
 		printf("%c[%d;%dmCamera: Cannot draw because a world is not loaded.%c[%dm\n",27,1,33,27,0);
 		return false;
 	}
 	else if(cameraNode == NULL) {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		SwapBuffers();
 		printf("%c[%d;%dmCamera: Cannot draw because the world does not contain a camera.%c[%dm\n",27,1,33,27,0);
 		return false;
 	}
-	//else if(!sceneChanged) return false;
-//	sceneChanged = false;
-//	static int a = 0;
-//	printf("Drawing %d\n", a++); fflush(stdout);
-	
 
 	// Setup the view options
 	glPolygonMode (GL_FRONT, GL_FILL);
