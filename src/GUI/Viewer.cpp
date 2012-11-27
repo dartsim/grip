@@ -120,7 +120,7 @@ void Viewer::shown(wxShowEvent& WXUNUSED(evt)){
     if (GetContext())
 	#endif
     {
-        SetCurrent();
+        SetCurrent(*context);
         glViewport(0, 0, (GLint) w, (GLint) h);
     }
 	DrawGLScene();
@@ -187,6 +187,7 @@ int Viewer::DrawGLScene()
 	float specRefl[] = {1.0f, 1.0f, 1.0f, 1.0f}; // default
 	glMaterialfv(GL_FRONT, GL_SPECULAR, specRefl);
 
+	// Draw the grid
 	glPushMatrix();
 	if (gridActive){  addGrid(); }
 	glPopMatrix();
@@ -194,10 +195,12 @@ int Viewer::DrawGLScene()
 	//USUALLY BAD
 	glDisable(GL_FOG);
 
+	// Draw the world if available
 	if( mWorld != NULL ) { 
-            drawWorld(); 
-        }
+    drawWorld(); 
+  }
 
+	// Swap the front and back buffers and return
 	glFlush();
 	SwapBuffers();
 	return TRUE;
@@ -218,7 +221,7 @@ void Viewer::resized(wxSizeEvent& evt){
     if (GetContext())
 	#endif
     {
-        SetCurrent();
+        SetCurrent(*context);
         glViewport(0, 0, (GLint) w, (GLint) h);
     }
 	glMatrixMode(GL_PROJECTION);
@@ -255,7 +258,10 @@ void Viewer::OnCaptureLost(wxMouseCaptureLostEvent& WXUNUSED(evt)){
  * @function OnMouse
  */
 void Viewer::OnMouse(wxMouseEvent& evt){
-	if(!handleEvents) return;
+	
+	if(!handleEvents) {
+		return;
+	}
 	evt.GetPosition(&x,&y);
 
 	if(evt.ButtonUp() && mouseCaptured){
@@ -315,7 +321,7 @@ void Viewer::OnMouse(wxMouseEvent& evt){
  */
 void Viewer::render(wxPaintEvent& WXUNUSED(evt)){
     if(!IsShown()) return;
-    wxGLCanvas::SetCurrent();
+    wxGLCanvas::SetCurrent(*context);
     wxPaintDC(this); // only to be used in paint events. use wxClientDC to paint outside the paint event
 	DrawGLScene();
 }
@@ -337,7 +343,7 @@ void Viewer::InitGL(){
 	#endif
     {
 		Show();
-		SetCurrent();
+		SetCurrent(*context);
         glViewport(0, 0, (GLint) w, (GLint) h);
     }
 

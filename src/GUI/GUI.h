@@ -50,6 +50,7 @@
 
 class GRIPFrame;
 class Viewer;
+class Camera;
 class TreeView;
 class TreeViewReturn;
 class InspectorTab;
@@ -64,7 +65,7 @@ extern int renderW,renderH,vgaW,vgaH,xgaW,xgaH,hd720W,hd720H;
 
 extern GRIPFrame*	frame;
 extern Viewer*		viewer;
-extern Viewer*		camera;
+extern Camera*		camera;
 extern TreeView*	treeView;
 extern TreeViewReturn* selectedTreeNode;
 extern wxNotebook*	tabView;

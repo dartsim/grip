@@ -1,0 +1,14 @@
+<!-- kinect.urdf -->
+
+<object name="kinect">
+
+	<!-- Link 0 -->
+	<link name="link_0">
+		<visual>
+			<geometry>
+				<mesh filename="objects/kinect.dae"/>
+			</geometry>
+		</visual>
+	</link>
+
+</object>

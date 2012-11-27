@@ -45,7 +45,7 @@ robotics::World* mWorld = 0;
 
 GRIPFrame*	frame = 0;
 Viewer*		viewer = 0;
-Viewer*		camera = 0;
+Camera*		camera = 0;
 TreeView*	treeView = 0;
 wxNotebook*	tabView = 0;
 

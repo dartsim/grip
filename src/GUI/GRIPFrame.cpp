@@ -42,7 +42,9 @@
 #include "GUI.h"
 #include "GRIPFrame.h"
 #include "Viewer.h"
+#include "Camera.h"
 #include "TreeView.h"
+#include "robotics/Robot.h"
 
 #include <Tabs/AllTabs.h>
 #include <Tabs/GRIPTab.h>
@@ -66,6 +68,7 @@
 
 #define ID_TOOLBAR 1257
 #define ID_TIMESLIDER 1258
+#define ID_CAMERA 1259
 
 enum toolNums{
     Tool_open= 1262,
@@ -254,7 +257,7 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
             WX_GL_DEPTH_SIZE, 16,
             0
         };
-        camera = new Viewer(this, -1, wxPoint(0, 0), wxSize(prefViewerWidth, prefViewerHeight),
+        camera = new Camera(this, ID_CAMERA, wxPoint(0, 0), wxSize(prefViewerWidth, prefViewerHeight),
                             wxFULL_REPAINT_ON_RESIZE | wxSUNKEN_BORDER, _T("GLCanvas"), attrib);
     }
 		#ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
@@ -322,7 +325,7 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     filebar->Realize();
     optionbar->Realize();
 
-		// Start the OpenGL visualization
+		// Start the OpenGL visualization for the 3D viewer
     Show();
     viewer->Freeze();
     viewer->InitGL();
@@ -331,12 +334,6 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 
 		// The menu bar has to be set at the end for windows. See wxMenuBar documentation.
     SetMenuBar(menuBar);
-		
-/*
-		sizerTop->Hide(camera, true);
-		sizerFull->Layout();
-		settingsMenu->SetLabel(MenuVision, wxT("Show Vision"));	
-*/
 }
 
 /**
@@ -409,27 +406,58 @@ void GRIPFrame::OnQuickLoad(wxCommandEvent& WXUNUSED(event)) {
  */
 void GRIPFrame::DoLoad(string filename){
 
+	// Create the new world
 	DeleteWorld();
-  			DartLoader dl;
-        mWorld = dl.parseWorld( filename.c_str() );
-        mWorld->printInfo();
+	DartLoader dl;
+	mWorld = dl.parseWorld( filename.c_str() );
+	mWorld->printInfo();
 
-        // UpdateTreeView();
+	// UpdateTreeView();
 	cout << "--(v) Done Parsing World information (v)--" << endl;
 	treeView->CreateFromWorld();
 	cout << "--(v) Done Updating TreeView (v)--" << endl;
 	SetStatusText(wxT("--(i) Done Loading and updating the View (i)--"));
 
-	/// Extract path to executable & save "lastload" there
+	// Extract path to executable & save "lastload" there
 	cout << "--(i) Saving " << filename << " to .lastload file (i)--" << endl;
-        wxString filename_string(filename.c_str(), wxConvUTF8);
+	wxString filename_string(filename.c_str(), wxConvUTF8);
 	saveText(filename_string,".lastload");
 
 	selectedTreeNode = 0;
 	treeView->ExpandAll();
 	updateAllTabs();
 
+	// Draw the viewer scene
 	viewer->DrawGLScene();
+	viewer->Refresh();
+
+	// Find out if the scene has a robot with a camera. Update the camera viewer if so.
+	kinematics::BodyNode* cameraNode = getCameraNode();
+	if(cameraNode != NULL) {
+		camera->cameraNode = cameraNode;
+		printf("Set the camera node!\n"); fflush(stdout);
+		if(camera->IsShown()) {
+			camera->DrawGLScene();
+			camera->Refresh();
+		}
+	}
+}
+
+kinematics::BodyNode* GRIPFrame::getCameraNode() {
+
+	// Sanity check
+	if(mWorld == NULL) return NULL;
+
+	// Traverse each robot in the world
+  for( unsigned int i = 0; i < mWorld->getNumRobots(); i++ ) {
+	
+		// Check if the robot has a body node named "Camera". 
+		robotics::Robot* robot = mWorld->getRobot(i);
+		kinematics::BodyNode* cameraNode = robot->getNode("Camera");
+		if(cameraNode != NULL) return cameraNode;
+	}
+
+	return NULL;
 }
 
 /**
@@ -842,6 +870,11 @@ void GRIPFrame::OnVision(wxCommandEvent& WXUNUSED(event)) {
 	else {
 		sizerTop->Show(camera, true, true);
 		settingsMenu->SetLabel(MenuVision, wxT("Hide Vision"));	
+    camera->Freeze();
+    camera->InitGL();
+    camera->DrawGLScene();
+    camera->Thaw();
+		camera->Refresh();
 	}
 
 	// Toggle the control variable and update the window size

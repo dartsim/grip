@@ -41,6 +41,7 @@
 
 class GRIPSlider;
 class Viewer;
+class Camera;
 class GRIPTimeSlice;
 #include <vector>
 
@@ -64,90 +65,94 @@ using namespace std;
  */
 class GRIPFrame : public wxFrame
 {
-    /// The menu bar for settings. Need to be class variable 
-    /// to change its name at OnVision callback.
-    wxMenu *settingsMenu;					
-    wxSizer *sizerFull;            ///< The full sizer that controls the frame layout
-    wxSizer *sizerTop;             ///< The sizer for the top of the frame
+	/// The menu bar for settings. Need to be class variable 
+	/// to change its name at OnVision callback.
+	wxMenu *settingsMenu;					
+	wxSizer *sizerFull;				///< The full sizer that controls the frame layout
+	wxSizer *sizerTop;				///< The sizer for the top of the frame
+
+	/// Returns the body node for a camera in a world robot. The assumption is that
+	/// a robot has a camera iff it has a body node named "Camera".
+	kinematics::BodyNode* getCameraNode (); 	
 
 public:
-    GRIPFrame(const wxString& title);
+	GRIPFrame(const wxString& title);
 
-    wxPanel *backPanel;
+	wxPanel *backPanel;
 
-    GRIPSlider *timeSlider;
+	GRIPSlider *timeSlider;
 
-    wxSlider *timeTrack;
-    wxTextCtrl *timeText;
+	wxSlider *timeTrack;
+	wxTextCtrl *timeText;
 
-    wxToolBar* filebar;
-    wxToolBar* optionbar;
-    wxBitmap toolBarBitmaps[10];
+	wxToolBar* filebar;
+	wxToolBar* optionbar;
+	wxBitmap toolBarBitmaps[10];
 
-    //void OnSize(wxSizeEvent& evt);
-    int saveText(wxString scenepath, const char* llfile);
-    void OnQuit(wxCommandEvent& event);
-    void OnAbout(wxCommandEvent& event);
-    void OnSaveScene(wxCommandEvent& event);
-    void OnSaveRobot(wxCommandEvent& event);
-    void OnLoad(wxCommandEvent& event);
-    void OnQuickLoad(wxCommandEvent& event);
-    void OnToolOrder(wxCommandEvent& event);
-    void OnToolCheckColl(wxCommandEvent& event);
-    void OnToolScreenshot(wxCommandEvent& event);
-    void OnToolMovie(wxCommandEvent& event);
-    void OnClose(wxCommandEvent& event);
+	//void OnSize(wxSizeEvent& evt);
+	int saveText(wxString scenepath, const char* llfile);
+	void OnQuit(wxCommandEvent& event);
+	void OnAbout(wxCommandEvent& event);
+	void OnSaveScene(wxCommandEvent& event);
+	void OnSaveRobot(wxCommandEvent& event);
+	void OnLoad(wxCommandEvent& event);
+	void OnQuickLoad(wxCommandEvent& event);
+	void OnToolOrder(wxCommandEvent& event);
+	void OnToolCheckColl(wxCommandEvent& event);
+	void OnToolScreenshot(wxCommandEvent& event);
+	void OnToolMovie(wxCommandEvent& event);
+	void OnClose(wxCommandEvent& event);
 
-    void OnTimeScroll(wxScrollEvent &evt);
-    void OnTimeEnter(wxCommandEvent &evt);
+	void OnTimeScroll(wxScrollEvent &evt);
+	void OnTimeEnter(wxCommandEvent &evt);
 
-    void OnWhite(wxCommandEvent& event);
-    void OnBlack(wxCommandEvent& event); 
-    void OnVGA(wxCommandEvent& event);
-    void OnXGA(wxCommandEvent& event);
-    void OnHD(wxCommandEvent& event); 
-    void OnCameraReset(wxCommandEvent& event);
-    void OnVision(wxCommandEvent& event);
+	void OnWhite(wxCommandEvent& event);
+	void OnBlack(wxCommandEvent& event); 
+	void OnVGA(wxCommandEvent& event);
+	void OnXGA(wxCommandEvent& event);
+	void OnHD(wxCommandEvent& event); 
+	void OnCameraReset(wxCommandEvent& event);
+	void OnVision(wxCommandEvent& event);
 
-    void InitTimer(string title, double period);
-    void AddWorld( robotics::World* world );
+	void InitTimer(string title, double period);
+	void AddWorld( robotics::World* world );
 
-    vector<GRIPTimeSlice*> timeVector;
-    double tCurrent;
-    double tMax;
-    double tIncrement;
-    int tPrecision;
-    void setTimeValue( double value, bool sendSignal = false );
-    void updateTimeValue( double value, bool sendSignal = false );
+	vector<GRIPTimeSlice*> timeVector;
+	double tCurrent;
+	double tMax;
+	double tIncrement;
+	int tPrecision;
+	void setTimeValue( double value, bool sendSignal = false );
+	void updateTimeValue( double value, bool sendSignal = false );
 
-    void updateAllTabs();
+	void updateAllTabs();
 
-    void DoLoad(string filename);
-    void DeleteWorld();
+	void DoLoad(string filename);
+	void DeleteWorld();
 
-    void onTVChange(wxTreeEvent& event);
+	void onTVChange(wxTreeEvent& event);
 
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 
 enum
 {
-    MenuSaveScene = wxID_HIGHEST+1,
-    MenuSaveRobot,
-    MenuLoad,
-    MenuQuickLoad,
-    MenuClose,
-    MenuBgWhite,
-    MenuBgBlack,
+	MenuSaveScene = wxID_HIGHEST+1,
+	MenuSaveRobot,
+	MenuLoad,
+	MenuQuickLoad,
+	MenuClose,
+	MenuBgWhite,
+	MenuBgBlack,
 	MenuRenderXGA,
 	MenuRenderVGA,
 	MenuRenderHD,
-    MenuCameraReset,
+	MenuCameraReset,
 		MenuVision,
 
-    MenuQuit = wxID_EXIT,
-    MenuAbout = wxID_ABOUT
+	MenuQuit = wxID_EXIT,
+	MenuAbout = wxID_ABOUT
 };
 
 

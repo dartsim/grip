@@ -36,13 +36,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIEWER_H
-#define VIEWER_H
+#pragma once
 
-//#define EIGEN_DONT_ALIGN
-// TODO Fix Eigen Alignment issues: http://eigen.tuxfamily.org/dox/TopicUnalignedArrayAssert.html
 #include <Eigen/Core>
-#include <Eigen/Geometry>
 #include <wx/wx.h>
 #include <wx/glcanvas.h>
 #include <kinematics/Shape.h>
@@ -53,83 +49,67 @@
 
 using namespace Eigen;
 
-class Viewer: public wxGLCanvas {
+class Camera: public wxGLCanvas {
+private:
+
+	// Changed with the resized function (mainly)
+	int width;			///< The width of the canvas
+	int height;			///< The height of the canvas
+
+	renderer::OpenGLRenderInterface renderer;			///< The OpenGL renderer interface
+
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-	Eigen::Transform<double, 3, Eigen::Affine> camT, prevCamT;
+	kinematics::BodyNode* cameraNode; 						///< The body node of the camera
 
-	Matrix3d camRotT;
-	Vector3d worldV, prevWorldV;
-	renderer::OpenGLRenderInterface renderer;
-	wxGLContext* context;
+public:
 
-	Viewer( wxWindow * parent, wxWindowID id, const wxPoint & pos,
+	/// The constructor
+	Camera( wxWindow * parent, wxWindowID id, const wxPoint & pos,
 		const wxSize& size, long style = 0, const wxString & name =
 					_("GLCanvas"), int * attribList = 0,
 		const wxPalette & palette = wxNullPalette) :
-		 wxGLCanvas(parent, id, pos, size, style, name, attribList, palette),		// Changed for wx 2.8
-//		wxGLCanvas(parent, id, attribList, pos, size, style, name, palette),
-		backColor(0.0, 0.0, 0.0), gridColor(0.5, 0.5, 0.0),
-		camRotT(AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0))),
-		worldV(0.0, 0.0, 0.0),
-		camRadius(10.0)
+		wxGLCanvas(parent, id, pos, size, style, name, attribList, palette),		// Changed for wx 2.8
+	//	wxGLCanvas(parent, id, attribList, pos, size, style, name, palette),
+		cameraNode(NULL)
 	{
-		handleEvents = true;
-		UpdateCamera();
-		context = new wxGLContext(this);
 	}
 
-	virtual ~Viewer() {
+	/// The destructor
+	virtual ~Camera() {
 		renderer.destroy();
 	}
 
+	void InitGL();						///< Initializes OpenGL options and sets the class variables
+	int  DrawGLScene();				///< If the world contains a robot with a camera, draws the world from the camera's perspective
 
+	// TODO Find a way not to duplicate code between these implementations and those in Viewer.cpp
+	void drawWorld(); 				///< Draws the world
+	void drawModel(const aiScene* _model, Eigen::Transform<double, 3, Eigen::Affine> *_pose, bool collisionFlag);	///< Draws the object models
+
+	void resized(wxSizeEvent& evt);			///< Resizes the canvas 
+	void shown(wxShowEvent& evt);				///< Draws the canvas for wxWidget "show" event
+	void render(wxPaintEvent& evt);			///< Main interface for rendering - calls DrawOpenGL
+
+// Functions needed to wxWidget
+public:
+
+	/// Waits for events
 	void OnIdle(wxIdleEvent & evt) {
-		//draw();
+//		DrawGLScene();
+//		Refresh(false);
 		evt.RequestMore();
 	}
 
-	void InitGL();
-	void setClearColor();
-	void UpdateCamera();
-	int  DrawGLScene();
-	void addGrid();
-
-	void drawWorld(); 
-	void drawModel( const aiScene* _model, Eigen::Transform<double, 3, Eigen::Affine> *_pose, bool collisionFlag );
-
-	long x, y, xInit, yInit;
-	int w, h;
-
-	bool handleEvents;
-
-	bool doCollisions;
-	bool gridActive;
-	double camRadius;
-
-	Vector3d gridColor;     /**< Grid color*/
-	Vector3d backColor;	/**< Background color */
-
-	bool mouseCaptured;
-
-	void resized(wxSizeEvent& evt);
-	void shown(wxShowEvent& evt);
-
+	/// Return the width of the canvas
 	int getWidth() {
 		return GetSize().x;
 	}
+	
+	/// Return the height of the canvas
 	int getHeight() {
 		return GetSize().y;
 	}
 
-	void render(wxPaintEvent& evt);
-
-	// events
-	void OnMouse(wxMouseEvent& evt);
-	void OnCaptureLost(wxMouseCaptureLostEvent& evt);
-	void mouseWheelMoved(wxMouseEvent& evt);
-
-DECLARE_EVENT_TABLE()
+	/// Declare the events the canvas should respond to
+	DECLARE_EVENT_TABLE()
 };
-
-#endif

@@ -42,6 +42,7 @@
 #include "InspectorTab.h"
 
 #include <GUI/Viewer.h>
+#include <GUI/Camera.h>
 #include <GUI/GUI.h>
 #include <GUI/GRIPSlider.h>
 #include <GUI/GRIPFrame.h>
@@ -227,6 +228,11 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
 
     mWorld->checkCollision(true);
 	viewer->DrawGLScene();
+	viewer->Refresh();
+	if(camera->IsShown()) {
+		camera->DrawGLScene();
+		camera->Refresh();
+	}
 }
 
 /**
