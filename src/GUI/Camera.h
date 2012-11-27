@@ -60,6 +60,7 @@ private:
 
 public:
 	kinematics::BodyNode* cameraNode; 						///< The body node of the camera
+	bool sceneChanged;
 
 public:
 
@@ -72,6 +73,7 @@ public:
 	//	wxGLCanvas(parent, id, attribList, pos, size, style, name, palette),
 		cameraNode(NULL)
 	{
+		sceneChanged = true;
 	}
 
 	/// The destructor
@@ -95,7 +97,10 @@ public:
 
 	/// Waits for events
 	void OnIdle(wxIdleEvent & evt) {
-//		DrawGLScene();
+ 		wxPaintEvent ev;
+	//	if(sceneChanged) 
+		render(ev);
+
 //		Refresh(false);
 		evt.RequestMore();
 	}

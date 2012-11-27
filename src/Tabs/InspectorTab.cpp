@@ -227,11 +227,13 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
     if(frame!=NULL) frame->SetStatusText(wxString(numBuf,wxConvUTF8));
 
     mWorld->checkCollision(true);
-	viewer->DrawGLScene();
-	viewer->Refresh();
+//	printf("Inspector\n");
+//		camera->sceneChanged = true;
+//	viewer->DrawGLScene();
+//	viewer->Refresh();
 	if(camera->IsShown()) {
-		camera->DrawGLScene();
-		camera->Refresh();
+//		camera->DrawGLScene();
+	//	camera->Refresh();
 	}
 }
 

@@ -85,6 +85,8 @@ public:
 
 
 	void OnIdle(wxIdleEvent & evt) {
+ 		wxPaintEvent ev;
+	render(ev);
 		//draw();
 		evt.RequestMore();
 	}

@@ -117,6 +117,8 @@ void Camera::shown(wxShowEvent& WXUNUSED(evt)){
 		SetCurrent();
 		glViewport(0, 0, (GLint) width, (GLint) height);
 	}
+	//printf("Camera shown\n");
+	//sceneChanged = true;
 	DrawGLScene();
 }
 
@@ -135,9 +137,12 @@ int Camera::DrawGLScene()
 		printf("%c[%d;%dmCamera: Cannot draw because the world does not contain a camera.%c[%dm\n",27,1,33,27,0);
 		return false;
 	}
+	//else if(!sceneChanged) return false;
+//	sceneChanged = false;
+//	static int a = 0;
+//	printf("Drawing %d\n", a++); fflush(stdout);
+	
 
-	static int a = 0;
-	printf("Drawing.. %d\n", a++); fflush(stdout);
 	// Setup the view options
 	glPolygonMode (GL_FRONT, GL_FILL);
 	glMatrixMode(GL_MODELVIEW);
@@ -222,8 +227,10 @@ void Camera::resized(wxSizeEvent& evt){
 	glLoadIdentity();
 	gluPerspective(45.0f,(GLdouble)width/(GLdouble)height,0.1f,15.0f);//100.0f);
 
+
 	// Redraw the scene
 	DrawGLScene();
+	//sceneChanged = true;
 }
 
 /// Renders the scene
@@ -231,7 +238,10 @@ void Camera::render(wxPaintEvent& WXUNUSED(evt)){
 	if(!IsShown()) return;
 	wxGLCanvas::SetCurrent();
 	wxPaintDC(this); // only to be used in paint events. use wxClientDC to paint outside the paint event
+//	printf("Render\n");
+//	sceneChanged = true;
 	DrawGLScene();
+
 }
 
 /// Initializes the openGL options and the class options
@@ -266,6 +276,9 @@ void Camera::InitGL(){
 	gluPerspective(45.0f,(GLdouble)width/(GLdouble)height,0.1f,15.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+	//printf("Init GL\n");
+	//sceneChanged = true;
 }
 
 /// The event table for rendering and resizing the camera image
@@ -273,5 +286,5 @@ BEGIN_EVENT_TABLE(Camera, wxGLCanvas)
 	EVT_SHOW(Camera::shown)
   EVT_PAINT(Camera::render)
   EVT_SIZE(Camera::resized)
-//	EVT_IDLE(Camera::OnIdle)
+	EVT_IDLE(Camera::OnIdle)
 END_EVENT_TABLE()
