@@ -85,6 +85,7 @@ set (GRIP_LIBRARIES grip ggui gtabs gtools ${DART_LIBRARIES})
 set (GRIP_LIBDIR ${CMAKE_SOURCE_DIR}/lib)
 add_subdirectory (projects/tabEmpty)
 add_subdirectory (projects/tabTemplate)
+add_subdirectory (projects/tabVision)
 
 #####################################
 # Package Installer
