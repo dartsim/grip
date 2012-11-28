@@ -41,6 +41,7 @@
 
 #include <wx/wx.h>
 #include <GUI/Viewer.h>
+#include <GUI/Camera.h>
 #include <GUI/GUI.h>
 #include <GUI/GRIPSlider.h>
 #include <GUI/GRIPFrame.h>
@@ -49,7 +50,10 @@
 #include <robotics/Object.h>
 #include <robotics/Robot.h>
 
+#include <fstream>
+
 using namespace std;
+using namespace Eigen;
 
 void VisionTab::onButton(wxCommandEvent &evt) {
 
@@ -95,10 +99,61 @@ void VisionTab::onButton(wxCommandEvent &evt) {
 
 void VisionTab::attention () {
 
-	
+	// Set the predetermined configuration
+	VectorXd conf (7);
+	conf << 0.0, -0.648582, 0.0, 1.11803, 0.0, 1.62454, 0;
+	mWorld->getRobot(0)->setQuickDofs(conf);
+ 	mWorld->getRobot(0)->update();
+	robotics::Object* bear = mWorld->getObject(4);
+	bear->setPositionXYZ(1.608, 2.4, 0.416);
+	bear->update();
 }
 
-void VisionTab::startSearch () {}
+void VisionTab::startSearch () {
+
+	// Read in the trajectory from the file
+  ifstream in("/home/cerdogan/trajectory.txt");
+	vector <VectorXd> trajectory;
+	while(true) {
+		VectorXd conf (7);
+    for (size_t x = 0; x < 7; x++) 
+      in >> conf(x);
+		if(in.fail() || in.eof() || in.bad()) break; 
+		trajectory.push_back(conf);
+  }
+	in.close();
+
+	// Draw the trajectory
+	size_t fps = 30;
+	for(size_t i = 0; i < trajectory.size(); i++) {
+
+		// Set the polar bear location
+		double x, y, z;
+		robotics::Object* bear = mWorld->getObject(4);
+		bear->getPositionXYZ(x,y,z);
+		if(i < 50) {}
+		else if(i < 60)
+			bear->setPositionXYZ(x,y-0.1,z);
+		else if(i < 65)
+			bear->setPositionXYZ(x-0.1,y-0.1,z);
+		
+		bear->update();
+
+		// Set the robot location
+		mWorld->getRobot(0)->setQuickDofs(trajectory[i]);
+		mWorld->getRobot(0)->update();
+
+		// Update the view
+    usleep(1000000/fps);
+    wxPaintEvent ev; 
+	  viewer->render(ev);
+	  camera->render(ev);
+
+	
+
+	}
+}
+
 void VisionTab::cloud () {}
 void VisionTab::depthMap () {}
 
