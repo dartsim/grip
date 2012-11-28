@@ -44,19 +44,63 @@
 #include <GUI/GUI.h>
 #include <GUI/GRIPSlider.h>
 #include <GUI/GRIPFrame.h>
+
+#include <robotics/World.h>
+#include <robotics/Object.h>
+#include <robotics/Robot.h>
+
 using namespace std;
 
-enum VisionTabEvents {
-	button_attention = 50, 
-  button_go,
-  button_,
-  button_showGoal
-};
+void VisionTab::onButton(wxCommandEvent &evt) {
 
-void VisionTab::OnButton(wxCommandEvent &evt) {
+	// Check if a world exists
+  if(mWorld == NULL) {
+		printf("%c[%d;%dmCamera: Cannot handle event because a world is not loaded.%c[%dm\n",27,1,33,27,0);
+		return;
+	}
 
+  // Traverse each robot in the world to check for a camera
+	bool noCamera = true;
+  for( unsigned int i = 0; i < mWorld->getNumRobots(); i++ ) { 
+    robotics::Robot* robot = mWorld->getRobot(i);
+    kinematics::BodyNode* cameraNode = robot->getNode("Camera");
+    if(cameraNode != NULL) {
+			noCamera = false;
+			break;
+		}
+  }
+
+	if(noCamera) {
+    printf("%c[%d;%dmCamera: Cannot handle event because the world does not contain a camera.%c[%dm\n",27,1,33,27,0);
+  	return;
+	}
+	
+	// Get the button and switch on the set symbols
+  int button_num = evt.GetId();
+  switch (button_num) {
+	  case button_attention:
+			attention();
+		break;
+	  case button_startSearch:
+			startSearch();
+		break;
+		case button_cloud:
+			cloud();
+		break;
+		case button_depthMap:
+			depthMap();
+		break;	
+	}
 }
 
+void VisionTab::attention () {
+
+	
+}
+
+void VisionTab::startSearch () {}
+void VisionTab::cloud () {}
+void VisionTab::depthMap () {}
 
 VisionTab::VisionTab(wxWindow *parent, const wxWindowID id,
 		const wxPoint& pos, const wxSize& size, long style) : GRIPTab(parent, id, pos, size, style) {
@@ -64,15 +108,15 @@ VisionTab::VisionTab(wxWindow *parent, const wxWindowID id,
 	// ===========================================================
 	// 1. Create the left side for the vision demonstration
 
-	// Create StaticBox container for the two buttons: "Attention!" and "Go!"
+	// Create StaticBox container for the two buttons: "Attention!" and "Start Search!"
 	wxStaticBox* leftBox = new wxStaticBox(this, -1, wxT("Demonstration"));
 	wxStaticBoxSizer* leftBoxSizer = new wxStaticBoxSizer(leftBox, wxVERTICAL);
 
 	// Add the "Attention!" button
 	leftBoxSizer->Add(new wxButton(this, button_attention, wxT("Attention!")), 0, wxALL, 10);
 
-	// Add the "Go!" button
-	leftBoxSizer->Add(new wxButton(this, button_go, wxT("Start Search!")), 0, wxALL, 10);
+	// Add the "Start Search!" button
+	leftBoxSizer->Add(new wxButton(this, button_startSearch, wxT("Start Search!")), 0, wxALL, 10);
 
 	// ===========================================================
 	// 2. Create the right side for 3D data acquisition
@@ -85,7 +129,7 @@ VisionTab::VisionTab(wxWindow *parent, const wxWindowID id,
 	rightBoxSizer->Add(new wxButton(this, button_cloud, wxT("Show Cloud")), 0, wxALL, 10);
 
 	// Add the "Go!" button
-	rightBoxSizer->Add(new wxButton(this, button_depthmap, wxT("Show Depth Map")), 0, wxALL, 10);
+	rightBoxSizer->Add(new wxButton(this, button_depthMap, wxT("Show Depth Map")), 0, wxALL, 10);
 
 	// ===========================================================
 	// 3. Create empty far right container to look nice
@@ -105,12 +149,11 @@ VisionTab::VisionTab(wxWindow *parent, const wxWindowID id,
 
 	// Set the full sizer as the sizer of this tab
 	SetSizer(sizerFull);
-
 }
 
 //Add a handlers for UI changes
 BEGIN_EVENT_TABLE(VisionTab, wxPanel)
-	EVT_COMMAND (wxID_ANY, wxEVT_COMMAND_BUTTON_CLICKED, VisionTab::OnButton)
+	EVT_COMMAND (wxID_ANY, wxEVT_COMMAND_BUTTON_CLICKED, VisionTab::onButton)
 END_EVENT_TABLE ()
 
 // Class constructor for the tab

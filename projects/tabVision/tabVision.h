@@ -58,9 +58,9 @@ public:
 	/// The callback events
 	enum Events {
 		button_attention,
-		button_go,
+		button_startSearch,
 		button_cloud,
-		button_depthmap
+		button_depthMap
 	};
 
 	/// The default constructor
@@ -75,11 +75,23 @@ public:
 	/// The destructor
 	virtual ~VisionTab(){}
 
+	/// Moves the arm to a position where the scene is probably visible through the camera
+	void attention ();
+
+	/// Moves the arm around to visualize more of the scene
+	void startSearch ();
+
+	/// Displays the point cloud in a new window after getting the depth values
+	void cloud ();
+
+	/// Displays the depth map mapped to a greyscale image
+	void depthMap ();
+
 	/// Handles the state changes in GRIP
 	void GRIPStateChange(){}
 
 	/// Handles the input from button interfaces
-	void OnButton(wxCommandEvent &evt);
+	void onButton(wxCommandEvent &evt);
 
 // The macros for wxWidget
 public:
