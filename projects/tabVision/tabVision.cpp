@@ -112,7 +112,7 @@ void VisionTab::attention () {
 void VisionTab::startSearch () {
 
 	// Read in the trajectory from the file
-  ifstream in("/home/cerdogan/trajectory.txt");
+  ifstream in("../projects/tabVision/trajectory.txt");
 	vector <VectorXd> trajectory;
 	while(true) {
 		VectorXd conf (7);
@@ -171,7 +171,7 @@ VisionTab::VisionTab(wxWindow *parent, const wxWindowID id,
 	leftBoxSizer->Add(new wxButton(this, button_attention, wxT("Attention!")), 0, wxALL, 10);
 
 	// Add the "Start Search!" button
-	leftBoxSizer->Add(new wxButton(this, button_startSearch, wxT("Start Search!")), 0, wxALL, 10);
+	leftBoxSizer->Add(new wxButton(this, button_startSearch, wxT("Find Bear!")), 0, wxALL, 10);
 
 	// ===========================================================
 	// 2. Create the right side for 3D data acquisition
