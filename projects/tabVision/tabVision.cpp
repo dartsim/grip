@@ -113,6 +113,10 @@ void VisionTab::startSearch () {
 
 	// Read in the trajectory from the file
   ifstream in("../projects/tabVision/trajectory.txt");
+	if(!in.is_open()) {
+		printf("%c[%d;%dmCTabVision: Could not find the trajectory file.%c[%dm\n",27,1,33,27,0);
+		return;
+	}
 	vector <VectorXd> trajectory;
 	while(true) {
 		VectorXd conf (7);
@@ -148,14 +152,146 @@ void VisionTab::startSearch () {
     wxPaintEvent ev; 
 	  viewer->render(ev);
 	  camera->render(ev);
-
-	
-
 	}
 }
 
-void VisionTab::cloud () {}
-void VisionTab::depthMap () {}
+void VisionTab::getDisparities (vector <Vector3d>& disparities, double& focalLength) {
+
+	// Set the constants
+	size_t kWidth = 640, kHeight = 480;
+	float kBaseline = 0.10;
+	float kDisparityNoise = 0.1;
+
+	// Assert the baseline is non-negative
+	assert((kBaseline > 0.0) && "Non-positive baseline.");
+
+	printf("Starting to save... "); fflush(stdout);
+
+	// Get the color data
+	unsigned char* im = new unsigned char [3 * kWidth * kHeight];
+	glReadPixels(0,0, kWidth, kHeight, GL_RGB, GL_UNSIGNED_BYTE, im);
+
+	// Get the depths of the objects
+	float* depths = new float [kWidth * kHeight];
+	glReadPixels(0,0, kWidth, kHeight, GL_DEPTH_COMPONENT, GL_FLOAT, depths);
+
+	// Get the view options
+	glLoadIdentity();
+	GLdouble modelMatrix[16];
+	glGetDoublev(GL_MODELVIEW_MATRIX,modelMatrix);
+	GLdouble projMatrix[16];
+	glGetDoublev(GL_PROJECTION_MATRIX,projMatrix);
+	int viewport[4];
+	glGetIntegerv(GL_VIEWPORT,viewport);
+
+	// Get focal length using some pixel
+	double x_, y_, z_;
+	gluUnProject(300, 200, depths[200 * kWidth + 300], modelMatrix, projMatrix, viewport, &x_, &y_, &z_);
+	focalLength = (300 - 320) * (-z_ / x_);
+
+	// Create the pixel data
+	disparities.clear();
+	for(size_t v = 0; v < kHeight; v++) {
+		for(size_t u = 0; u < kWidth; u++) {
+
+			// Skip the pixel if it is in the background
+			Vector2d pix (u,v); //= (*pix_it);
+			size_t k = (pix(1) * kWidth + pix(0)) * 3;
+			if((im[k] == 0) && (im[k+1] == 0) && (im[k+2] == 0)) continue;
+
+			// Get the position data - if the 'z' is the far clip, skip
+			size_t k2 = (pix(1) * kWidth + pix(0));
+			double x_, y_, z_;
+			gluUnProject(u, v, depths[k2], modelMatrix, projMatrix, viewport, &x_, &y_, &z_);
+			Vector3d loc (x_, y_, z_);
+			if(-loc(2) > 15.0) continue;		// TODO: Replace 15.0 with camera.zFar
+
+			// Compute the disparity and add noise to it
+			float disparity = (kBaseline * focalLength) / -loc(2);
+		  float r1 = ((float) rand()) / RAND_MAX, r2 = ((float) rand()) / RAND_MAX;
+		  float noiseEffect = sqrt(-2.0 * log(r1)) * cos(2 * M_PI * r2) * kDisparityNoise; 
+			disparity += noiseEffect;
+
+			// Save the pixel location and the disparity
+			size_t color = (im[k] << 16) | (im[k+1] << 8) | (im[k+2]);
+			disparities.push_back(Vector3d(k2, disparity, color));
+		}
+	}
+
+	printf("Data acquired.\n"); fflush(stdout);
+}
+
+/// Prints the PCD file header
+void VisionTab::printPCDHeader (FILE* file, size_t numPoints) {
+
+  fprintf(file, "VERSION 0.7\n");
+  fprintf(file, "FIELDS x y z rgb\n");
+  fprintf(file, "SIZE 4 4 4 4\n");
+  fprintf(file, "TYPE F F F U\n");
+  fprintf(file, "COUNT 1 1 1 1\n");
+  fprintf(file, "WIDTH 1\n");
+  fprintf(file, "HEIGHT %lu\n", numPoints);
+  fprintf(file, "VIEWPOINT 0 0 0 1 0 0 0\n");
+  fprintf(file, "POINTS %lu\n", numPoints);
+  fprintf(file, "DATA ascii\n");
+}
+
+void VisionTab::cloud () {
+
+	// Set the constants; TODO: Move these constants to class definition
+	size_t kWidth = 640, kHeight = 480;
+	float kBaseline = 0.10;
+	float kDisparityNoise = 0.1;
+
+	// Get the disparities
+	double focalLength;
+	vector <Vector3d> disparities;
+	getDisparities(disparities, focalLength);
+
+	// Create the 3D points
+	vector <Vector3d> points;
+	for(size_t i = 0; i < disparities.size(); i++) {
+
+		// Get the pixel
+		size_t v = (size_t) disparities[i](0) / kWidth;
+		size_t u = (size_t) disparities[i](0) % kWidth;
+
+		// Change the location based on the new disparity
+		double disparity = disparities[i](1);
+		float distZ = -(kBaseline * focalLength) / disparity;
+		float distX = ((int) u - (int) kWidth/2) * distZ / focalLength;
+		float distY = ((int) v - (int) kHeight/2) * distZ / focalLength;
+
+		// Save the pixel
+		points.push_back(Vector3d(-distX, distY, -distZ));
+	}
+
+	// Save the points to a .pcd file
+  FILE* file = fopen("cloud.pcd", "w");
+  assert((file != NULL) && "The .pcd file could not be opened");
+
+  // Write the pixel data to the file
+  printPCDHeader(file, points.size());
+	for(size_t i = 0; i < points.size(); i++) {
+		Vector3d& loc = points[i];
+    fprintf(file, "%lf\t%lf\t%lf\t%lu\n", loc(0), loc(1), loc(2), (size_t) disparities[i](2)); 
+	}
+
+  // Close the file
+  assert((fclose(file) == 0) && "The file could not be closed successfully");
+
+	// Run the pcd_viewer
+	system("pcd_viewer cloud.pcd &");
+  printf("PCD file saved.\n"); fflush(stdout);
+}
+
+void VisionTab::depthMap () {
+
+	vector <Vector2d> disparities;
+	//getDisparities(disparities);
+	
+
+}
 
 VisionTab::VisionTab(wxWindow *parent, const wxWindowID id,
 		const wxPoint& pos, const wxSize& size, long style) : GRIPTab(parent, id, pos, size, style) {

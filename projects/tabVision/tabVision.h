@@ -81,6 +81,12 @@ public:
 	/// Moves the arm around to visualize more of the scene
 	void startSearch ();
 
+	/// Prints a pcd header to the file
+	void printPCDHeader (FILE* file, size_t numPoints);
+
+	/// Returns the disparity, color and pixel location for the visible 3D points
+	void getDisparities (std::vector <Eigen::Vector3d>& disparities, double& focalLength);
+
 	/// Displays the point cloud in a new window after getting the depth values
 	void cloud ();
 
