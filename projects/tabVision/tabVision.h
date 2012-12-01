@@ -50,6 +50,23 @@
 #include <Tabs/GRIPTab.h>
 #include <Tools/Constants.h>
 
+/// The definition of a new frame to show an image
+class wxImagePanel : public wxPanel {
+public:
+  wxBitmap image;			///< The shown image
+	/// The constructor
+  wxImagePanel(wxFrame* parent, const wxImage& img) : wxPanel(parent) {
+    image = wxBitmap(img);
+  }
+	/// The paint callback
+  void paintEvent(wxPaintEvent & evt) {
+    wxPaintDC dc(this);
+    dc.DrawBitmap( image, 0, 0, false );
+  }
+	/// Handlers table for wxWidget
+  DECLARE_EVENT_TABLE()
+};
+
 /// The tab definition
 class VisionTab : public GRIPTab
 {
@@ -85,7 +102,7 @@ public:
 	void printPCDHeader (FILE* file, size_t numPoints);
 
 	/// Returns the disparity, color and pixel location for the visible 3D points
-	void getDisparities (std::vector <Eigen::Vector3d>& disparities, double& focalLength);
+	void getDisparities (std::vector <Eigen::Vector3d>& disparities, double& focalLength, Eigen::Vector2d* range = NULL);
 
 	/// Displays the point cloud in a new window after getting the depth values
 	void cloud ();

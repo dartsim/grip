@@ -35,7 +35,7 @@ int saveRscene( std::string filename ) {
 
         wstream << "##### ROBOTS #####" << endl;
 	wstream << endl;
-	unsigned int i = 0;
+	int i = 0;
 	while( i < mWorld->getNumRobots() ) {
 
 	    wstream << "##### ROBOT " << i+1 << " #####" << endl;
@@ -80,7 +80,7 @@ int saveRscene( std::string filename ) {
  
         wstream << "##### OBJECTS #####" << endl;
 	wstream << endl;
-	unsigned int i = 0;
+	int i = 0;
 	while( i < mWorld->getNumObjects() ) {
 
 	    wstream << "##### OBJECT " << i+1 << " #####" << endl;
