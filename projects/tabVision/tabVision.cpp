@@ -91,6 +91,9 @@ void VisionTab::onButton(wxCommandEvent &evt) {
 		case button_cloud:
 			cloud();
 		break;
+		case button_color:
+			color();
+		break;
 		case button_depthMap:
 			depthMap();
 		break;	
@@ -292,6 +295,28 @@ void VisionTab::cloud () {
   printf("PCD file saved.\n"); fflush(stdout);
 }
 
+void VisionTab::color () {
+
+	// Get the color data
+	const size_t kWidth = 640, kHeight = 480;
+  unsigned char* imageData = (unsigned char*) malloc(kWidth * kHeight * 3); 
+	unsigned char* im = new unsigned char [3 * kWidth * kHeight];
+	glReadPixels(0,0, kWidth, kHeight, GL_RGB, GL_UNSIGNED_BYTE, im);
+
+  wxImage img_ud(kWidth,kHeight,im);
+  wxImage img = img_ud.Mirror(false);
+
+	// Create the frame and visualize
+	wxFrame* frame = new wxFrame(NULL, wxID_ANY, wxT("Color Image"), wxPoint(50,50), wxSize(kWidth, kHeight));
+ 	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
+	wxImagePanel* drawPane = new wxImagePanel(frame, img);
+  sizer->Add(drawPane, 1, wxEXPAND);
+	frame->SetSizer(sizer);
+	frame->Show();
+
+	
+}
+
 void VisionTab::depthMap () {
 
 	// Get the disparities
@@ -321,7 +346,7 @@ void VisionTab::depthMap () {
   wxImage img = img_ud.Mirror(false);
 
 	// Create the frame and visualize
-	wxFrame* frame = new wxFrame(NULL, wxID_ANY, wxT("Hello wxDC"), wxPoint(50,50), wxSize(800,600));
+	wxFrame* frame = new wxFrame(NULL, wxID_ANY, wxT("Depth Map"), wxPoint(50,50), wxSize(kWidth, kHeight));
  	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
 	wxImagePanel* drawPane = new wxImagePanel(frame, img);
   sizer->Add(drawPane, 1, wxEXPAND);
@@ -346,33 +371,44 @@ VisionTab::VisionTab(wxWindow *parent, const wxWindowID id,
 	leftBoxSizer->Add(new wxButton(this, button_startSearch, wxT("Find Bear!")), 0, wxALL, 10);
 
 	// ===========================================================
-	// 2. Create the right side for 3D data acquisition
+	// 2. Create the middle for 3D data acquisition
 
 	// Create StaticBox container for the two buttons: "Show Cloud" and "Show Depth Map"
-	wxStaticBox* rightBox = new wxStaticBox(this, -1, wxT("3D Data"));
+	wxStaticBox* middleBox = new wxStaticBox(this, -1, wxT("3D Data"));
+	wxStaticBoxSizer* middleBoxSizer = new wxStaticBoxSizer(middleBox, wxVERTICAL);
+
+	// Add the "Attention!" button
+	middleBoxSizer->Add(new wxButton(this, button_cloud, wxT("Show Cloud")), 0, wxALL, 10);
+
+	// Add the "Go!" button
+	middleBoxSizer->Add(new wxButton(this, button_depthMap, wxT("Show Depth Map")), 0, wxALL, 10);
+
+	// ===========================================================
+	// 3. Create the right side for color acquisition
+
+	// Create StaticBox container for the button: "Show Color"
+	wxStaticBox* rightBox = new wxStaticBox(this, -1, wxT("Color Data"));
 	wxStaticBoxSizer* rightBoxSizer = new wxStaticBoxSizer(rightBox, wxVERTICAL);
 
 	// Add the "Attention!" button
-	rightBoxSizer->Add(new wxButton(this, button_cloud, wxT("Show Cloud")), 0, wxALL, 10);
-
-	// Add the "Go!" button
-	rightBoxSizer->Add(new wxButton(this, button_depthMap, wxT("Show Depth Map")), 0, wxALL, 10);
+	rightBoxSizer->Add(new wxButton(this, button_color, wxT("Show Color")), 0, wxALL, 10);
 
 	// ===========================================================
-	// 3. Create empty far right container to look nice
+	// 4. Create empty far right container to look nice
 	wxStaticBox* emptyBox = new wxStaticBox(this, -1, wxT(""));
 	wxStaticBoxSizer* emptyBoxSizer = new wxStaticBoxSizer(emptyBox, wxVERTICAL);
 
 	// ===========================================================
-	// 4. Add both sizers to the full sizer
+	// 5. Add both sizers to the full sizer
 
 	// Create the sizer that controls the tab panel
 	wxBoxSizer* sizerFull = new wxBoxSizer (wxHORIZONTAL);
 	
 	// Add the sides
 	sizerFull->Add(leftBoxSizer, 2, wxALL | wxEXPAND, 10);
+	sizerFull->Add(middleBoxSizer, 2, wxALL | wxEXPAND, 10);
 	sizerFull->Add(rightBoxSizer, 2, wxALL | wxEXPAND, 10);
-	sizerFull->Add(emptyBoxSizer, 5, wxALL | wxEXPAND, 10);
+	sizerFull->Add(emptyBoxSizer, 3, wxALL | wxEXPAND, 10);
 
 	// Set the full sizer as the sizer of this tab
 	SetSizer(sizerFull);

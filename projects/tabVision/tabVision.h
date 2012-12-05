@@ -77,7 +77,8 @@ public:
 		button_attention,
 		button_startSearch,
 		button_cloud,
-		button_depthMap
+		button_depthMap,
+		button_color
 	};
 
 	/// The default constructor
@@ -109,6 +110,9 @@ public:
 
 	/// Displays the depth map mapped to a greyscale image
 	void depthMap ();
+
+	/// Displays the color image
+	void color ();
 
 	/// Handles the state changes in GRIP
 	void GRIPStateChange(){}
