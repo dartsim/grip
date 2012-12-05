@@ -96,7 +96,7 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     tMax = 5;
     tMax = 0;
     InitTimer("",0);
-    std::cout << "GRIPFrame 1" << std::endl;
+    // std::cout << "GRIPFrame 1" << std::endl;
 
 		// ========================================================
 		// A. Create the menu bar
@@ -406,20 +406,23 @@ void GRIPFrame::OnQuickLoad(wxCommandEvent& WXUNUSED(event)) {
  */
 void GRIPFrame::DoLoad(string filename){
 
+	bool debug = false;
+
 	// Create the new world
 	DeleteWorld();
 	DartLoader dl;
 	mWorld = dl.parseWorld( filename.c_str() );
-	mWorld->printInfo();
+	cout << "Loaded file: '" << filename.c_str() << "'" << endl;
+	if(debug) mWorld->printInfo();
 
 	// UpdateTreeView();
-	cout << "--(v) Done Parsing World information (v)--" << endl;
+	if(debug) cout << "--(v) Done Parsing World information (v)--" << endl;
 	treeView->CreateFromWorld();
-	cout << "--(v) Done Updating TreeView (v)--" << endl;
+	if(debug) cout << "--(v) Done Updating TreeView (v)--" << endl;
 	SetStatusText(wxT("--(i) Done Loading and updating the View (i)--"));
 
 	// Extract path to executable & save "lastload" there
-	cout << "--(i) Saving " << filename << " to .lastload file (i)--" << endl;
+	if(debug) cout << "--(i) Saving " << filename << " to .lastload file (i)--" << endl;
 	wxString filename_string(filename.c_str(), wxConvUTF8);
 	saveText(filename_string,".lastload");
 
@@ -435,7 +438,7 @@ void GRIPFrame::DoLoad(string filename){
 	kinematics::BodyNode* cameraNode = getCameraNode();
 	if(cameraNode != NULL) {
 		camera->cameraNode = cameraNode;
-		printf("Set the camera node!\n"); fflush(stdout);
+		if(debug) printf("Set the camera node!\n"); 
 		if(camera->IsShown()) {
 			camera->DrawGLScene();
 			camera->Refresh();
@@ -623,7 +626,6 @@ int GRIPFrame::saveText(wxString scenepath, const char* llfile) {
 	if (lastloadFile) {
 	    lastloadFile  << string(scenepath.mb_str()) << endl;
 	    lastloadFile.close();
-	    cout << "Saved" << endl;
 	    return 0;
         } else {
 	    cout << "Error opening file: " << llfile << endl;
