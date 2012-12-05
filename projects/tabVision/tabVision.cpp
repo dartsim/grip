@@ -65,7 +65,7 @@ void VisionTab::onButton(wxCommandEvent &evt) {
 
   // Traverse each robot in the world to check for a camera
 	bool noCamera = true;
-  for( unsigned int i = 0; i < mWorld->getNumRobots(); i++ ) { 
+  for(int i = 0; i < mWorld->getNumRobots(); i++ ) { 
     robotics::Robot* robot = mWorld->getRobot(i);
     kinematics::BodyNode* cameraNode = robot->getNode("Camera");
     if(cameraNode != NULL) {
@@ -155,7 +155,7 @@ void VisionTab::startSearch () {
 	}
 }
 
-void VisionTab::getDisparities (vector <Vector3d>& disparities, double& focalLength) {
+void VisionTab::getDisparities (vector <Vector3d>& disparities, double& focalLength, Vector2d* range) {
 
 	// Set the constants
 	size_t kWidth = 640, kHeight = 480;
@@ -189,8 +189,9 @@ void VisionTab::getDisparities (vector <Vector3d>& disparities, double& focalLen
 	gluUnProject(300, 200, depths[200 * kWidth + 300], modelMatrix, projMatrix, viewport, &x_, &y_, &z_);
 	focalLength = (300 - 320) * (-z_ / x_);
 
-	// Create the pixel data
+	// Create the pixel data and record the min and max disparities
 	disparities.clear();
+	double minDisp = 100000, maxDisp = 0;
 	for(size_t v = 0; v < kHeight; v++) {
 		for(size_t u = 0; u < kWidth; u++) {
 
@@ -207,16 +208,23 @@ void VisionTab::getDisparities (vector <Vector3d>& disparities, double& focalLen
 			if(-loc(2) > 15.0) continue;		// TODO: Replace 15.0 with camera.zFar
 
 			// Compute the disparity and add noise to it
-			float disparity = (kBaseline * focalLength) / -loc(2);
+			double disparity = (kBaseline * focalLength) / -loc(2);
 		  float r1 = ((float) rand()) / RAND_MAX, r2 = ((float) rand()) / RAND_MAX;
 		  float noiseEffect = sqrt(-2.0 * log(r1)) * cos(2 * M_PI * r2) * kDisparityNoise; 
 			disparity += noiseEffect;
+
+			// Update the min and max
+			minDisp = min(minDisp, disparity);
+			maxDisp = max(maxDisp, disparity);
 
 			// Save the pixel location and the disparity
 			size_t color = (im[k] << 16) | (im[k+1] << 8) | (im[k+2]);
 			disparities.push_back(Vector3d(k2, disparity, color));
 		}
 	}
+
+	// Set the min and max if necessary
+	if(range != NULL) *range = Vector2d(minDisp, maxDisp);
 
 	printf("Data acquired.\n"); fflush(stdout);
 }
@@ -241,7 +249,6 @@ void VisionTab::cloud () {
 	// Set the constants; TODO: Move these constants to class definition
 	size_t kWidth = 640, kHeight = 480;
 	float kBaseline = 0.10;
-	float kDisparityNoise = 0.1;
 
 	// Get the disparities
 	double focalLength;
@@ -287,10 +294,39 @@ void VisionTab::cloud () {
 
 void VisionTab::depthMap () {
 
-	vector <Vector2d> disparities;
-	//getDisparities(disparities);
-	
+	// Get the disparities
+	double focalLength;
+	vector <Vector3d> disparities;
+	Vector2d minMax;
+	getDisparities(disparities, focalLength, &minMax);
+	double range = minMax(1) - minMax(0);
 
+	// Create the wxImage
+	const size_t kWidth = 640, kHeight = 480;
+  unsigned char* imageData = (unsigned char*) malloc(kWidth * kHeight * 3); 
+	memset(imageData, 9, kWidth * kHeight * 3);
+	for(size_t i = 0; i < disparities.size(); i++) {
+
+		// Get the pixel
+		size_t v = (size_t) disparities[i](0) / kWidth;
+		size_t u = (size_t) disparities[i](0) % kWidth;
+		double disparity = disparities[i](1);
+
+		// Set the pixel color
+		size_t k = (u + v * kWidth) * 3;
+		imageData[k] = imageData[k+1] = imageData[k+2] = (size_t) (((disparity - minMax(0)) / range) * 255);
+	}
+
+  wxImage img_ud(kWidth,kHeight,imageData);
+  wxImage img = img_ud.Mirror(false);
+
+	// Create the frame and visualize
+	wxFrame* frame = new wxFrame(NULL, wxID_ANY, wxT("Hello wxDC"), wxPoint(50,50), wxSize(800,600));
+ 	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
+	wxImagePanel* drawPane = new wxImagePanel(frame, img);
+  sizer->Add(drawPane, 1, wxEXPAND);
+	frame->SetSizer(sizer);
+	frame->Show();
 }
 
 VisionTab::VisionTab(wxWindow *parent, const wxWindowID id,
@@ -342,7 +378,12 @@ VisionTab::VisionTab(wxWindow *parent, const wxWindowID id,
 	SetSizer(sizerFull);
 }
 
-//Add a handlers for UI changes
+// Handles for the ImagePanel
+BEGIN_EVENT_TABLE(wxImagePanel, wxPanel)
+EVT_PAINT(wxImagePanel::paintEvent)
+END_EVENT_TABLE()
+
+// Add a handlers for UI changes
 BEGIN_EVENT_TABLE(VisionTab, wxPanel)
 	EVT_COMMAND (wxID_ANY, wxEVT_COMMAND_BUTTON_CLICKED, VisionTab::onButton)
 END_EVENT_TABLE ()

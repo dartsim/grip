@@ -58,10 +58,12 @@ public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	Eigen::Transform<double, 3, Eigen::Affine> camT, prevCamT;
 
-	Matrix3d camRotT;
 	Vector3d worldV, prevWorldV;
+	Matrix3d camRotT;
 	renderer::OpenGLRenderInterface renderer;
 	wxGLContext* context;
+	Vector3d backColor;	/**< Background color */
+	Vector3d gridColor;     /**< Grid color*/
 
 	Viewer( wxWindow * parent, wxWindowID id, const wxPoint & pos,
 		const wxSize& size, long style = 0, const wxString & name =
@@ -69,9 +71,9 @@ public:
 		const wxPalette & palette = wxNullPalette) :
 		 wxGLCanvas(parent, id, pos, size, style, name, attribList, palette),		// Changed for wx 2.8
 //		wxGLCanvas(parent, id, attribList, pos, size, style, name, palette),
-		backColor(0.0, 0.0, 0.0), gridColor(0.5, 0.5, 0.0),
-		camRotT(AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0))),
 		worldV(0.0, 0.0, 0.0),
+		camRotT(AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0))),
+		backColor(0.0, 0.0, 0.0), gridColor(0.5, 0.5, 0.0),
 		camRadius(10.0)
 	{
 		handleEvents = true;
@@ -108,9 +110,6 @@ public:
 	bool doCollisions;
 	bool gridActive;
 	double camRadius;
-
-	Vector3d gridColor;     /**< Grid color*/
-	Vector3d backColor;	/**< Background color */
 
 	bool mouseCaptured;
 
