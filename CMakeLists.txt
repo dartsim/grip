@@ -24,7 +24,7 @@ if(WIN32)
 	set (CMAKE_EXE_LINKER_FLAGS "/LTCG")
 	set (CMAKE_MODULE_LINKER_FLAGS "/LTCG")
 else ()
-   set (CMAKE_INSTALL_PREFIX /usr/local )
+   set (CMAKE_INSTALL_PREFIX /usr )
    set (CMAKE_CXX_FLAGS "-g -O0 -Wall -Wextra -Wpointer-arith -fno-default-inline -fno-implicit-inline-templates -DwxUSE_THREADS -std=c++0x -fpermissive")
 endif()
 
@@ -75,6 +75,10 @@ FILE(APPEND ${GRIP_CONFIG} "\nSET(GRIP_LIBDIR ${CMAKE_INSTALL_PREFIX}/lib)")
 FILE(APPEND ${GRIP_CONFIG} "\nSET(GRIP_LIBRARIES optimized grip optimized ggui optimized gtabs optimized gtools debug gripd debug gguid debug gtabsd debug gtoolsd )")
 FILE(APPEND ${GRIP_CONFIG} "\n\n")
 INSTALL(FILES ${GRIP_CONFIG} DESTINATION share/grip)
+
+# Add an "uninstall" target
+CONFIGURE_FILE ("${PROJECT_SOURCE_DIR}/cmake/uninstall_target.cmake.in" "${PROJECT_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
+ADD_CUSTOM_TARGET (uninstall "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/uninstall_target.cmake")
 
 #####################################
 # Build Projects
