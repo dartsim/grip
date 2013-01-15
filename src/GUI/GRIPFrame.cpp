@@ -660,14 +660,16 @@ void GRIPFrame::updateTimeValue(double value, bool sendSignal) {
     if(tIncrement == 0) return;
     char buf[100];
     sprintf(buf, "%6.2f", tCurrent);
-
     wxString posString = wxString(buf,wxConvUTF8);
     timeText->ChangeValue(posString);
 
     unsigned int timeIndex = (int)((tCurrent/tMax)*((double)timeVector.size()));
+ 
     if(timeIndex > timeVector.size()-1) timeIndex = timeVector.size()-1;
+  
     timeVector[timeIndex]->SetToWorld( mWorld );
     viewer->UpdateCamera();
+    viewer->DrawGLScene();
 
     if(sendSignal) updateAllTabs();
 }
@@ -679,8 +681,8 @@ void GRIPFrame::updateTimeValue(double value, bool sendSignal) {
  */
 void GRIPFrame::OnTimeScroll(wxScrollEvent& event) {
     tCurrent = (double)(event.GetPosition())/(double)tPrecision;
-    //updateTimeValue(tCurrent);
-    updateTimeValue(tCurrent,true);
+   
+    updateTimeValue(tCurrent,true); 
 }
 
 /**
