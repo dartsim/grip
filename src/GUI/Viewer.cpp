@@ -150,21 +150,23 @@ int Viewer::DrawGLScene()
 	glHint(GL_FOG_HINT,GL_NICEST);
 	glHint(GL_POLYGON_SMOOTH_HINT,GL_NICEST);
 
-	gluLookAt(camT(0,3),camT(1,3),camT(2,3), // Camera position
-			  0,0,0, // Target Vector in scene
-			  camT(0,2),camT(1,2),camT(2,2));  // Up Vector from Camera pose
+	gluLookAt(camT(0,3), camT(1,3), camT(2,3),   // Camera position
+              0, 0, 0,                           // Target Vector in scene
+              camT(0,2), camT(1,2), camT(2,2));  // Up Vector from Camera pose
 
-	float position[]= {camT(0,3),camT(1,3),camT(2,3), 1.0}; // Camera position
+	GLfloat position[]= {static_cast<GLfloat>(camT(0,3)),
+			static_cast<GLfloat>(camT(1,3)),
+			static_cast<GLfloat>(camT(2,3)), 1.0}; // Camera position
 	glEnable(GL_TEXTURE_2D);
-	glColor4f(1.0f,1.0f,1.0f,0.0f);
+	glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
 
 	glEnable(GL_LIGHTING);
 	glDisable(GL_LIGHT1);
 	glEnable(GL_LIGHT2);
 
-	float no_mat[] = {0.0f, 0.0f, 0.0f, 1.0f};
-	float diffuse[] = {.7f, .7f, .7f, .7f};
-	float specular[] = {0.5f, 0.5f, 0.5f, 1.0f};
+	GLfloat no_mat[] = {0.0f, 0.0f, 0.0f, 1.0f};
+	GLfloat diffuse[] = {.7f, .7f, .7f, .7f};
+	GLfloat specular[] = {0.5f, 0.5f, 0.5f, 1.0f};
 	glLightfv(GL_LIGHT1, GL_POSITION, position);
 	glLightfv(GL_LIGHT1, GL_AMBIENT, no_mat);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
@@ -388,15 +390,15 @@ void Viewer::addGrid(){
 	double startY=-sizeY/2.f;
 	double endY  =sizeY/2.f;
 
-	GLfloat grid2x2[2][2][3] = {
+	GLdouble grid2x2[2][2][3] = {
 		{{startX, startY, 0.0}, {endX, startY, 0.0}},
 		{{startX, endY, 0.0}, {endX, endY, 0.0}}
 	};
 
-	GLfloat *grid = &grid2x2[0][0][0];
+	GLdouble *grid = &grid2x2[0][0][0];
 
     glEnable(GL_MAP2_VERTEX_3);
-    glMap2f(GL_MAP2_VERTEX_3,
+    glMap2d(GL_MAP2_VERTEX_3,
     0.0, 1.0,  /* U ranges 0..1 */
     3,         /* U stride, 3 floats per coord */
     2,         /* U is 2nd order, ie. linear */
