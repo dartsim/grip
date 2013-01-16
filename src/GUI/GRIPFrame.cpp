@@ -61,6 +61,10 @@
 #include "icons/film.xpm"
 #include "icons/clock.xpm"
 
+#include "icons/simulate.xpm"
+#include "icons/play.xpm"
+#include "icons/stop.xpm"
+
 // Parser
 #include <utils/Parser/dartParser/DartLoader.h>
 
@@ -156,6 +160,10 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     toolBarBitmaps[4] = wxIcon(asterisk_xpm);
     toolBarBitmaps[5] = wxIcon(camera_xpm);
     toolBarBitmaps[6] = wxIcon(film_xpm);
+    toolBarBitmaps[7] = wxIcon(simulate_xpm);
+    toolBarBitmaps[8] = wxIcon(play_xpm);
+    toolBarBitmaps[9] = wxIcon(stop_xpm);
+
     wxBitmap clockBmp = wxBitmap(clock_xpm);
 
     // Create the toolbar and assign the callback functions
@@ -165,6 +173,10 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     filebar->AddTool(wxID_SAVE, _T("Save"),toolBarBitmaps[1], toolBarBitmaps[1], wxITEM_NORMAL,  _T("Save world to .rscene file (Alt-S)"));
     filebar->AddSeparator();
     filebar->AddTool(Tool_quickload, _T("Quick Load"),toolBarBitmaps[2], toolBarBitmaps[2], wxITEM_NORMAL, _T("Load last viewed scene (Alt-Shift-Q)"));
+    filebar->AddSeparator();
+    filebar->AddTool(MenuSimulate, _T("Simulate"),toolBarBitmaps[7], toolBarBitmaps[7], wxITEM_NORMAL, _T("Simulate"));
+    filebar->AddTool(MenuPlay, _T("Play"),toolBarBitmaps[8], toolBarBitmaps[8], wxITEM_NORMAL, _T("Play"));
+    filebar->AddTool(MenuStop, _T("Stop"),toolBarBitmaps[9], toolBarBitmaps[9], wxITEM_NORMAL, _T("Stop"));
     filebar->AddSeparator();
     filebar->AddTool(Tool_screenshot, _T("Screenshot"),toolBarBitmaps[5], toolBarBitmaps[5], wxITEM_NORMAL, _T("Export screenshot"));
     filebar->AddTool(Tool_movie, _T("Movie"),toolBarBitmaps[6], toolBarBitmaps[6], wxITEM_NORMAL, _T("Export film sequence"));
