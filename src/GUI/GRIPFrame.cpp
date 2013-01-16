@@ -821,7 +821,14 @@ void GRIPFrame::OnSimulate(wxCommandEvent& event) {
  * @date 2013-01-15
  */
 void GRIPFrame::OnPlay(wxCommandEvent& event) {
-  printf("Testing OnPlay \n");
+    printf("Testing OnPlay\n");
+    continueSimulation = true;
+
+    int type = 0;
+    wxCommandEvent evt(wxEVT_GRIP_SIMULATE_FRAME,GetId());
+    evt.SetEventObject(this);
+    evt.SetClientData((void*)&type);
+    GetEventHandler()->AddPendingEvent(evt);
 }
 
 /**
@@ -830,7 +837,9 @@ void GRIPFrame::OnPlay(wxCommandEvent& event) {
  * @date 2013-01-15
  */
 void GRIPFrame::OnStop(wxCommandEvent& event) {
-  printf("Testing OnStop \n");
+    continueSimulation = false;
+    printf("Testing OnStop \n");
+}
 }
 
 
