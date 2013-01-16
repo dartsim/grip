@@ -38,6 +38,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <limits>
+#include <ctime>
 
 #include "GUI.h"
 #include "GRIPFrame.h"
@@ -60,6 +62,9 @@
 #include "icons/camera.xpm"
 #include "icons/film.xpm"
 #include "icons/clock.xpm"
+
+#include <robotics/Object.h>
+#include <robotics/Robot.h>
 
 // Parser
 #include <utils/Parser/dartParser/DartLoader.h>
