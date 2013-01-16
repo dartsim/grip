@@ -54,7 +54,39 @@ public:
 			 long style = wxTAB_TRAVERSAL) : wxPanel(parent, id, pos, size, style) {};
 	virtual ~GRIPTab(){}
 
+
+        /* general event */
+        /* TODO: learn more about this */
 	virtual void GRIPStateChange(){};
+
+        /* Fire in relation to dyanmic simulation */
+        /* Suitable for controllers */
+        virtual void GRIPEventSimulationBeforeTimestep(){};
+        virtual void GRIPEventSimulationAfterTimestep(){};
+        virtual void GRIPEventSimulationStart(){};
+        virtual void GRIPEventSimulationEnd(){};
+
+        /* Fire in relation to movie playback/history slider traversal */
+        /* Suitable for displaying graphical effects or object
+         * information */
+        virtual void GRIPEventPlaybackBeforeFrame(){};
+        virtual void GRIPEventPlaybackAfterFrame(){};
+        virtual void GRIPEventPlaybackStart(){};
+        virtual void GRIPEventPlaybackEnd(){};
+
+        /* fires when the world is changed by something other than the
+         * dyanmics simulation, like the inspector tab */
+        virtual void GRIPEventWorldChanged(){};
+        
+        /* fires when a new object is selected in the treeview */
+        virtual void GRIPEventTreeViewSelectionChanged(){};
+        
+        /* fires when worlds are loaded or unloaded */
+        virtual void GRIPEventSceneLoaded(){};
+        virtual void GRIPEventSceneUnloaded(){};
+
+        /* fires during render so tabs can add objects to the world */
+        virtual void GRIPEventRender(){};
 
 	// call GRIPThread::CheckPoint() regularly
 	virtual void Thread() {};
