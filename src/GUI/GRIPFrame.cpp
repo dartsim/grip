@@ -842,6 +842,13 @@ void GRIPFrame::OnSimulateStart(wxCommandEvent& event) {
     continueSimulation = true;
     UpdateAndRedraw();
 
+    // fire simulation start timestep hooks
+    size_t numPages = tabView->GetPageCount();
+    for(size_t i=0; i< numPages; i++) {
+        GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
+	tab->GRIPEventSimulationStart();
+    }
+
     // fire the event that tells us to start simulating
     int type = 0;
     wxCommandEvent evt(wxEVT_GRIP_SIMULATE_FRAME,GetId());
@@ -868,6 +875,13 @@ void GRIPFrame::OnSimulateSingle(wxCommandEvent& event) {
  * @date 2013-01-15
  */
 void GRIPFrame::OnSimulateStop(wxCommandEvent& event) {
+    // fire simulation start timestep hooks
+    size_t numPages = tabView->GetPageCount();
+    for(size_t i=0; i< numPages; i++) {
+        GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
+	tab->GRIPEventSimulationStop();
+    }
+
     continueSimulation = false;
     UpdateAndRedraw();
     printf("Stopping simulation\n");
