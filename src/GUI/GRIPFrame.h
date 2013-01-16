@@ -128,6 +128,8 @@ public:
 
     void onTVChange(wxTreeEvent& event);
 
+    void SimulateFrame(wxCommandEvent& event);
+
     DECLARE_EVENT_TABLE()
 };
 

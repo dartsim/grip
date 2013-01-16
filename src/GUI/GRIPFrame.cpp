@@ -840,6 +840,47 @@ void GRIPFrame::OnStop(wxCommandEvent& event) {
     continueSimulation = false;
     printf("Testing OnStop \n");
 }
+
+void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
+    size_t numPages = tabView->GetPageCount();
+
+    printf("Before simulation \n");
+    for(size_t i=0; i< numPages; i++) {
+        GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
+	tab->GRIPEventSimulationBeforeTimestep();
+    }
+
+    // Simulate a frame
+    mWorld->step();
+
+    // redraw if necessary
+    if (clock() - timeLastRedraw > (float)CLOCKS_PER_SEC/30.0) // 30-ish hz redraw
+    {
+        for (int j = 0; j < mWorld->getNumRobots(); j++) {
+            mWorld->getRobot(j)->update();
+        }
+        for (int j = 0; j < mWorld->getNumObjects(); j++) {
+            mWorld->getObject(j)->update();
+        }
+        viewer->DrawGLScene();
+        timeLastRedraw = clock();
+    }
+
+    printf("After simulation \n");
+    for(size_t i=0; i< numPages; i++) {
+        GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
+	tab->GRIPEventSimulationAfterTimestep();
+    }
+
+    if (continueSimulation) {
+        wxYield();
+        printf("Continuing \n");
+        int type = 0;
+        wxCommandEvent evt(wxEVT_GRIP_SIMULATE_FRAME,GetId());
+        evt.SetEventObject(this);
+        evt.SetClientData((void*)&type);
+        GetEventHandler()->AddPendingEvent(evt);
+    }
 }
 
 
@@ -878,6 +919,8 @@ EVT_MENU(Tool_screenshot, GRIPFrame::OnToolScreenshot)
 EVT_MENU(Tool_movie, GRIPFrame::OnToolMovie)
 
 EVT_TREE_SEL_CHANGED(TreeViewHandle,GRIPFrame::onTVChange)
+
+EVT_COMMAND(wxID_ANY, wxEVT_GRIP_SIMULATE_FRAME, GRIPFrame::SimulateFrame)
 
 //	EVT_BUTTON (BUTTON_Hello, GRIPFrame::OnQuit )
 END_EVENT_TABLE()
