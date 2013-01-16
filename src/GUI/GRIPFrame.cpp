@@ -879,7 +879,7 @@ void GRIPFrame::OnSimulateStop(wxCommandEvent& event) {
     size_t numPages = tabView->GetPageCount();
     for(size_t i=0; i< numPages; i++) {
         GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
-	tab->GRIPEventSimulationEnd();
+	tab->GRIPEventSimulationStop();
     }
 
     continueSimulation = false;
