@@ -422,6 +422,14 @@ void GRIPFrame::DoLoad(string filename){
 	treeView->ExpandAll();
 	updateAllTabs();
 
+        // fire SceneLoaded hooks
+        size_t numPages = tabView->GetPageCount();
+        for(size_t i=0; i< numPages; i++) {
+            GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
+            tab->GRIPEventSceneLoaded();
+        }
+        
+
 	viewer->DrawGLScene();
 }
 
