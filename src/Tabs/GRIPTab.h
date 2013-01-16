@@ -64,7 +64,7 @@ public:
         virtual void GRIPEventSimulationBeforeTimestep(){};
         virtual void GRIPEventSimulationAfterTimestep(){};
         virtual void GRIPEventSimulationStart(){};
-        virtual void GRIPEventSimulationEnd(){};
+        virtual void GRIPEventSimulationStop(){};
 
         /* Fire in relation to movie playback/history slider traversal */
         /* Suitable for displaying graphical effects or object
@@ -72,7 +72,7 @@ public:
         virtual void GRIPEventPlaybackBeforeFrame(){};
         virtual void GRIPEventPlaybackAfterFrame(){};
         virtual void GRIPEventPlaybackStart(){};
-        virtual void GRIPEventPlaybackEnd(){};
+        virtual void GRIPEventPlaybackStop(){};
 
         /* fires when the world is changed by something other than the
          * dyanmics simulation, like the inspector tab */
