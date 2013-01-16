@@ -71,7 +71,7 @@ enum toolNums{
     Tool_open= 1262,
     Tool_save= 1263,
     Tool_quickload = 1264,
-
+    
     Tool_linkorder = 1265,
     Tool_checkcollisions = 1266,
     Tool_screenshot = 1267,
@@ -95,17 +95,17 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     InitTimer("",0);
     std::cout << "GRIPFrame 1" << std::endl;
 
-		// ========================================================
-		// A. Create the menu bar
-
+    // ========================================================
+    // A. Create the menu bar
+    
     wxMenu *fileMenu = new wxMenu;
     wxMenu *helpMenu = new wxMenu;
     wxMenu *settingsMenu = new wxMenu;
-		wxMenu *renderMenu = new wxMenu;
+    wxMenu *renderMenu = new wxMenu;
     wxMenu *bgMenu = new wxMenu;
-    //wxMenu *saveMenu = new wxMenu;
-
-		// Create the file menu
+    wxMenu *simMenu = new wxMenu;
+    
+    // Create the file menu
     fileMenu->Append(MenuLoad, wxT("L&oad\tAlt-O"));
     fileMenu->Append(MenuQuickLoad, wxT("Q&uickLoad\tAlt-Shift-Q"));
     fileMenu->Append(MenuSaveScene, wxT("Save Scene"));
@@ -115,33 +115,40 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     fileMenu->AppendSeparator();
     fileMenu->Append(MenuQuit, wxT("E&xit\tAlt-Q"));
 
-		// Create the background menu
+    // Create the simulation menu
+    simMenu->Append(MenuSimulate, wxT("Simulate"));
+    simMenu->Append(MenuPlay, wxT("Play"));
+    simMenu->Append(MenuStop, wxT("Stop"));
+
+    // Create the background menu
     bgMenu->Append(MenuBgWhite, wxT("White"));
     bgMenu->Append(MenuBgBlack, wxT("Black"));
+    
+    // Create the render menu
+    renderMenu->Append(MenuRenderXGA, wxT("XGA 1024x768"));
+    renderMenu->Append(MenuRenderVGA, wxT("VGA 640x480"));
+    renderMenu->Append(MenuRenderHD, wxT("HD 1280x720"));
 
-		// Create the render menu
-	  renderMenu->Append(MenuRenderXGA, wxT("XGA 1024x768"));
-	  renderMenu->Append(MenuRenderVGA, wxT("VGA 640x480"));
-	  renderMenu->Append(MenuRenderHD, wxT("HD 1280x720"));
-
-		// Create the settings menu
+    // Create the settings menu
     settingsMenu->AppendSubMenu(bgMenu, wxT("Background"));
     settingsMenu->Append(MenuCameraReset, wxT("Reset Camera"));
-
-		// Create the help menu
+    
+    // Create the help menu
     helpMenu->Append(MenuAbout, wxT("&About...\tF1"), wxT("Show about dialog"));
+    
 
-		// Add all the menus to the menu bar
+    // Add all the menus to the menu bar
     wxMenuBar *menuBar = new wxMenuBar();
     menuBar->Append(fileMenu, wxT("&File"));
+    menuBar->Append(simMenu, wxT("S&imulation"));
     menuBar->Append(settingsMenu, wxT("&Settings"));
-	  menuBar->Append(renderMenu, wxT("&Render"));
+    menuBar->Append(renderMenu, wxT("&Render"));
     menuBar->Append(helpMenu, wxT("&Help"));
 
-		// ========================================================
-		// B. Create the toolbar icons for shortcuts
-
-		// Get the bitmaps
+    // ========================================================
+    // B. Create the toolbar icons for shortcuts
+    
+    // Get the bitmaps
     toolBarBitmaps[0] = wxIcon(open_xpm);
     toolBarBitmaps[1] = wxIcon(save_xpm);
     toolBarBitmaps[2] = wxIcon(redo_xpm);
@@ -151,7 +158,7 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     toolBarBitmaps[6] = wxIcon(film_xpm);
     wxBitmap clockBmp = wxBitmap(clock_xpm);
 
-		// Create the toolbar and assign the callback functions
+    // Create the toolbar and assign the callback functions
     filebar = new wxToolBar(this,ID_TOOLBAR,wxPoint(0, 0), wxSize(prefTreeViewWidth+50, toolBarHeight), wxTB_HORIZONTAL);
     filebar->SetToolBitmapSize(wxSize(16, 16));
     filebar->AddTool(wxID_OPEN, _T("Open"),toolBarBitmaps[0], toolBarBitmaps[0], wxITEM_NORMAL, _T("Open .rscene file (Alt-O)"));
@@ -161,17 +168,17 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     filebar->AddSeparator();
     filebar->AddTool(Tool_screenshot, _T("Screenshot"),toolBarBitmaps[5], toolBarBitmaps[5], wxITEM_NORMAL, _T("Export screenshot"));
     filebar->AddTool(Tool_movie, _T("Movie"),toolBarBitmaps[6], toolBarBitmaps[6], wxITEM_NORMAL, _T("Export film sequence"));
-
-		// Create the sizer for the filebar
-		wxSizer* fileBarBox = new wxBoxSizer(wxVERTICAL);
-		fileBarBox->Add(filebar, 0, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
-
-		// ========================================================
-		// C. Create the time slider
-		
+    
+    // Create the sizer for the filebar
+    wxSizer* fileBarBox = new wxBoxSizer(wxVERTICAL);
+    fileBarBox->Add(filebar, 0, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
+    
+    // ========================================================
+    // C. Create the time slider
+    
     //timeSlider = new GRIPSlider(clockBmp,0,1000,100,0,100,500,this,ID_TIMESLIDER,true);
     wxPanel* timePanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, 0);
-
+    
 #ifdef WIN32 /// For windows use a thicker slider - it looks nice
     timeTrack = new wxSlider(timePanel,1009,0,0,1000,wxDefaultPosition, wxSize(30,100), wxSL_BOTH | wxSL_VERTICAL | wxALIGN_CENTRE);
 #else
@@ -182,9 +189,9 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     sizerTime->Add(timeButton,0 , wxALIGN_CENTRE | wxEXPAND | wxALL, 2);
     sizerTime->Add(timeTrack,1 , wxALIGN_CENTRE | wxEXPAND | wxALL, 2);
 
-		// ========================================================
-		// D. Create the option bar
-
+    // ========================================================
+    // D. Create the option bar
+    
     optionbar = new wxToolBar(this,ID_TOOLBAR,wxPoint(0, 0), wxSize(prefTreeViewWidth+50, toolBarHeight), wxTB_HORIZONTAL);
     // wxBitmap optionBarBitmaps[2];
     optionbar->SetToolBitmapSize(wxSize(16, 16));
@@ -195,85 +202,85 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     optionbar->AddSeparator();
     optionbar->AddControl(timeText);
 
-		// Create the sizer for the optionbar
-		wxSizer* optionBarBox = new wxBoxSizer(wxVERTICAL);
-		optionBarBox->Add(optionbar, 0, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
-
-		// ========================================================
-		// E. Create the status bar
-
-	  CreateStatusBar(2);
+    // Create the sizer for the optionbar
+    wxSizer* optionBarBox = new wxBoxSizer(wxVERTICAL);
+    optionBarBox->Add(optionbar, 0, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
+    
+    // ========================================================
+    // E. Create the status bar
+    
+    CreateStatusBar(2);
     SetStatusText(wxT("GRIP Loading..."));
-
-  	// ========================================================
-		// F. Create the layout: treeView, tabView and 3D viewer.
-
+    
+    // ========================================================
+    // F. Create the layout: treeView, tabView and 3D viewer.
+    
     // Create sizers - these will manage the layout/resizing of the frame elements
     wxSizer *sizerFull = new wxBoxSizer(wxVERTICAL);
     wxSizer *sizerTop = new wxBoxSizer(wxHORIZONTAL);
     wxSizer *sizerRight = new wxBoxSizer(wxVERTICAL);
     wxSizer *sizerRightH = new wxBoxSizer(wxHORIZONTAL);
     wxSizer *sizerBottom = new wxBoxSizer(wxHORIZONTAL);
-
-		// ********************************************
-		// F1a. Create the LHS of the top sizer: 3D
- 
-		// Create the 3D viewer
-		#ifndef WIN32 // Weird hack to make wxWidgets work in Linux
-    	Show();
-		#endif
+    
+    // ********************************************
+    // F1a. Create the LHS of the top sizer: 3D
+    
+    // Create the 3D viewer
+#ifndef WIN32 // Weird hack to make wxWidgets work in Linux
+    Show();
+#endif
     {
-        int attrib[] = {
-            WX_GL_DOUBLEBUFFER,
-            WX_GL_RGBA,
-            WX_GL_DEPTH_SIZE, 16,
-            0
-        };
-        viewer = new Viewer(this, -1, wxPoint(0, 0), wxSize(prefViewerWidth, prefViewerHeight),
-                            wxFULL_REPAINT_ON_RESIZE | wxSUNKEN_BORDER, _T("GLCanvas"), attrib);
+      int attrib[] = {
+	WX_GL_DOUBLEBUFFER,
+	WX_GL_RGBA,
+	WX_GL_DEPTH_SIZE, 16,
+	0
+      };
+      viewer = new Viewer(this, -1, wxPoint(0, 0), wxSize(prefViewerWidth, prefViewerHeight),
+			  wxFULL_REPAINT_ON_RESIZE | wxSUNKEN_BORDER, _T("GLCanvas"), attrib);
     }
-		#ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
-    	viewer->MSWSetOldWndProc((WXFARPROC)DefWindowProc);
-		#endif
-
-		// Add the viewer to the sizer
+#ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
+    viewer->MSWSetOldWndProc((WXFARPROC)DefWindowProc);
+#endif
+    
+    // Add the viewer to the sizer
     sizerTop->Add(viewer, 1, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
-
-		// ********************************************
-		// F1b. Create the RHS of the top sizer
- 
-		// Create the treeview that will go to the right handside of the top sizer. kHackOffset is referenced below.
-		static const size_t kHackOffset = 30;
+    
+    // ********************************************
+    // F1b. Create the RHS of the top sizer
+    
+    // Create the treeview that will go to the right handside of the top sizer. kHackOffset is referenced below.
+    static const size_t kHackOffset = 30;
     treeView = new TreeView(this, TreeViewHandle, wxPoint(0, 0), wxSize(prefTreeViewWidth, prefViewerHeight-2*toolBarHeight - kHackOffset),
                             wxTR_LINES_AT_ROOT | wxTR_HAS_BUTTONS | wxTR_HIDE_ROOT | wxSUNKEN_BORDER);
     sizerRightH->Add((wxTreeCtrl*)treeView, 1, wxALIGN_CENTRE | wxALL | wxEXPAND, 0);
 
-		// Also add the time panel created above. Note that RightH is horizontal
-		// so we need to add treeView and timePanel next to each other.
+    // Also add the time panel created above. Note that RightH is horizontal
+    // so we need to add treeView and timePanel next to each other.
     timePanel->SetSizer(sizerTime);
     sizerRightH->Add(timePanel,0, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
-
-		// Add the three parts of the right handside vertically. sizerRight is vertical.
+    
+    // Add the three parts of the right handside vertically. sizerRight is vertical.
     sizerRight->Add(filebar,0, wxALIGN_TOP | wxALL, 0);
     sizerRight->Add(sizerRightH, 1 , wxALIGN_TOP | wxEXPAND | wxALL, 0);
     sizerRight->Add(optionbar,0, wxALIGN_TOP | wxALL, 0);
-
-		// HACK: To make sure that the optionbar is not blocked by the sizerRHS
+    
+    // HACK: To make sure that the optionbar is not blocked by the sizerRHS
     wxSize rs = sizerRight->GetMinSize();
     sizerRight->SetMinSize(rs.x, rs.y + kHackOffset);
-
+    
     // Finally, add the RHS to the top sizer:
-		/// Set the proportion flag to 0 (for wxHORIZONTAL sizer) to fix the width to its minimal size
+    /// Set the proportion flag to 0 (for wxHORIZONTAL sizer) to fix the width to its minimal size
     sizerTop->Add(sizerRight, 0, wxALIGN_RIGHT | wxEXPAND | wxALL, 0);
-	
-		// End of F1: Add the top to the full sizer:
+    
+    // End of F1: Add the top to the full sizer:
     // Add elements to the sizers, setting the proportion flag to 1 and using the
     // wxEXPAND flag to ensure that the Viewer fills the entire sizer (subject to constraints)
     sizerFull->Add(sizerTop, 1,  wxEXPAND | wxALL,  0 );
-	
-		// ********************************************
-		// F2. Create the bottom sizer 
- 
+    
+    // ********************************************
+    // F2. Create the bottom sizer 
+    
     /// Adding a backPanel to the lower half of the window covers the generic "inner grey"
     /// with a forms-like control color. The tabView is added to the backPanel
     backPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, 0);
@@ -287,16 +294,16 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     /// Place the back panel on the lower part of the window (0 fixes the height for wxVERTICAL sizer)
     sizerFull->Add(backPanel, 0, wxEXPAND | wxALL, 0);
 
-		// ========================================================
-		// G. Set the fullSizer as the frame's sizer and wrap up
-
-		// Set the sizer
+    // ========================================================
+    // G. Set the fullSizer as the frame's sizer and wrap up
+    
+    // Set the sizer
     SetSizer(sizerFull);
     sizerFull->SetSizeHints( this );
     filebar->Realize();
     optionbar->Realize();
-
-		// Start the OpenGL visualization
+    
+    // Start the OpenGL visualization
     Show();
     viewer->Freeze();
     viewer->InitGL();
@@ -796,6 +803,34 @@ void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)) {
 	viewer->DrawGLScene();
 }
 
+/**
+ * @function OnSimulate 
+ * @brief Activate/Deactivate dynamic simulation
+ * @date 2013-01-15
+ */
+void GRIPFrame::OnSimulate(wxCommandEvent& event) {
+  printf("Testing OnSimulate \n");
+}
+
+/**
+ * @function OnPlay 
+ * @brief 
+ * @date 2013-01-15
+ */
+void GRIPFrame::OnPlay(wxCommandEvent& event) {
+  printf("Testing OnPlay \n");
+}
+
+/**
+ * @function OnStop
+ * @brief 
+ * @date 2013-01-15
+ */
+void GRIPFrame::OnStop(wxCommandEvent& event) {
+  printf("Testing OnStop \n");
+}
+
+
 BEGIN_EVENT_TABLE(GRIPFrame, wxFrame)
 EVT_COMMAND_SCROLL(1009, GRIPFrame::OnTimeScroll)
 EVT_TEXT_ENTER(1008, GRIPFrame::OnTimeEnter)
@@ -808,6 +843,10 @@ EVT_MENU(wxID_CLOSE,  GRIPFrame::OnClose)
 EVT_MENU(MenuClose,  GRIPFrame::OnClose)
 EVT_MENU(MenuQuit,  GRIPFrame::OnQuit)
 EVT_MENU(MenuAbout, GRIPFrame::OnAbout)
+
+EVT_MENU(MenuSimulate,  GRIPFrame::OnSimulate)
+EVT_MENU(MenuPlay,  GRIPFrame::OnPlay)
+EVT_MENU(MenuStop, GRIPFrame::OnStop)
 
 EVT_MENU(MenuBgWhite,  GRIPFrame::OnWhite)
 EVT_MENU(MenuBgBlack, GRIPFrame::OnBlack)

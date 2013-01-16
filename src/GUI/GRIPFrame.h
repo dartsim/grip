@@ -92,6 +92,11 @@ public:
     void OnToolMovie(wxCommandEvent& event);
     void OnClose(wxCommandEvent& event);
 
+    void OnSimulate(wxCommandEvent& event);
+    void OnPlay(wxCommandEvent& event);
+    void OnStop(wxCommandEvent& event);
+
+
     void OnTimeScroll(wxScrollEvent &evt);
     void OnTimeEnter(wxCommandEvent &evt);
 
@@ -126,20 +131,23 @@ public:
 
 enum
 {
-    MenuSaveScene = wxID_HIGHEST+1,
-    MenuSaveRobot,
-    MenuLoad,
-    MenuQuickLoad,
-    MenuClose,
-    MenuBgWhite,
-    MenuBgBlack,
-	MenuRenderXGA,
-	MenuRenderVGA,
-	MenuRenderHD,
-    MenuCameraReset,
-
-    MenuQuit = wxID_EXIT,
-    MenuAbout = wxID_ABOUT
+  MenuSaveScene = wxID_HIGHEST+1,
+  MenuSaveRobot,
+  MenuLoad,
+  MenuQuickLoad,
+  MenuClose,
+  MenuBgWhite,
+  MenuBgBlack,
+  MenuRenderXGA,
+  MenuRenderVGA,
+  MenuRenderHD,
+  MenuCameraReset,
+  MenuSimulate,
+  MenuPlay,
+  MenuStop,
+  
+  MenuQuit = wxID_EXIT,
+  MenuAbout = wxID_ABOUT
 };
 
 
