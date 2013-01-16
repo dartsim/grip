@@ -641,11 +641,6 @@ void GRIPFrame::onTVChange(wxTreeEvent& WXUNUSED(event)){
  * @date 2011-10-13
  */
 void GRIPFrame::updateAllTabs() {
-
-    int type = 0;
-    wxCommandEvent evt(wxEVT_GRIP_STATE_CHANGE,GetId());
-    evt.SetEventObject(this);
-    evt.SetClientData((void*)&type);
     size_t numPages = tabView->GetPageCount();
     for(size_t i=0; i< numPages; i++){
         GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
