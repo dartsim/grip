@@ -67,6 +67,9 @@ class GRIPFrame : public wxFrame
 public:
     GRIPFrame(const wxString& title);
 
+    int continueSimulation;
+    clock_t timeLastRedraw;
+
     wxPanel *backPanel;
 
     GRIPSlider *timeSlider;

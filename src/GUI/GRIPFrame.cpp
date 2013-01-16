@@ -100,6 +100,9 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     InitTimer("",0);
     std::cout << "GRIPFrame 1" << std::endl;
 
+    continueSimulation = false;
+    timeLastRedraw = -1;
+
     // ========================================================
     // A. Create the menu bar
     
