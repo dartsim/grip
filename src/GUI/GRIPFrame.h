@@ -95,10 +95,11 @@ public:
     void OnToolMovie(wxCommandEvent& event);
     void OnClose(wxCommandEvent& event);
 
-    void OnSimulate(wxCommandEvent& event);
-    void OnPlay(wxCommandEvent& event);
-    void OnStop(wxCommandEvent& event);
+    void OnSimulateStart(wxCommandEvent& event);
+    void OnSimulateStop(wxCommandEvent& event);
+    void OnSimulateSingle(wxCommandEvent& event);
 
+    void OnPlay(wxCommandEvent& event);
 
     void OnTimeScroll(wxScrollEvent &evt);
     void OnTimeEnter(wxCommandEvent &evt);
@@ -122,6 +123,7 @@ public:
     void updateTimeValue( double value, bool sendSignal = false );
 
     void updateAllTabs();
+    void UpdateAndRedraw();
 
     void DoLoad(string filename);
     void DeleteWorld();
@@ -147,9 +149,10 @@ enum
   MenuRenderVGA,
   MenuRenderHD,
   MenuCameraReset,
-  MenuSimulate,
+  MenuSimulateStart,
+  MenuSimulateStop,
+  MenuSimulateSingle,
   MenuPlay,
-  MenuStop,
   
   MenuQuit = wxID_EXIT,
   MenuAbout = wxID_ABOUT
