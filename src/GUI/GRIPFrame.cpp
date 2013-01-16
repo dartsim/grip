@@ -127,9 +127,9 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     fileMenu->Append(MenuQuit, wxT("E&xit\tAlt-Q"));
 
     // Create the simulation menu
-    simMenu->Append(MenuSimulate, wxT("Simulate"));
-    simMenu->Append(MenuPlay, wxT("Play"));
-    simMenu->Append(MenuStop, wxT("Stop"));
+    simMenu->Append(MenuSimulateStart, wxT("Start simulation"));
+    simMenu->Append(MenuSimulateStop, wxT("Stop Simulation"));
+    simMenu->Append(MenuSimulateSingle, wxT("Simulate Single Step"));
 
     // Create the background menu
     bgMenu->Append(MenuBgWhite, wxT("White"));
@@ -181,9 +181,9 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     // filebar->AddSeparator();
     filebar->AddTool(Tool_quickload, _T("Quick Load"),toolBarBitmaps[2], toolBarBitmaps[2], wxITEM_NORMAL, _T("Load last viewed scene (Alt-Shift-Q)"));
     filebar->AddSeparator();
-    filebar->AddTool(MenuSimulate, _T("Simulate"),toolBarBitmaps[7], toolBarBitmaps[7], wxITEM_NORMAL, _T("Simulate"));
-    filebar->AddTool(MenuPlay, _T("Play"),toolBarBitmaps[8], toolBarBitmaps[8], wxITEM_NORMAL, _T("Play"));
-    filebar->AddTool(MenuStop, _T("Stop"),toolBarBitmaps[9], toolBarBitmaps[9], wxITEM_NORMAL, _T("Stop"));
+    filebar->AddTool(MenuSimulateStart, _T("Start Simulation"),toolBarBitmaps[7], toolBarBitmaps[7], wxITEM_NORMAL, _T("Start Simulation"));
+    // filebar->AddTool(MenuPlay, _T("Play"),toolBarBitmaps[8], toolBarBitmaps[8], wxITEM_NORMAL, _T("Play"));
+    filebar->AddTool(MenuSimulateStop, _T("Stop Simulation"),toolBarBitmaps[9], toolBarBitmaps[9], wxITEM_NORMAL, _T("Stop Simulation"));
     filebar->AddSeparator();
     filebar->AddTool(Tool_screenshot, _T("Screenshot"),toolBarBitmaps[5], toolBarBitmaps[5], wxITEM_NORMAL, _T("Export screenshot"));
     filebar->AddTool(Tool_movie, _T("Movie"),toolBarBitmaps[6], toolBarBitmaps[6], wxITEM_NORMAL, _T("Export film sequence"));
@@ -818,23 +818,16 @@ void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)) {
 }
 
 /**
- * @function OnSimulate 
+ * @function OnSimulateStart 
  * @brief Activate/Deactivate dynamic simulation
  * @date 2013-01-15
  */
-void GRIPFrame::OnSimulate(wxCommandEvent& event) {
-  printf("Testing OnSimulate \n");
-}
-
-/**
- * @function OnPlay 
- * @brief 
- * @date 2013-01-15
- */
-void GRIPFrame::OnPlay(wxCommandEvent& event) {
-    printf("Testing OnPlay\n");
+void GRIPFrame::OnSimulateStart(wxCommandEvent& event) {
+    printf("Simulating... \n");
     continueSimulation = true;
+    UpdateAndRedraw();
 
+    // fire the event that tells us to start simulating
     int type = 0;
     wxCommandEvent evt(wxEVT_GRIP_SIMULATE_FRAME,GetId());
     evt.SetEventObject(this);
@@ -843,13 +836,26 @@ void GRIPFrame::OnPlay(wxCommandEvent& event) {
 }
 
 /**
- * @function OnStop
+ * @function OnSimulateSingle
+ * @brief Run dynamic simulation for one frame
+ * @date 2013-01-16
+ */
+void GRIPFrame::OnSimulateSingle(wxCommandEvent& event) {
+    printf("Simulating Single... \n");
+    continueSimulation = true;
+    SimulateFrame(event);
+    continueSimulation = false;
+}
+
+/**
+ * @function OnSimulateStop
  * @brief 
  * @date 2013-01-15
  */
-void GRIPFrame::OnStop(wxCommandEvent& event) {
+void GRIPFrame::OnSimulateStop(wxCommandEvent& event) {
     continueSimulation = false;
-    printf("Testing OnStop \n");
+    UpdateAndRedraw();
+    printf("Stopping simulation\n");
 }
 
 void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
@@ -857,7 +863,7 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
 
     size_t numPages = tabView->GetPageCount();
 
-    printf("Before simulation \n");
+    // fire before timestep hooks
     for(size_t i=0; i< numPages; i++) {
         GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
 	tab->GRIPEventSimulationBeforeTimestep();
@@ -869,29 +875,45 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
     // redraw if necessary
     if (clock() - timeLastRedraw > (float)CLOCKS_PER_SEC/30.0) // 30-ish hz redraw
     {
-        for (int j = 0; j < mWorld->getNumRobots(); j++) {
-            mWorld->getRobot(j)->update();
-        }
-        for (int j = 0; j < mWorld->getNumObjects(); j++) {
-            mWorld->getObject(j)->update();
-        }
-        viewer->DrawGLScene();
-        timeLastRedraw = clock();
+        UpdateAndRedraw();
     }
 
-    printf("After simulation \n");
+    // fire after timestep hooks
     for(size_t i=0; i< numPages; i++) {
         GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
 	tab->GRIPEventSimulationAfterTimestep();
     }
 
+    // fire the event for the next simulation step. note that we
+    // actually do fire an event here, making sure that the rest of
+    // the UI gets its chance to do things.
     wxYield();
-    printf("Continuing \n");
     int type = 0;
     wxCommandEvent evt(wxEVT_GRIP_SIMULATE_FRAME,GetId());
     evt.SetEventObject(this);
     evt.SetClientData((void*)&type);
     GetEventHandler()->AddPendingEvent(evt);
+}
+
+/**
+ * @function OnPlay 
+ * @brief 
+ * @date 2013-01-15
+ */
+void GRIPFrame::OnPlay(wxCommandEvent& event) {
+    printf("OnPlay\n");
+}
+
+void GRIPFrame::UpdateAndRedraw()
+{
+    for (int j = 0; j < mWorld->getNumRobots(); j++) {
+        mWorld->getRobot(j)->update();
+    }
+    for (int j = 0; j < mWorld->getNumObjects(); j++) {
+        mWorld->getObject(j)->update();
+    }
+    viewer->DrawGLScene();
+    timeLastRedraw = clock();
 }
 
 
@@ -908,9 +930,9 @@ EVT_MENU(MenuClose,  GRIPFrame::OnClose)
 EVT_MENU(MenuQuit,  GRIPFrame::OnQuit)
 EVT_MENU(MenuAbout, GRIPFrame::OnAbout)
 
-EVT_MENU(MenuSimulate,  GRIPFrame::OnSimulate)
-EVT_MENU(MenuPlay,  GRIPFrame::OnPlay)
-EVT_MENU(MenuStop, GRIPFrame::OnStop)
+EVT_MENU(MenuSimulateStart,  GRIPFrame::OnSimulateStart)
+EVT_MENU(MenuSimulateStop, GRIPFrame::OnSimulateStop)
+EVT_MENU(MenuSimulateSingle,  GRIPFrame::OnSimulateSingle)
 
 EVT_MENU(MenuBgWhite,  GRIPFrame::OnWhite)
 EVT_MENU(MenuBgBlack, GRIPFrame::OnBlack)
