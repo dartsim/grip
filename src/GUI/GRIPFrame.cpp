@@ -853,6 +853,11 @@ void GRIPFrame::OnStop(wxCommandEvent& event) {
 }
 
 void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
+    if (!continueSimulation) {
+        return;
+    }
+
+
     size_t numPages = tabView->GetPageCount();
 
     printf("Before simulation \n");
@@ -883,15 +888,13 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
 	tab->GRIPEventSimulationAfterTimestep();
     }
 
-    if (continueSimulation) {
-        wxYield();
-        printf("Continuing \n");
-        int type = 0;
-        wxCommandEvent evt(wxEVT_GRIP_SIMULATE_FRAME,GetId());
-        evt.SetEventObject(this);
-        evt.SetClientData((void*)&type);
-        GetEventHandler()->AddPendingEvent(evt);
-    }
+    wxYield();
+    printf("Continuing \n");
+    int type = 0;
+    wxCommandEvent evt(wxEVT_GRIP_SIMULATE_FRAME,GetId());
+    evt.SetEventObject(this);
+    evt.SetClientData((void*)&type);
+    GetEventHandler()->AddPendingEvent(evt);
 }
 
 
