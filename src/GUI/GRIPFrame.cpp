@@ -853,10 +853,7 @@ void GRIPFrame::OnStop(wxCommandEvent& event) {
 }
 
 void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
-    if (!continueSimulation) {
-        return;
-    }
-
+    if (!continueSimulation) { return; }
 
     size_t numPages = tabView->GetPageCount();
 
