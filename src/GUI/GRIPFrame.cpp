@@ -838,6 +838,11 @@ void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)) {
  * @date 2013-01-15
  */
 void GRIPFrame::OnSimulateStart(wxCommandEvent& event) {
+    if (continueSimulation) {
+        std::cout << "Already simulating." << std::endl << std::flush;
+        return;
+    }
+
     std::cout << "Simulating..." << std::endl << std::flush;
     continueSimulation = true;
     UpdateAndRedraw();
