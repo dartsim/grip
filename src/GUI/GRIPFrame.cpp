@@ -400,37 +400,37 @@ void GRIPFrame::OnQuickLoad(wxCommandEvent& WXUNUSED(event)) {
  * @function DoLoad
  * @brief Load world from RSDH file
  */
-void GRIPFrame::DoLoad(string filename){
+void GRIPFrame::DoLoad(string filename)
+{
+    DeleteWorld();
+    DartLoader dl;
 
-	DeleteWorld();
-  			DartLoader dl;
-        mWorld = dl.parseWorld( filename.c_str() );
-        mWorld->printInfo();
+    mWorld = dl.parseWorld( filename.c_str() );
+    mWorld->printInfo();
 
-        // UpdateTreeView();
-	cout << "--(v) Done Parsing World information (v)--" << endl;
-	treeView->CreateFromWorld();
-	cout << "--(v) Done Updating TreeView (v)--" << endl;
-	SetStatusText(wxT("--(i) Done Loading and updating the View (i)--"));
+    // UpdateTreeView();
+    cout << "--(v) Done Parsing World information (v)--" << endl;
+    treeView->CreateFromWorld();
+    cout << "--(v) Done Updating TreeView (v)--" << endl;
+    SetStatusText(wxT("--(i) Done Loading and updating the View (i)--"));
 
-	/// Extract path to executable & save "lastload" there
-	cout << "--(i) Saving " << filename << " to .lastload file (i)--" << endl;
-        wxString filename_string(filename.c_str(), wxConvUTF8);
-	saveText(filename_string,".lastload");
+    /// Extract path to executable & save "lastload" there
+    cout << "--(i) Saving " << filename << " to .lastload file (i)--" << endl;
+    wxString filename_string(filename.c_str(), wxConvUTF8);
+    saveText(filename_string,".lastload");
 
-	selectedTreeNode = 0;
-	treeView->ExpandAll();
-	updateAllTabs();
+    selectedTreeNode = 0;
+    treeView->ExpandAll();
+    updateAllTabs();
 
-        // fire SceneLoaded hooks
-        size_t numPages = tabView->GetPageCount();
-        for(size_t i=0; i< numPages; i++) {
-            GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
-            tab->GRIPEventSceneLoaded();
-        }
-        
+    // fire SceneLoaded hooks
+    size_t numPages = tabView->GetPageCount();
+    for(size_t i=0; i< numPages; i++) {
+        GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
+        tab->GRIPEventSceneLoaded();
+    }
 
-	viewer->DrawGLScene();
+    viewer->DrawGLScene();
 }
 
 /**
