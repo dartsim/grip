@@ -505,7 +505,7 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
 	//#endif
 
 	int attrib[] = {WX_GL_DOUBLEBUFFER,WX_GL_RGBA,	WX_GL_DEPTH_SIZE, 16,0};
-	Viewer *movieViewer = new Viewer(movieFrame,wxID_ANY, wxPoint(0, 0), wxSize(renderW, renderH),NULL, _T("MovieWindow"), attrib);
+	Viewer *movieViewer = new Viewer(movieFrame, wxID_ANY, wxPoint(0, 0), wxSize(renderW, renderH), 0, _T("MovieWindow"), attrib);
 	
 	//movieFrame.AddChild(
 	#ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
