@@ -31,6 +31,7 @@ endif()
 
 include (${CMAKE_INSTALL_PREFIX}/share/dart/DARTConfig.cmake)
 include_directories(${DART_INCLUDEDIR})
+link_directories(${DART_LIBRARY_DIRS})
 
 ###############
 include_directories (src)
