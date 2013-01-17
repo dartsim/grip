@@ -918,6 +918,11 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
 	tab->GRIPEventSimulationAfterTimestep();
     }
 
+    // update interface to display time
+    timeText->Clear();
+    timeText->SetInsertionPoint(0);
+    timeText->AppendText(wxString::Format(wxT("%.3f"), mWorld->mTime));
+
     // fire the event for the next simulation step. note that we
     // actually do fire an event here, making sure that the rest of
     // the UI gets its chance to do things.
