@@ -838,7 +838,12 @@ void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)) {
  * @date 2013-01-15
  */
 void GRIPFrame::OnSimulateStart(wxCommandEvent& event) {
-    printf("Simulating... \n");
+    if (continueSimulation) {
+        std::cout << "Already simulating." << std::endl << std::flush;
+        return;
+    }
+
+    std::cout << "Simulating..." << std::endl << std::flush;
     continueSimulation = true;
     UpdateAndRedraw();
 
@@ -863,7 +868,7 @@ void GRIPFrame::OnSimulateStart(wxCommandEvent& event) {
  * @date 2013-01-16
  */
 void GRIPFrame::OnSimulateSingle(wxCommandEvent& event) {
-    printf("Simulating Single... \n");
+    std::cout << "Simulating Single..." << std::endl;
     continueSimulation = true;
     SimulateFrame(event);
     continueSimulation = false;
@@ -884,7 +889,7 @@ void GRIPFrame::OnSimulateStop(wxCommandEvent& event) {
 
     continueSimulation = false;
     UpdateAndRedraw();
-    printf("Stopping simulation\n");
+    std::cout << "Stopping simulation" << std::endl;
 }
 
 void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
