@@ -907,7 +907,7 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
     mWorld->step();
 
     // redraw if necessary
-    if (clock() - timeLastRedraw > (float)CLOCKS_PER_SEC/30.0) // 30-ish hz redraw
+    if (clock() - timeLastRedraw > (float)CLOCKS_PER_SEC/5.0) // 30-ish hz redraw
     {
         UpdateAndRedraw();
     }
