@@ -1,8 +1,8 @@
 cmake_minimum_required (VERSION 2.6)
 project (tabTemplate)
 
-# include (${CMAKE_INSTALL_PREFIX}/share/dart/DART_config.cmake)
-# include (${CMAKE_INSTALL_PREFIX}/share/grip/GRIP_config.cmake)
+# include (${CMAKE_INSTALL_PREFIX}/share/dart/DARTConfig.cmake)
+# include (${CMAKE_INSTALL_PREFIX}/share/grip/GRIPConfig.cmake)
 # This include is used only if you have installed Grip
 
 # Search all header and source files
@@ -28,7 +28,7 @@ if (wxWidgets_FOUND)
     add_executable (tabTemplate ${srcs} ${hdrs})
    endif()
    
-   target_link_libraries (tabTemplate ${GRIP_LIBRARIES} ${DART_LIBRARIES} ${wxWidgets_LIBRARIES} )
+   target_link_libraries (tabTemplate ${GRIP_LIBRARIES} ${DART_LIBRARIES} ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES})
   
 else (wxWidgets_FOUND)
   message ("wxWidgets not found!")
