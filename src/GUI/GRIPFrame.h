@@ -99,6 +99,8 @@ public:
     void OnSimulateStop(wxCommandEvent& event);
     void OnSimulateSingle(wxCommandEvent& event);
 
+    void OnRequestUpdateAndRender(wxCommandEvent& event);
+    
     void OnPlay(wxCommandEvent& event);
 
     void OnTimeScroll(wxScrollEvent &evt);

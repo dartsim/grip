@@ -938,8 +938,12 @@ void GRIPFrame::OnPlay(wxCommandEvent& event) {
     printf("OnPlay\n");
 }
 
+void GRIPFrame::OnRequestUpdateAndRender(wxCommandEvent& event) {
+    UpdateAndRedraw();
+}
 void GRIPFrame::UpdateAndRedraw()
 {
+    // call tab render hooks somewhere in here
     for (int j = 0; j < mWorld->getNumRobots(); j++) {
         mWorld->getRobot(j)->update();
     }
@@ -988,6 +992,7 @@ EVT_MENU(Tool_movie, GRIPFrame::OnToolMovie)
 EVT_TREE_SEL_CHANGED(TreeViewHandle,GRIPFrame::onTVChange)
 
 EVT_COMMAND(wxID_ANY, wxEVT_GRIP_SIMULATE_FRAME, GRIPFrame::SimulateFrame)
+EVT_COMMAND(wxID_ANY, wxEVT_GRIP_UPDATE_AND_RENDER, GRIPFrame::OnRequestUpdateAndRender)
 
 //	EVT_BUTTON (BUTTON_Hello, GRIPFrame::OnQuit )
 END_EVENT_TABLE()
