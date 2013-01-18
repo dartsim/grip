@@ -136,15 +136,17 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     // Create the background menu
     bgMenu->Append(MenuBgWhite, wxT("White"));
     bgMenu->Append(MenuBgBlack, wxT("Black"));
-    
+
     // Create the render menu
     renderMenu->Append(MenuRenderXGA, wxT("XGA 1024x768"));
     renderMenu->Append(MenuRenderVGA, wxT("VGA 640x480"));
     renderMenu->Append(MenuRenderHD, wxT("HD 1280x720"));
 
     // Create the settings menu
+    settingsMenu->AppendCheckItem(MenuRenderDuringSim, wxT("Render During Simulation"));
     settingsMenu->AppendSubMenu(bgMenu, wxT("Background"));
     settingsMenu->Append(MenuCameraReset, wxT("Reset Camera"));
+    settingsMenu->Check(MenuRenderDuringSim, true);
     
     // Create the help menu
     helpMenu->Append(MenuAbout, wxT("&About...\tF1"), wxT("Show about dialog"));
@@ -794,6 +796,15 @@ void GRIPFrame::OnBlack(wxCommandEvent& WXUNUSED(event)) {
 }
 
 /**
+ * @function OnMenuRenderDuringSimulation
+ * @brief Check item sets whether DART should render the world during simulations
+ * @date 2012-01-18
+ */
+void GRIPFrame::OnMenuRenderDuringSimulation(wxCommandEvent& event){
+    renderDuringSimulation = event.IsChecked();
+}
+
+/**
  * @function OnVGA
  * @brief Set rendering to XGA
  * @date 2011-10-13
@@ -914,7 +925,8 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
     mWorld->step();
 
     // redraw if necessary
-    if (clock() - timeLastRedraw > (float)CLOCKS_PER_SEC/10.0) // 30-ish hz redraw
+    if ((clock() - timeLastRedraw > (float)CLOCKS_PER_SEC/10.0)
+        and renderDuringSimulation)
     {
         UpdateAndRedraw();
     }
@@ -1010,6 +1022,7 @@ EVT_MENU(MenuSimulateSingle,  GRIPFrame::OnSimulateSingle)
 
 EVT_MENU(MenuBgWhite,  GRIPFrame::OnWhite)
 EVT_MENU(MenuBgBlack, GRIPFrame::OnBlack)
+EVT_MENU(MenuRenderDuringSim, GRIPFrame::OnMenuRenderDuringSimulation)
 EVT_MENU(MenuCameraReset, GRIPFrame::OnCameraReset)
 
 EVT_MENU(MenuRenderVGA,  GRIPFrame::OnVGA)

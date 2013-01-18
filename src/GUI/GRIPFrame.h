@@ -69,6 +69,7 @@ public:
 
     int continueSimulation;
     clock_t timeLastRedraw;
+    int renderDuringSimulation;
     clock_t lastFrameTime;
     double filteredRelSimSpeed;
 
@@ -110,8 +111,9 @@ public:
     void OnTimeEnter(wxCommandEvent &evt);
 
     void OnWhite(wxCommandEvent& event);
-    void OnBlack(wxCommandEvent& event); 
-	void OnVGA(wxCommandEvent& event);
+    void OnBlack(wxCommandEvent& event);
+    void OnMenuRenderDuringSimulation(wxCommandEvent& event);
+    void OnVGA(wxCommandEvent& event);
     void OnXGA(wxCommandEvent& event);
     void OnHD(wxCommandEvent& event); 
     void OnCameraReset(wxCommandEvent& event);
@@ -154,6 +156,7 @@ enum
   MenuRenderVGA,
   MenuRenderHD,
   MenuCameraReset,
+  MenuRenderDuringSim,
   MenuSimulateStart,
   MenuSimulateStop,
   MenuSimulateSingle,
