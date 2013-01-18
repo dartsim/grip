@@ -221,6 +221,9 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     optionbar->AddSeparator();
     optionbar->AddControl(timeText);
 
+    timeRelText = new wxTextCtrl(optionbar,1008,wxT("1.00"),wxDefaultPosition,wxSize(50,20),wxTE_PROCESS_ENTER | wxTE_RIGHT);
+    optionbar->AddControl(timeRelText);
+
     // Create the sizer for the optionbar
     wxSizer* optionBarBox = new wxBoxSizer(wxVERTICAL);
     optionBarBox->Add(optionbar, 0, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
@@ -918,10 +921,36 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
 	tab->GRIPEventSimulationAfterTimestep();
     }
 
-    // update interface to display time
+    // calculate times - current time and how fast the simulation is
+    // going. clock() has terrible resolution - upwards of ten
+    // milliseconds - so we throw on a really crude kalman filter and
+    // weight past evidence very highly.
+    
+    // TODO: Make a better initial estimate. Our current initial
+    // estimate is hard-coded to be about right for our simple demo
+    // scenes on a good desktop with slow framerate.
+    
+    // TODO: take rendering into account so we're only measuring
+    // simulation time.
+    
+    // TODO: use simulation start and stop hook handlers to that
+    // pausing doesn't mess with the estimate.
+    double filterStrength = .995;
+    static clock_t lastFrameTime = clock();
+    static double filteredRelSimSpeed = 8;
+    clock_t curFrameTime = clock();
+    double frameDuration = (float)(curFrameTime - lastFrameTime) / (float)CLOCKS_PER_SEC;
+    double rawRelSimSpeed = frameDuration / mWorld->mTimeStep;
+    lastFrameTime = curFrameTime;
+    filteredRelSimSpeed = (filteredRelSimSpeed * filterStrength) + (rawRelSimSpeed * (1.0-filterStrength));
+    
+    // and then display the results
     timeText->Clear();
     timeText->SetInsertionPoint(0);
-    timeText->AppendText(wxString::Format(wxT("%.3f"), mWorld->mTime));
+    timeText->AppendText(wxString::Format(wxT("%.3f"), mWorld->mTime)); // current time
+    timeRelText->Clear();
+    timeRelText->SetInsertionPoint(0);
+    timeRelText->AppendText(wxString::Format(wxT("%.3f"), filteredRelSimSpeed)); // simulation speed
 
     // fire the event for the next simulation step. note that we
     // actually do fire an event here, making sure that the rest of

@@ -76,6 +76,7 @@ public:
 
     wxSlider *timeTrack;
     wxTextCtrl *timeText;
+    wxTextCtrl *timeRelText;
 
     wxToolBar* filebar;
     wxToolBar* optionbar;
