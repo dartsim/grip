@@ -850,6 +850,7 @@ void GRIPFrame::OnSimulateStart(wxCommandEvent& event) {
 
     std::cout << "Simulating..." << std::endl << std::flush;
     continueSimulation = true;
+    lastFrameTime = clock();
     UpdateAndRedraw();
 
     // fire simulation start timestep hooks
@@ -893,6 +894,7 @@ void GRIPFrame::OnSimulateStop(wxCommandEvent& event) {
     }
 
     continueSimulation = false;
+    timeRelText->Clear();
     UpdateAndRedraw();
     std::cout << "Stopping simulation" << std::endl;
 }
