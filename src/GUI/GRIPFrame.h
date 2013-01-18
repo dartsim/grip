@@ -69,6 +69,8 @@ public:
 
     int continueSimulation;
     clock_t timeLastRedraw;
+    clock_t lastFrameTime;
+    double filteredRelSimSpeed;
 
     wxPanel *backPanel;
 

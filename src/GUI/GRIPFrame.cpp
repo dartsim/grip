@@ -105,6 +105,8 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 
     continueSimulation = false;
     timeLastRedraw = -1;
+    renderDuringSimulation = true;
+    filteredRelSimSpeed = 8;
 
     // ========================================================
     // A. Create the menu bar
@@ -936,8 +938,6 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
     // TODO: use simulation start and stop hook handlers to that
     // pausing doesn't mess with the estimate.
     double filterStrength = .995;
-    static clock_t lastFrameTime = clock();
-    static double filteredRelSimSpeed = 8;
     clock_t curFrameTime = clock();
     double frameDuration = (float)(curFrameTime - lastFrameTime) / (float)CLOCKS_PER_SEC;
     double rawRelSimSpeed = frameDuration / mWorld->mTimeStep;
