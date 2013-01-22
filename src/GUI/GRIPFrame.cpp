@@ -70,7 +70,7 @@
 #include <robotics/Robot.h>
 
 // Parser
-#include <utils/Parser/dartParser/DartLoader.h>
+#include <utils/parser/dart_parser/DartLoader.h>
 
 #define ID_TOOLBAR 1257
 #define ID_TIMESLIDER 1258

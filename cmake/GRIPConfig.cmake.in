@@ -11,11 +11,7 @@
 # GRIP_LIBRARIES - Libraries needed to use GRIP.
 # GRIP_DEFINITIONS - Compiler flags for GRIP.
 
-if (WIN32 AND NOT CYGWIN)
-  set(INCL_DIRS "C:/Golems/include")
-elseif(UNIX)
-  set(INCL_DIRS "@CMAKE_INSTALL_PREFIX@/include")
-endif()
+set(SYS_INSTALL_PREFIX @CMAKE_INSTALL_PREFIX@)
 
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
@@ -23,11 +19,13 @@ if(PKG_CONFIG_FOUND)
    set(GRIP_DEFINITIONS ${PC_GRIP_CFLAGS_OTHER})
 endif()
 
-SET(CMAKE_MODULE_PATH "@CMAKE_MODULE_PATH@")
-
-find_path(GRIP_INCLUDEDIR GRIPApp.h Tabs/GRIPTab.h
-    HINTS ${PC_GRIP_INCLUDEDIR} /usr/local/include
+find_path(GRIP_INCLUDEDIR GRIPApp.h
+    HINTS ${PC_GRIP_INCLUDEDIR} ${SYS_INSTALL_PREFIX}/include
     PATH_SUFFIXES grip)    
+
+if(EXISTS GRIP_INCLUDEDIR/GRIPApp.h)
+    set(GRIP_FOUND TRUE)
+endif()
 
 set(GRIP_LIBS grip ggui gtabs gtools)
 foreach(GRIP_LIB ${GRIP_LIBS})
@@ -35,6 +33,6 @@ foreach(GRIP_LIB ${GRIP_LIBS})
 endforeach(GRIP_LIB)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(GRIP DEFAULT_MSG GRIP_INCLUDEDIR GRIP_LIBRARIES)
+find_package_handle_standard_args(GRIP DEFAULT_MSG GRIP_FOUND)
 
-mark_as_advanced(GRIP_INCLUDEDIR GRIP_LIBRARIES)
+mark_as_advanced(GRIP_FOUND GRIP_INCLUDEDIR GRIP_LIBRARIES)

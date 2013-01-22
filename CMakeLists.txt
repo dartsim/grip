@@ -1,5 +1,3 @@
-# Edited for DART - AHQ 2012-08-07
-
 cmake_minimum_required (VERSION 2.8)
 project (grip_all)
 
@@ -12,9 +10,8 @@ set(PKG_DESC "GRIP is a robotics simulator based on the DART physics engine.")
 set(GRIP_VERSION "${GRIP_MAJOR_VERSION}.${GRIP_MINOR_VERSION}.${GRIP_PATCH_VERSION}")
 set(PKG_EXTERNAL_DEPS "dart, flann, ccd, fcl")
 
-###############
-# Global Variables
-set (CMAKE_VERBOSE_MAKEFILE OFF)
+message(STATUS "CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
+message(STATUS "CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR}")
 
 if(WIN32)
 	set (CMAKE_INSTALL_PREFIX "C:/Golems" CACHE PATH "Install prefix" FORCE)
@@ -30,16 +27,23 @@ else ()
    set(CMAKE_CXX_FLAGS_PROFILE "-pg" CACHE STRING "Profiling flags")
 endif()
 
-include (${CMAKE_INSTALL_PREFIX}/share/dart/DARTConfig.cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_INSTALL_PREFIX}/share/dart")
+
+find_package(DART REQUIRED)
+
+# Eigen
+find_path(EIGEN3_INCLUDEDIR Eigen/Core
+    PATHS ${CMAKE_INSTALL_PREFIX}/include PATH_SUFFIXES eigen3 eigen)
+
+include_directories(${EIGEN3_INCLUDEDIR})
 include_directories(${DART_INCLUDEDIR})
 link_directories(${DART_LIBRARY_DIRS})
 
-###############
-include_directories (src)
-add_subdirectory (src)
+include_directories(BEFORE src)
+add_subdirectory(src)
 
-set (srcs src/GRIP.cpp)
-set (hdrs src/GRIPApp.h)
+set(srcs src/GRIP.cpp)
+set(hdrs src/GRIPApp.h)
 
 if(WIN32)
   set (wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
@@ -64,9 +68,8 @@ message(STATUS "CMake root is ${CMAKE_ROOT}")
 
 ###############
 # Generate config file
-configure_file(${CMAKE_SOURCE_DIR}/cmake/GRIPConfig.cmake.in ${CMAKE_SOURCE_DIR}/GRIPConfig.cmake @ONLY)
-configure_file(${CMAKE_SOURCE_DIR}/cmake/GRIPConfig.cmake.in ${CMAKE_SOURCE_DIR}/FindGRIP.cmake @ONLY)
-install(FILES ${CMAKE_SOURCE_DIR}/GRIPConfig.cmake DESTINATION share/grip)
+configure_file(${CMAKE_SOURCE_DIR}/cmake/GRIPConfig.cmake.in ${CMAKE_SOURCE_DIR}/cmake/FindGRIP.cmake @ONLY)
+install(FILES ${CMAKE_SOURCE_DIR}/FindGRIP.cmake DESTINATION share/grip)
 install(FILES ${CMAKE_SOURCE_DIR}/FindGRIP.cmake DESTINATION ${CMAKE_ROOT}/Modules)
 
 configure_file(${CMAKE_SOURCE_DIR}/cmake/grip.pc.in ${CMAKE_SOURCE_DIR}/grip.pc @only)
@@ -78,9 +81,7 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/uninsta
 
 ###############
 # Build Projects
-set(GRIP_HEADERS ${CMAKE_SOURCE_DIR}/src)
-set(GRIP_LIBRARIES grip ggui gtabs gtools ${DART_LIBRARIES})
-set(GRIP_LIBDIR ${CMAKE_SOURCE_DIR}/lib)
+set(GRIP_LIBRARIES grip ggui gtabs gtools)
 add_subdirectory(projects/tabEmpty)
 add_subdirectory(projects/tabTemplate)
 
