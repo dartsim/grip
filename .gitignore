@@ -4,6 +4,7 @@ CMakeFiles*
 CMakeCache.txt
 cmake_install.cmake
 install_manifest.txt
+grip.pc
 CPack*
 CTest*
 Makefile
