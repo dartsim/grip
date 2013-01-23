@@ -69,8 +69,8 @@ message(STATUS "CMake root is ${CMAKE_ROOT}")
 ###############
 # Generate config file
 configure_file(${CMAKE_SOURCE_DIR}/cmake/GRIPConfig.cmake.in ${CMAKE_SOURCE_DIR}/cmake/FindGRIP.cmake @ONLY)
-install(FILES ${CMAKE_SOURCE_DIR}/FindGRIP.cmake DESTINATION share/grip)
-install(FILES ${CMAKE_SOURCE_DIR}/FindGRIP.cmake DESTINATION ${CMAKE_ROOT}/Modules)
+install(FILES ${CMAKE_SOURCE_DIR}/cmake/FindGRIP.cmake DESTINATION share/grip)
+install(FILES ${CMAKE_SOURCE_DIR}/cmake/FindGRIP.cmake DESTINATION ${CMAKE_ROOT}/Modules)
 
 configure_file(${CMAKE_SOURCE_DIR}/cmake/grip.pc.in ${CMAKE_SOURCE_DIR}/grip.pc @only)
 install(FILES ${CMAKE_SOURCE_DIR}/grip.pc DESTINATION lib/pkgconfig)
