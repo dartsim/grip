@@ -79,7 +79,7 @@ public:
 
     wxToolBar* filebar;
     wxToolBar* optionbar;
-    wxBitmap toolBarBitmaps[10];
+    wxBitmap toolBarBitmaps[13];
 
     //void OnSize(wxSizeEvent& evt);
     int saveText(wxString scenepath, const char* llfile);
@@ -93,6 +93,7 @@ public:
     void OnToolCheckColl(wxCommandEvent& event);
     void OnToolScreenshot(wxCommandEvent& event);
     void OnToolMovie(wxCommandEvent& event);
+    void OnViewChange(wxCommandEvent& event);			///< Change the view to front, side or top
     void OnClose(wxCommandEvent& event);
 
     void OnSimulateStart(wxCommandEvent& event);

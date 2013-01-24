@@ -65,6 +65,9 @@
 #include "icons/simulate.xpm"
 #include "icons/play.xpm"
 #include "icons/stop.xpm"
+#include "icons/rightSideView.xpm"
+#include "icons/frontView.xpm"
+#include "icons/topView.xpm"
 
 #include <robotics/Object.h>
 #include <robotics/Robot.h>
@@ -83,7 +86,11 @@ enum toolNums{
     Tool_linkorder = 1265,
     Tool_checkcollisions = 1266,
     Tool_screenshot = 1267,
-    Tool_movie = 1268
+    Tool_movie = 1268,
+
+		Tool_rightSideView = 1269,				///< Change the view to one of the orthogonal options
+		Tool_frontView = 1270,
+		Tool_topView = 1271
 };
 
 extern bool check_for_collisions;
@@ -170,6 +177,9 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     toolBarBitmaps[7] = wxIcon(simulate_xpm);
     toolBarBitmaps[8] = wxIcon(play_xpm);
     toolBarBitmaps[9] = wxIcon(stop_xpm);
+    toolBarBitmaps[10] = wxIcon(topView_xpm);
+    toolBarBitmaps[11] = wxIcon(rightSideView_xpm);
+    toolBarBitmaps[12] = wxIcon(frontView_xpm);
 
     wxBitmap clockBmp = wxBitmap(clock_xpm);
 
@@ -220,6 +230,12 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     timeText = new wxTextCtrl(optionbar,1008,wxT(" 0.00"),wxDefaultPosition,wxSize(50,20),wxTE_PROCESS_ENTER | wxTE_RIGHT);
     optionbar->AddSeparator();
     optionbar->AddControl(timeText);
+
+		// Add the optional views such as top, front and side
+    optionbar->AddSeparator();
+    optionbar->AddTool(Tool_frontView, _T("frontView"),toolBarBitmaps[12], toolBarBitmaps[12], wxITEM_NORMAL, _T("View scene from front"));
+    optionbar->AddTool(Tool_topView, _T("topView"),toolBarBitmaps[10], toolBarBitmaps[10], wxITEM_NORMAL, _T("View scene from top"));
+    optionbar->AddTool(Tool_rightSideView, _T("rightSideView"),toolBarBitmaps[11], toolBarBitmaps[11], wxITEM_NORMAL, _T("View scene from right"));
 
     // Create the sizer for the optionbar
     wxSizer* optionBarBox = new wxBoxSizer(wxVERTICAL);
@@ -825,11 +841,11 @@ void GRIPFrame::OnHD(wxCommandEvent& WXUNUSED(event)){
  * @date 2011-10-13
  */
 void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)) {
-	viewer->camRotT = AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0));
-	viewer->worldV = Vector3d(0.0, 0.0, 0.0);
-	viewer->camRadius = 10.0;
-	viewer->UpdateCamera();
-	viewer->DrawGLScene();
+    viewer->camRotT = AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0));
+    viewer->worldV = Vector3d(0.0, 0.0, 0.0);
+    viewer->camRadius = 10.0;
+    viewer->UpdateCamera();
+    viewer->DrawGLScene();
 }
 
 /**
@@ -891,6 +907,24 @@ void GRIPFrame::OnSimulateStop(wxCommandEvent& event) {
     UpdateAndRedraw();
     std::cout << "Stopping simulation" << std::endl;
 }
+
+/**
+ * @function OnSimulateStop
+ * @author Can Erdogan
+ * @brief Updates the view to either front, side or top view
+ * @date 2013-01-24
+ */
+void GRIPFrame::OnViewChange(wxCommandEvent& event) {
+	if(event.GetId() == Tool_topView)
+		viewer->camRotT = AngleAxis<double>(DEG2RAD(-90.0), Vector3d(0.0, 1.0, 0.0));
+	else if(event.GetId() == Tool_rightSideView)
+		viewer->camRotT = AngleAxis<double>(DEG2RAD(90.0), Vector3d(0.0, 0.0, 1.0));
+	else if(event.GetId() == Tool_frontView)
+		viewer->camRotT = AngleAxis<double>(DEG2RAD(0.0), Vector3d(0.0, 1.0, 0.0));
+	viewer->UpdateCamera();
+	viewer->DrawGLScene();
+}
+
 
 void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
     if (!continueSimulation) { return; }
@@ -993,6 +1027,10 @@ EVT_MENU(Tool_linkorder, GRIPFrame::OnToolOrder)
 EVT_MENU(Tool_checkcollisions, GRIPFrame::OnToolCheckColl)
 EVT_MENU(Tool_screenshot, GRIPFrame::OnToolScreenshot)
 EVT_MENU(Tool_movie, GRIPFrame::OnToolMovie)
+
+EVT_MENU(Tool_rightSideView, GRIPFrame::OnViewChange)
+EVT_MENU(Tool_frontView, GRIPFrame::OnViewChange)
+EVT_MENU(Tool_topView, GRIPFrame::OnViewChange)
 
 EVT_TREE_SEL_CHANGED(TreeViewHandle,GRIPFrame::onTVChange)
 
