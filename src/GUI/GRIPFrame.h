@@ -131,6 +131,7 @@ public:
 
     void updateAllTabs();
     void UpdateAndRedraw();
+    void FireEventRender();
 
     void DoLoad(string filename);
     void DeleteWorld();
