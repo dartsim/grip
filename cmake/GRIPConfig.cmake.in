@@ -33,7 +33,7 @@ if(EXISTS GRIP_INCLUDEDIR/kinematics/Skeleton.h)
     set(GRIP_FOUND TRUE)
 endif()
    
-set(GRIP_LIBRARY_DIRS "@SYS_INSTALL_PREFIX@/lib")
+set(DART_LIBRARY_DIRS "${SYS_INSTALL_PREFIX}/lib")
 
 set(GRIP_LIBS grip)
 

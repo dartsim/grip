@@ -926,7 +926,7 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
 
     // redraw if necessary
     if ((clock() - timeLastRedraw > (float)CLOCKS_PER_SEC/10.0)
-        and renderDuringSimulation)
+        && renderDuringSimulation)
     {
         UpdateAndRedraw();
     }

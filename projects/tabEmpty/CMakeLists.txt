@@ -25,7 +25,7 @@ if (wxWidgets_FOUND)
   include_directories(${DART_INCLUDEDIR})
   include_directories(${GRIP_INCLUDEDIR})
   include_directories(${WXWIDGETS_SHARED_INCLUDE_DIRS})
-  link_directories(${CMAKE_SOURCE_DIR}/lib ${GRIP_LIBRARY_DIRS} ${WXWIDGETS_SHARED_LIBRARY_DIRS})
+  link_directories(${CMAKE_SOURCE_DIR}/lib ${DART_LIBRARY_DIRS} ${GRIP_LIBRARY_DIRS} ${WXWIDGETS_SHARED_LIBRARY_DIRS})
 
   if(MSVC)
 	add_executable (tabEmpty WIN32 ${srcs} ${hdrs})
