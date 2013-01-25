@@ -1,7 +1,11 @@
 cmake_minimum_required (VERSION 2.6)
 project (tabEmpty)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_INSTALL_PREFIX}/share/dart")
+# set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_INSTALL_PREFIX}/share/grip")
 find_package(DARTExt REQUIRED)
+find_package(DART REQUIRED)
+# find_package(GRIP REQUIRED)
 
 # Search all header and source files
 file (GLOB srcs "*.cpp")
@@ -17,8 +21,11 @@ endif(WIN32)
 find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
-  include_directories(${DART_HEADERS} ${GRIP_HEADERS} ${WXWIDGETS_SHARED_INCLUDE_DIRS})
-  link_directories(${CMAKE_SOURCE_DIR}/lib ${GRIP_LIBDIR} ${WXWIDGETS_SHARED_LIBRARY_DIRS})
+  include_directories(${DARTExt_INCLUDEDIR})
+  include_directories(${DART_INCLUDEDIR})
+  include_directories(${GRIP_INCLUDEDIR})
+  include_directories(${WXWIDGETS_SHARED_INCLUDE_DIRS})
+  link_directories(${CMAKE_SOURCE_DIR}/lib ${GRIP_LIBRARY_DIRS} ${WXWIDGETS_SHARED_LIBRARY_DIRS})
 
   if(MSVC)
 	add_executable (tabEmpty WIN32 ${srcs} ${hdrs})
