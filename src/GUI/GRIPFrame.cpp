@@ -991,7 +991,6 @@ void GRIPFrame::OnRequestUpdateAndRender(wxCommandEvent& event) {
 }
 void GRIPFrame::UpdateAndRedraw()
 {
-    // call tab render hooks somewhere in here
     for (int j = 0; j < mWorld->getNumRobots(); j++) {
         mWorld->getRobot(j)->update();
     }
@@ -1000,6 +999,15 @@ void GRIPFrame::UpdateAndRedraw()
     }
     viewer->DrawGLScene();
     timeLastRedraw = clock();
+}
+// Must be called during the gl render
+void GRIPFrame::FireEventRender()
+{
+    size_t numPages = tabView->GetPageCount();
+    for(size_t i=0; i< numPages; i++) {
+        GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
+	tab->GRIPEventRender();
+    }
 }
 
 
