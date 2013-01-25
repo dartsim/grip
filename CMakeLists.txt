@@ -37,6 +37,7 @@ find_path(EIGEN3_INCLUDEDIR Eigen/Core
 
 include_directories(${EIGEN3_INCLUDEDIR})
 include_directories(${DART_INCLUDEDIR})
+message(STATUS " dart is in ${DART_INCLUDEDIR}")
 link_directories(${DART_LIBRARY_DIRS})
 
 include_directories(BEFORE src)

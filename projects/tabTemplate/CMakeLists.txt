@@ -26,7 +26,7 @@ if (wxWidgets_FOUND)
     add_executable (tabTemplate ${srcs} ${hdrs})
    endif()
    
-   target_link_libraries (tabTemplate ${GRIP_LIBRARIES} ${DART_LIBRARIES} ${DARTExt_LIBRARIES} ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES})
+   target_link_libraries (tabTemplate  ${DART_LIBRARIES} ${DARTExt_LIBRARIES} ${GRIP_LIBRARIES} ${wxWidgets_LIBRARIES})
   
 else (wxWidgets_FOUND)
   message ("wxWidgets not found!")
