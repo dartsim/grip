@@ -4,7 +4,7 @@ project (tabEmpty)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_INSTALL_PREFIX}/share/dart")
 # set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_INSTALL_PREFIX}/share/grip")
 find_package(DARTExt REQUIRED)
-find_package(DART REQUIRED)
+find_package(DART REQUIRED CONFIG)
 # find_package(GRIP REQUIRED)
 
 # Search all header and source files
