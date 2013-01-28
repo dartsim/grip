@@ -70,7 +70,7 @@
 #include <robotics/Robot.h>
 
 // Parser
-#include <utils/Parser/dartParser/DartLoader.h>
+#include <robotics/parser/dart_parser/DartLoader.h>
 
 #define ID_TOOLBAR 1257
 #define ID_TIMESLIDER 1258
@@ -105,6 +105,8 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 
     continueSimulation = false;
     timeLastRedraw = -1;
+    renderDuringSimulation = true;
+    filteredRelSimSpeed = 8;
 
     // ========================================================
     // A. Create the menu bar
@@ -134,15 +136,17 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     // Create the background menu
     bgMenu->Append(MenuBgWhite, wxT("White"));
     bgMenu->Append(MenuBgBlack, wxT("Black"));
-    
+
     // Create the render menu
     renderMenu->Append(MenuRenderXGA, wxT("XGA 1024x768"));
     renderMenu->Append(MenuRenderVGA, wxT("VGA 640x480"));
     renderMenu->Append(MenuRenderHD, wxT("HD 1280x720"));
 
     // Create the settings menu
+    settingsMenu->AppendCheckItem(MenuRenderDuringSim, wxT("Render During Simulation"));
     settingsMenu->AppendSubMenu(bgMenu, wxT("Background"));
     settingsMenu->Append(MenuCameraReset, wxT("Reset Camera"));
+    settingsMenu->Check(MenuRenderDuringSim, true);
     
     // Create the help menu
     helpMenu->Append(MenuAbout, wxT("&About...\tF1"), wxT("Show about dialog"));
@@ -220,6 +224,9 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     timeText = new wxTextCtrl(optionbar,1008,wxT(" 0.00"),wxDefaultPosition,wxSize(50,20),wxTE_PROCESS_ENTER | wxTE_RIGHT);
     optionbar->AddSeparator();
     optionbar->AddControl(timeText);
+
+    timeRelText = new wxTextCtrl(optionbar,1008,wxT("1.00"),wxDefaultPosition,wxSize(50,20),wxTE_PROCESS_ENTER | wxTE_RIGHT);
+    optionbar->AddControl(timeRelText);
 
     // Create the sizer for the optionbar
     wxSizer* optionBarBox = new wxBoxSizer(wxVERTICAL);
@@ -789,6 +796,15 @@ void GRIPFrame::OnBlack(wxCommandEvent& WXUNUSED(event)) {
 }
 
 /**
+ * @function OnMenuRenderDuringSimulation
+ * @brief Check item sets whether DART should render the world during simulations
+ * @date 2012-01-18
+ */
+void GRIPFrame::OnMenuRenderDuringSimulation(wxCommandEvent& event){
+    renderDuringSimulation = event.IsChecked();
+}
+
+/**
  * @function OnVGA
  * @brief Set rendering to XGA
  * @date 2011-10-13
@@ -845,6 +861,7 @@ void GRIPFrame::OnSimulateStart(wxCommandEvent& event) {
 
     std::cout << "Simulating..." << std::endl << std::flush;
     continueSimulation = true;
+    lastFrameTime = clock();
     UpdateAndRedraw();
 
     // fire simulation start timestep hooks
@@ -888,6 +905,7 @@ void GRIPFrame::OnSimulateStop(wxCommandEvent& event) {
     }
 
     continueSimulation = false;
+    timeRelText->Clear();
     UpdateAndRedraw();
     std::cout << "Stopping simulation" << std::endl;
 }
@@ -907,7 +925,8 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
     mWorld->step();
 
     // redraw if necessary
-    if (clock() - timeLastRedraw > (float)CLOCKS_PER_SEC/30.0) // 30-ish hz redraw
+    if ((clock() - timeLastRedraw > (float)CLOCKS_PER_SEC/10.0)
+        && renderDuringSimulation)
     {
         UpdateAndRedraw();
     }
@@ -917,6 +936,35 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
         GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
 	tab->GRIPEventSimulationAfterTimestep();
     }
+
+    // calculate times - current time and how fast the simulation is
+    // going. clock() has terrible resolution - upwards of ten
+    // milliseconds - so we throw on a really crude kalman filter and
+    // weight past evidence very highly.
+    
+    // TODO: Make a better initial estimate. Our current initial
+    // estimate is hard-coded to be about right for our simple demo
+    // scenes on a good desktop with slow framerate.
+    
+    // TODO: take rendering into account so we're only measuring
+    // simulation time.
+    
+    // TODO: use simulation start and stop hook handlers to that
+    // pausing doesn't mess with the estimate.
+    double filterStrength = .995;
+    clock_t curFrameTime = clock();
+    double frameDuration = (float)(curFrameTime - lastFrameTime) / (float)CLOCKS_PER_SEC;
+    double rawRelSimSpeed = frameDuration / mWorld->mTimeStep;
+    lastFrameTime = curFrameTime;
+    filteredRelSimSpeed = (filteredRelSimSpeed * filterStrength) + (rawRelSimSpeed * (1.0-filterStrength));
+    
+    // and then display the results
+    timeText->Clear();
+    timeText->SetInsertionPoint(0);
+    timeText->AppendText(wxString::Format(wxT("%.3f"), mWorld->mTime)); // current time
+    timeRelText->Clear();
+    timeRelText->SetInsertionPoint(0);
+    timeRelText->AppendText(wxString::Format(wxT("%.3f"), filteredRelSimSpeed)); // simulation speed
 
     // fire the event for the next simulation step. note that we
     // actually do fire an event here, making sure that the rest of
@@ -938,6 +986,9 @@ void GRIPFrame::OnPlay(wxCommandEvent& event) {
     printf("OnPlay\n");
 }
 
+void GRIPFrame::OnRequestUpdateAndRender(wxCommandEvent& event) {
+    UpdateAndRedraw();
+}
 void GRIPFrame::UpdateAndRedraw()
 {
     for (int j = 0; j < mWorld->getNumRobots(); j++) {
@@ -948,6 +999,15 @@ void GRIPFrame::UpdateAndRedraw()
     }
     viewer->DrawGLScene();
     timeLastRedraw = clock();
+}
+// Must be called during the gl render
+void GRIPFrame::FireEventRender()
+{
+    size_t numPages = tabView->GetPageCount();
+    for(size_t i=0; i< numPages; i++) {
+        GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
+	tab->GRIPEventRender();
+    }
 }
 
 
@@ -970,6 +1030,7 @@ EVT_MENU(MenuSimulateSingle,  GRIPFrame::OnSimulateSingle)
 
 EVT_MENU(MenuBgWhite,  GRIPFrame::OnWhite)
 EVT_MENU(MenuBgBlack, GRIPFrame::OnBlack)
+EVT_MENU(MenuRenderDuringSim, GRIPFrame::OnMenuRenderDuringSimulation)
 EVT_MENU(MenuCameraReset, GRIPFrame::OnCameraReset)
 
 EVT_MENU(MenuRenderVGA,  GRIPFrame::OnVGA)
@@ -988,6 +1049,7 @@ EVT_MENU(Tool_movie, GRIPFrame::OnToolMovie)
 EVT_TREE_SEL_CHANGED(TreeViewHandle,GRIPFrame::onTVChange)
 
 EVT_COMMAND(wxID_ANY, wxEVT_GRIP_SIMULATE_FRAME, GRIPFrame::SimulateFrame)
+EVT_COMMAND(wxID_ANY, wxEVT_GRIP_UPDATE_AND_RENDER, GRIPFrame::OnRequestUpdateAndRender)
 
 //	EVT_BUTTON (BUTTON_Hello, GRIPFrame::OnQuit )
 END_EVENT_TABLE()

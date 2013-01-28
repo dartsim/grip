@@ -69,6 +69,9 @@ public:
 
     int continueSimulation;
     clock_t timeLastRedraw;
+    int renderDuringSimulation;
+    clock_t lastFrameTime;
+    double filteredRelSimSpeed;
 
     wxPanel *backPanel;
 
@@ -76,6 +79,7 @@ public:
 
     wxSlider *timeTrack;
     wxTextCtrl *timeText;
+    wxTextCtrl *timeRelText;
 
     wxToolBar* filebar;
     wxToolBar* optionbar;
@@ -99,14 +103,17 @@ public:
     void OnSimulateStop(wxCommandEvent& event);
     void OnSimulateSingle(wxCommandEvent& event);
 
+    void OnRequestUpdateAndRender(wxCommandEvent& event);
+    
     void OnPlay(wxCommandEvent& event);
 
     void OnTimeScroll(wxScrollEvent &evt);
     void OnTimeEnter(wxCommandEvent &evt);
 
     void OnWhite(wxCommandEvent& event);
-    void OnBlack(wxCommandEvent& event); 
-	void OnVGA(wxCommandEvent& event);
+    void OnBlack(wxCommandEvent& event);
+    void OnMenuRenderDuringSimulation(wxCommandEvent& event);
+    void OnVGA(wxCommandEvent& event);
     void OnXGA(wxCommandEvent& event);
     void OnHD(wxCommandEvent& event); 
     void OnCameraReset(wxCommandEvent& event);
@@ -124,6 +131,7 @@ public:
 
     void updateAllTabs();
     void UpdateAndRedraw();
+    void FireEventRender();
 
     void DoLoad(string filename);
     void DeleteWorld();
@@ -149,6 +157,7 @@ enum
   MenuRenderVGA,
   MenuRenderHD,
   MenuCameraReset,
+  MenuRenderDuringSim,
   MenuSimulateStart,
   MenuSimulateStop,
   MenuSimulateSingle,

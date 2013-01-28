@@ -39,6 +39,7 @@
 #include "Viewer.h"
 #include "wx/sizer.h"
 #include "GUI.h"
+#include "GRIPFrame.h"
 #include <wx/glcanvas.h>
 
 #include <Tools/GL/glcommon.h>
@@ -196,9 +197,13 @@ int Viewer::DrawGLScene()
 	//USUALLY BAD
 	glDisable(GL_FOG);
 
+        // draw models
 	if( mWorld != NULL ) { 
             drawWorld(); 
         }
+
+        // fire during-render hooks
+        ((GRIPFrame*)GetParent())->FireEventRender();
 
 	glFlush();
 	SwapBuffers();

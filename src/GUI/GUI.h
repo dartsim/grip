@@ -82,12 +82,11 @@ static const int prefTabsHeight = 200;
 static const int statusBarHeight = 22;
 static const double CAMERASPEED = 0.003f;
 
-
-/* no idea what this event is really used for */
-DECLARE_EVENT_TYPE(wxEVT_GRIP_STATE_CHANGE, -1)
-
 /* Tabs can issue this event to cause GRIP to start simulating */
 DECLARE_EVENT_TYPE(wxEVT_GRIP_SIMULATE_FRAME, -1)
+
+/* Tabs can issue this event to cause GRIP to render */
+DECLARE_EVENT_TYPE(wxEVT_GRIP_UPDATE_AND_RENDER, -1)
 
 /* Tabs can issue these events before and after they simulate to
  * notify other tabs that simulation is happening and that they need
@@ -104,5 +103,8 @@ DECLARE_EVENT_TYPE(wxEVT_GRIP_PLAYBACK_END, -1)
 /* Tabs can issue this event to notify other tabs that the world has
  * changed in some way. */
 DECLARE_EVENT_TYPE(wxEVT_GRIP_WORLD_CHANGED, -1)
+
+/* no idea what this event is really used for */
+DECLARE_EVENT_TYPE(wxEVT_GRIP_STATE_CHANGE, -1)
 
 #endif

@@ -64,13 +64,19 @@ bool reverseLinkOrder = false;
 bool check_for_collisions = false;
 int stateChangeType = 0;
 
+// these are for interacting with grip's simulation and playback
+// capabilities
 DEFINE_EVENT_TYPE(wxEVT_GRIP_SIMULATE_FRAME)
+DEFINE_EVENT_TYPE(wxEVT_GRIP_UPDATE_AND_RENDER)
+DEFINE_EVENT_TYPE(wxEVT_GRIP_PLAYBACK_FRAME)
 
-DEFINE_EVENT_TYPE(wxEVT_GRIP_STATE_CHANGE)
+// these are for ensuring that tabs play nice with each other
 DEFINE_EVENT_TYPE(wxEVT_GRIP_SIMULATION_START)
 DEFINE_EVENT_TYPE(wxEVT_GRIP_SIMULATION_END)
 DEFINE_EVENT_TYPE(wxEVT_GRIP_PLAYBACK_START)
 DEFINE_EVENT_TYPE(wxEVT_GRIP_PLAYBACK_END)
 DEFINE_EVENT_TYPE(wxEVT_GRIP_WORLD_CHANGED)
-DEFINE_EVENT_TYPE(wxEVT_GRIP_TREE_VIEW_SELECTION_CHANGED)
+
+// no idea what this is for
+DEFINE_EVENT_TYPE(wxEVT_GRIP_STATE_CHANGE)
 

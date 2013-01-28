@@ -1,10 +1,11 @@
 cmake_minimum_required (VERSION 2.6)
 project (tabEmpty)
 
-# include (${CMAKE_INSTALL_PREFIX}/share/dart/DART_config.cmake)
-# include (${CMAKE_INSTALL_PREFIX}/share/grip/GRIP_config.cmake)
-# This include is used only if you have installed Grip
-
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_INSTALL_PREFIX}/share/dart")
+# set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_INSTALL_PREFIX}/share/grip")
+find_package(DARTExt REQUIRED)
+find_package(DART REQUIRED)
+# find_package(GRIP REQUIRED)
 
 # Search all header and source files
 file (GLOB srcs "*.cpp")
@@ -16,11 +17,15 @@ if(WIN32)
 else(WIN32)
   set (wxWidgets_USE_LIBS base core gl)
 endif(WIN32)
+
 find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
-  include_directories(${DART_HEADERS} ${GRIP_HEADERS} ${WXWIDGETS_SHARED_INCLUDE_DIRS})
-  link_directories(${CMAKE_SOURCE_DIR}/lib ${GRIP_LIBDIR} ${WXWIDGETS_SHARED_LIBRARY_DIRS})
+  include_directories(${DARTExt_INCLUDEDIR})
+  include_directories(${DART_INCLUDEDIR})
+  include_directories(${GRIP_INCLUDEDIR})
+  include_directories(${WXWIDGETS_SHARED_INCLUDE_DIRS})
+  link_directories(${CMAKE_SOURCE_DIR}/lib ${DART_LIBRARY_DIRS} ${GRIP_LIBRARY_DIRS} ${WXWIDGETS_SHARED_LIBRARY_DIRS})
 
   if(MSVC)
 	add_executable (tabEmpty WIN32 ${srcs} ${hdrs})
@@ -29,7 +34,7 @@ if (wxWidgets_FOUND)
     add_executable (tabEmpty ${srcs} ${hdrs})
    endif()
    
-   target_link_libraries (tabEmpty ${GRIP_LIBRARIES} ${DART_LIBRARIES} ${wxWidgets_LIBRARIES})
+   target_link_libraries (tabEmpty ${DART_LIBRARIES} ${DARTExt_LIBRARIES} ${GRIP_LIBRARIES} ${wxWidgets_LIBRARIES})
   
 else (wxWidgets_FOUND)
   message ("wxWidgets not found!")
