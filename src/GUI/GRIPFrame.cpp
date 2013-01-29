@@ -65,6 +65,9 @@
 #include "icons/simulate.xpm"
 #include "icons/play.xpm"
 #include "icons/stop.xpm"
+#include "icons/rightSideView.xpm"
+#include "icons/frontView.xpm"
+#include "icons/topView.xpm"
 
 #include <robotics/Object.h>
 #include <robotics/Robot.h>
@@ -83,7 +86,11 @@ enum toolNums{
     Tool_linkorder = 1265,
     Tool_checkcollisions = 1266,
     Tool_screenshot = 1267,
-    Tool_movie = 1268
+    Tool_movie = 1268,
+
+    Tool_rightSideView = 1269,   ///< Change the view to one of the orthogonal options
+    Tool_frontView = 1270,
+    Tool_topView = 1271
 };
 
 extern bool check_for_collisions;
@@ -112,11 +119,12 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     // A. Create the menu bar
     
     wxMenu *fileMenu = new wxMenu;
-    wxMenu *helpMenu = new wxMenu;
+    wxMenu *viewMenu = new wxMenu;
+    wxMenu *simMenu = new wxMenu;
     wxMenu *settingsMenu = new wxMenu;
     wxMenu *renderMenu = new wxMenu;
     wxMenu *bgMenu = new wxMenu;
-    wxMenu *simMenu = new wxMenu;
+    wxMenu *helpMenu = new wxMenu;
     
     // Create the file menu
     fileMenu->Append(MenuLoad, wxT("L&oad\tAlt-O"));
@@ -127,6 +135,11 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     fileMenu->Append(MenuClose, wxT("C&lose\tAlt-C"));
     fileMenu->AppendSeparator();
     fileMenu->Append(MenuQuit, wxT("E&xit\tAlt-Q"));
+
+    // Create the view menu - constrain the camera position/orientation
+    viewMenu->Append(MenuFrontView, wxT("&Front"));
+    viewMenu->Append(MenuTopView, wxT("&Top"));
+    viewMenu->Append(MenuRightSideView, wxT("&Side"));
 
     // Create the simulation menu
     simMenu->Append(MenuSimulateStart, wxT("Start simulation"));
@@ -150,11 +163,11 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     
     // Create the help menu
     helpMenu->Append(MenuAbout, wxT("&About...\tF1"), wxT("Show about dialog"));
-    
 
     // Add all the menus to the menu bar
     wxMenuBar *menuBar = new wxMenuBar();
     menuBar->Append(fileMenu, wxT("&File"));
+    menuBar->Append(viewMenu, wxT("&View"));
     menuBar->Append(simMenu, wxT("S&imulation"));
     menuBar->Append(settingsMenu, wxT("&Settings"));
     menuBar->Append(renderMenu, wxT("&Render"));
@@ -174,11 +187,14 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     toolBarBitmaps[7] = wxIcon(simulate_xpm);
     toolBarBitmaps[8] = wxIcon(play_xpm);
     toolBarBitmaps[9] = wxIcon(stop_xpm);
+    toolBarBitmaps[10] = wxIcon(topView_xpm);
+    toolBarBitmaps[11] = wxIcon(rightSideView_xpm);
+    toolBarBitmaps[12] = wxIcon(frontView_xpm);
 
     wxBitmap clockBmp = wxBitmap(clock_xpm);
 
     // Create the toolbar and assign the callback functions
-    filebar = new wxToolBar(this,ID_TOOLBAR,wxPoint(0, 0), wxSize(prefTreeViewWidth+50, toolBarHeight), wxTB_HORIZONTAL);
+    filebar = new wxToolBar(this,ID_TOOLBAR,wxPoint(0, 0), wxSize(prefViewerWidth+prefTreeViewWidth+50, toolBarHeight), wxTB_HORIZONTAL);
     filebar->SetToolBitmapSize(wxSize(16, 16));
     filebar->AddTool(wxID_OPEN, _T("Open"),toolBarBitmaps[0], toolBarBitmaps[0], wxITEM_NORMAL, _T("Open .rscene file (Alt-O)"));
     // filebar->AddTool(wxID_SAVE, _T("Save"),toolBarBitmaps[1], toolBarBitmaps[1], wxITEM_NORMAL,  _T("Save world to .rscene file (Alt-S)"));
@@ -192,10 +208,12 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     filebar->AddTool(Tool_screenshot, _T("Screenshot"),toolBarBitmaps[5], toolBarBitmaps[5], wxITEM_NORMAL, _T("Export screenshot"));
     filebar->AddTool(Tool_movie, _T("Movie"),toolBarBitmaps[6], toolBarBitmaps[6], wxITEM_NORMAL, _T("Export film sequence"));
     
-    // Create the sizer for the filebar
-    wxSizer* fileBarBox = new wxBoxSizer(wxVERTICAL);
-    fileBarBox->Add(filebar, 0, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
-    
+    // Add the optional views such as top, front and side
+    filebar->AddSeparator();
+    filebar->AddTool(Tool_frontView, _T("frontView"),toolBarBitmaps[12], toolBarBitmaps[12], wxITEM_NORMAL, _T("View scene from front"));
+    filebar->AddTool(Tool_topView, _T("topView"),toolBarBitmaps[10], toolBarBitmaps[10], wxITEM_NORMAL, _T("View scene from top"));
+    filebar->AddTool(Tool_rightSideView, _T("rightSideView"),toolBarBitmaps[11], toolBarBitmaps[11], wxITEM_NORMAL, _T("View scene from right"));
+
     // ========================================================
     // C. Create the time slider
     
@@ -228,10 +246,6 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     timeRelText = new wxTextCtrl(optionbar,1008,wxT("1.00"),wxDefaultPosition,wxSize(50,20),wxTE_PROCESS_ENTER | wxTE_RIGHT);
     optionbar->AddControl(timeRelText);
 
-    // Create the sizer for the optionbar
-    wxSizer* optionBarBox = new wxBoxSizer(wxVERTICAL);
-    optionBarBox->Add(optionbar, 0, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
-    
     // ========================================================
     // E. Create the status bar
     
@@ -249,7 +263,12 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     wxSizer *sizerBottom = new wxBoxSizer(wxHORIZONTAL);
     
     // ********************************************
-    // F1a. Create the LHS of the top sizer: 3D
+    // F1. Add the filebar 
+
+    sizerFull->Add(filebar,0, wxALIGN_TOP | wxALL, 0);
+
+    // ********************************************
+    // F2a. Create the LHS of the top sizer: 3D
     
     // Create the 3D viewer
 #ifndef WIN32 // Weird hack to make wxWidgets work in Linux
@@ -273,7 +292,7 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     sizerTop->Add(viewer, 1, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
     
     // ********************************************
-    // F1b. Create the RHS of the top sizer
+    // F2b. Create the RHS of the top sizer
     
     // Create the treeview that will go to the right handside of the top sizer. kHackOffset is referenced below.
     static const size_t kHackOffset = 30;
@@ -287,7 +306,7 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     sizerRightH->Add(timePanel,0, wxALIGN_LEFT | wxEXPAND | wxALL, 0);
     
     // Add the three parts of the right handside vertically. sizerRight is vertical.
-    sizerRight->Add(filebar,0, wxALIGN_TOP | wxALL, 0);
+    // sizerRight->Add(filebar,0, wxALIGN_TOP | wxALL, 0);
     sizerRight->Add(sizerRightH, 1 , wxALIGN_TOP | wxEXPAND | wxALL, 0);
     sizerRight->Add(optionbar,0, wxALIGN_TOP | wxALL, 0);
     
@@ -305,7 +324,7 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     sizerFull->Add(sizerTop, 1,  wxEXPAND | wxALL,  0 );
     
     // ********************************************
-    // F2. Create the bottom sizer 
+    // F3. Create the bottom sizer 
     
     /// Adding a backPanel to the lower half of the window covers the generic "inner grey"
     /// with a forms-like control color. The tabView is added to the backPanel
@@ -841,9 +860,26 @@ void GRIPFrame::OnHD(wxCommandEvent& WXUNUSED(event)){
  * @date 2011-10-13
  */
 void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)) {
-	viewer->camRotT = AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0));
-	viewer->worldV = Vector3d(0.0, 0.0, 0.0);
-	viewer->camRadius = 10.0;
+  viewer->camRotT = AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0));
+  viewer->worldV = Vector3d(0.0, 0.0, 0.0);
+  viewer->camRadius = 10.0;
+  viewer->UpdateCamera();
+  viewer->DrawGLScene();
+}
+
+/**
+ * @function OnViewChange
+ * @author Can Erdogan
+ * @brief Updates the view to either front, side or top view
+ * @date 2013-01-24
+ */
+void GRIPFrame::OnViewChange(wxCommandEvent& event) {
+	if((event.GetId() == Tool_topView) || (event.GetId() == MenuTopView))
+		viewer->camRotT = AngleAxis<double>(DEG2RAD(-90.0), Vector3d(0.0, 1.0, 0.0));
+	else if((event.GetId() == Tool_rightSideView) || (event.GetId() == MenuRightSideView))
+		viewer->camRotT = AngleAxis<double>(DEG2RAD(90.0), Vector3d(0.0, 0.0, 1.0));
+	else if((event.GetId() == Tool_frontView) || (event.GetId() == MenuFrontView))
+		viewer->camRotT = AngleAxis<double>(DEG2RAD(0.0), Vector3d(0.0, 1.0, 0.0));
 	viewer->UpdateCamera();
 	viewer->DrawGLScene();
 }
@@ -1049,6 +1085,13 @@ EVT_MENU(Tool_linkorder, GRIPFrame::OnToolOrder)
 EVT_MENU(Tool_checkcollisions, GRIPFrame::OnToolCheckColl)
 EVT_MENU(Tool_screenshot, GRIPFrame::OnToolScreenshot)
 EVT_MENU(Tool_movie, GRIPFrame::OnToolMovie)
+
+EVT_MENU(MenuRightSideView, GRIPFrame::OnViewChange)
+EVT_MENU(MenuFrontView, GRIPFrame::OnViewChange)
+EVT_MENU(MenuTopView, GRIPFrame::OnViewChange)
+EVT_MENU(Tool_rightSideView, GRIPFrame::OnViewChange)
+EVT_MENU(Tool_frontView, GRIPFrame::OnViewChange)
+EVT_MENU(Tool_topView, GRIPFrame::OnViewChange)
 
 EVT_TREE_SEL_CHANGED(TreeViewHandle,GRIPFrame::onTVChange)
 

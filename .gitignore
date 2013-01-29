@@ -24,6 +24,7 @@ lib/
 *.suo
 *.htm
 *.user
+*.swp
 *.dep
 *.manifest
 *.rsp
