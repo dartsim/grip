@@ -14,7 +14,7 @@ foreach(SUBDIR ${SUBDIRS})
 endforeach()
 
 find_package(DARTExt REQUIRED)
-find_package(DART REQUIRED)
+find_package(DART REQUIRED CONFIG)
 
 if(WIN32)
   set (wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
