@@ -56,11 +56,6 @@ set(GRIP_LIBRARIES grip)
 set(GRIP_LIBRARY_DIRS ${CMAKE_SOURCE_DIR}/lib)
 add_subdirectory(src)
 
-# Build Projects
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-add_subdirectory(projects/tabEmpty)
-add_subdirectory(projects/tabTemplate)
-
 ###############
 # Package Installer
 set(CPACK_PACKAGE_NAME "grip")
