@@ -525,7 +525,7 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
     char *buf = new char[1000];
 
 	//Create a new Viewer Window
-	wxFrame *movieFrame = new wxFrame(NULL,wxID_ANY, wxT("MovieWindow"),wxPoint(0, 0), wxSize(renderW,renderH),wxDEFAULT_FRAME_STYLE & ~ (wxRESIZE_BORDER | wxRESIZE_BOX | wxMAXIMIZE_BOX));
+	wxFrame *movieFrame = new wxFrame(NULL,wxID_ANY, wxT("MovieWindow"),wxPoint(0, 0), wxSize(renderW,renderH),wxDEFAULT_FRAME_STYLE & ~ (wxRESIZE_BORDER | wxMAXIMIZE_BOX));
 	//#ifndef WIN32 // Weird hack to make wxWidgets work in Linux
 	movieFrame->Show();
 	//#endif
