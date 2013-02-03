@@ -71,6 +71,8 @@
 
 #include <robotics/Object.h>
 #include <robotics/Robot.h>
+#include <kinematics/ShapeBox.h> // for floor
+#include <kinematics/Joint.h> // for floor
 
 // Parser
 #include <robotics/parser/dart_parser/DartLoader.h>
@@ -441,6 +443,21 @@ void GRIPFrame::DoLoad(string filename)
 
     mWorld = dl.parseWorld( filename.c_str() );
     mWorld->printInfo();
+
+    // Add floor
+    robotics::Object* ground = new robotics::Object();
+    ground->setName("ground");
+    ground->addDefaultRootNode();
+    dynamics::BodyNodeDynamics* node = new dynamics::BodyNodeDynamics();
+    node->setShape(new kinematics::ShapeBox(Eigen::Vector3d(10.0, 10.0, 0.0001), 1.0));
+    kinematics::Joint* joint = new kinematics::Joint(ground->getRoot(), node);
+    ground->addNode(node);
+    ground->initSkel();
+    ground->update();
+    ground->setImmobileState(true);
+    mWorld->addObject(ground);
+    mWorld->rebuildCollision();
+
 
     // UpdateTreeView();
     cout << "--(v) Done Parsing World information (v)--" << endl;
