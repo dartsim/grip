@@ -62,10 +62,15 @@ void Viewer::drawWorld() {
 
     for( int j = 0; j < mWorld->getObject(i)->getNumNodes(); j++ ) {
         
-      Eigen::Matrix4d poseMatrix =mWorld->getObject(i)->getNode(j)->getWorldTransform();         
+      // Get worldTransform
+      Eigen::Matrix4d poseMatrix = mWorld->getObject(i)->getNode(j)->getWorldTransform();    
+      // Get visTransform
+      Eigen::Matrix4d visTransform = mWorld->getObject(i)->getNode(j)->getShape()->getVisTransform();
+      Eigen::Matrix4d poseFinal = poseMatrix*visTransform;
+
       Transform<double,3,Affine> pose;
       pose.setIdentity();
-      pose.matrix() = poseMatrix;  
+      pose.matrix() = poseFinal;  
       drawModel( mWorld->getObject(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getObject(i)->getNode(j)->getColliding() );
     }
   }
@@ -74,9 +79,14 @@ void Viewer::drawWorld() {
   for( unsigned int i = 0; i < mWorld->getNumRobots(); i++ ) {
 
     for( unsigned int j = 0; j < mWorld->getRobot(i)->getNumNodes(); j++ ) {
-      Eigen::Matrix4d poseMatrix =mWorld->getRobot(i)->getNode(j)->getWorldTransform();   
+
+      // Get worldTransform
+      Eigen::Matrix4d poseMatrix = mWorld->getRobot(i)->getNode(j)->getWorldTransform();
+      Eigen::Matrix4d visTransform = mWorld->getRobot(i)->getNode(j)->getShape()->getVisTransform();
+      Eigen::Matrix4d poseFinal = poseMatrix*visTransform;
+
       Transform<double,3,Affine> pose;
-      pose.matrix() = poseMatrix;  
+      pose.matrix() = poseFinal;  
       drawModel( mWorld->getRobot(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getRobot(i)->getNode(j)->getColliding() );
     }
   }  
