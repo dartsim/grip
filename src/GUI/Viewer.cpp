@@ -62,11 +62,13 @@ void Viewer::drawWorld() {
 
     for( int j = 0; j < mWorld->getObject(i)->getNumNodes(); j++ ) {
         
-      Eigen::Matrix4d poseMatrix =mWorld->getObject(i)->getNode(j)->getWorldTransform();         
-      Transform<double,3,Affine> pose;
-      pose.setIdentity();
-      pose.matrix() = poseMatrix;  
-      drawModel( mWorld->getObject(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getObject(i)->getNode(j)->getColliding() );
+//      Eigen::Matrix4d poseMatrix =mWorld->getObject(i)->getNode(j)->getWorldTransform();
+//      Transform<double,3,Affine> pose;
+//      pose.setIdentity();
+//      pose.matrix() = poseMatrix;
+//      drawModel( mWorld->getObject(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getObject(i)->getNode(j)->getColliding() );
+
+      drawNode(mWorld->getObject(i)->getNode(j), mWorld->getObject(i)->getNode(j)->getColliding());
     }
   }
 
@@ -74,10 +76,12 @@ void Viewer::drawWorld() {
   for( unsigned int i = 0; i < mWorld->getNumRobots(); i++ ) {
 
     for( unsigned int j = 0; j < mWorld->getRobot(i)->getNumNodes(); j++ ) {
-      Eigen::Matrix4d poseMatrix =mWorld->getRobot(i)->getNode(j)->getWorldTransform();   
-      Transform<double,3,Affine> pose;
-      pose.matrix() = poseMatrix;  
-      drawModel( mWorld->getRobot(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getRobot(i)->getNode(j)->getColliding() );
+//      Eigen::Matrix4d poseMatrix =mWorld->getRobot(i)->getNode(j)->getWorldTransform();
+//      Transform<double,3,Affine> pose;
+//      pose.matrix() = poseMatrix;
+//      drawModel( mWorld->getRobot(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getRobot(i)->getNode(j)->getColliding() );
+
+      drawNode(mWorld->getRobot(i)->getNode(j), mWorld->getRobot(i)->getNode(j)->getColliding());
     }
   }  
 
@@ -108,6 +112,45 @@ void Viewer::drawModel( const aiScene* _model, Transform<double, 3, Affine> *_po
    glDisable(GL_COLOR_MATERIAL);
    glPopMatrix(); 
   
+}
+
+void Viewer::drawNode(const kinematics::BodyNode* _node, bool _collision)
+{
+	if(_node == NULL) return;
+
+	Transform<double,3,Affine> pose;
+	pose.setIdentity();
+	pose.matrix() = _node->getWorldTransform();
+
+	kinematics::Shape *shape = _node->getShape();
+	const aiScene* model = shape->getVizMesh();
+	if(shape->listIndex == 0) {
+		unsigned int *lptr = const_cast<unsigned int*>(&shape->listIndex);
+		*lptr = renderer.compileDisplayList(Vector3d::Ones(), model);
+	}
+
+	if(check_for_collisions && _collision) {
+		glDisable(GL_TEXTURE_2D);
+		glEnable(GL_COLOR_MATERIAL);
+		glColor3f(1.0f, .1f, .1f);
+	}
+
+	glPushMatrix();
+	glMultMatrixd(pose.data());
+
+	if(shape->getVizMesh() != NULL) {
+		if(shape->listIndex) {
+			renderer.drawList(shape->listIndex);
+		} else {
+			renderer.drawMesh(Vector3d::Ones(), model);
+		}
+	}
+
+	glColor3f(1.0f,1.0f,1.0f);
+	glEnable( GL_TEXTURE_2D );
+	glDisable(GL_COLOR_MATERIAL);
+	glPopMatrix();
+
 }
 
 
