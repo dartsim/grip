@@ -37,11 +37,7 @@ set(DART_LIBRARY_DIRS "${SYS_INSTALL_PREFIX}/lib")
 
 set(GRIP_LIBS grip)
 
-if(MSVC OR MSVC90 OR MSVC10)
-    set(GRIP_LIBRARIES optimized ${GRIP_LIBS} debug ${GRIP_LIBS}d)
-elseif(UNIX)
-    set(GRIP_LIBRARIES ${GRIP_LIBS})
-endif()
+set(GRIP_LIBRARIES optimized ${GRIP_LIBS} debug ${GRIP_LIBS}d)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GRIP DEFAULT_MSG GRIP_FOUND)

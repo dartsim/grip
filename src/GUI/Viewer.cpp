@@ -57,30 +57,16 @@ using namespace std;
  */
 void Viewer::drawWorld() { 
 
-  // Draw Objects    
+  // Draw Objects
   for( unsigned int i = 0; i < mWorld->getNumObjects(); i++ ) {
-
     for( int j = 0; j < mWorld->getObject(i)->getNumNodes(); j++ ) {
-        
-//      Eigen::Matrix4d poseMatrix =mWorld->getObject(i)->getNode(j)->getWorldTransform();
-//      Transform<double,3,Affine> pose;
-//      pose.setIdentity();
-//      pose.matrix() = poseMatrix;
-//      drawModel( mWorld->getObject(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getObject(i)->getNode(j)->getColliding() );
-
       drawNode(mWorld->getObject(i)->getNode(j), mWorld->getObject(i)->getNode(j)->getColliding());
     }
   }
 
-  // Draw Robot     
+  // Draw Robot
   for( unsigned int i = 0; i < mWorld->getNumRobots(); i++ ) {
-
     for( unsigned int j = 0; j < mWorld->getRobot(i)->getNumNodes(); j++ ) {
-//      Eigen::Matrix4d poseMatrix =mWorld->getRobot(i)->getNode(j)->getWorldTransform();
-//      Transform<double,3,Affine> pose;
-//      pose.matrix() = poseMatrix;
-//      drawModel( mWorld->getRobot(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getRobot(i)->getNode(j)->getColliding() );
-
       drawNode(mWorld->getRobot(i)->getNode(j), mWorld->getRobot(i)->getNode(j)->getColliding());
     }
   }  
