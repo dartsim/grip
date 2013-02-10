@@ -92,7 +92,7 @@ public:
 
 	void drawWorld();
 	void drawModel( const aiScene* _model, Eigen::Transform<double, 3, Eigen::Affine> *_pose, bool collisionFlag );
-	void drawNode(const kinematics::BodyNode* _node, bool _collision);
+	void drawNode(kinematics::BodyNode* _node, bool _collision);
 
 	long x, y, xInit, yInit;
 	int w, h;

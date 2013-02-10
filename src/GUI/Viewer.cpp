@@ -100,7 +100,7 @@ void Viewer::drawModel( const aiScene* _model, Transform<double, 3, Affine> *_po
   
 }
 
-void Viewer::drawNode(const kinematics::BodyNode* _node, bool _collision)
+void Viewer::drawNode(kinematics::BodyNode* _node, bool _collision)
 {
 	if(_node == NULL) return;
 
@@ -111,8 +111,7 @@ void Viewer::drawNode(const kinematics::BodyNode* _node, bool _collision)
 	kinematics::Shape *shape = _node->getShape();
 	const aiScene* model = shape->getVizMesh();
 	if(shape->listIndex == 0) {
-		unsigned int *lptr = const_cast<unsigned int*>(&shape->listIndex);
-		*lptr = renderer.compileDisplayList(Vector3d::Ones(), model);
+		shape->listIndex = renderer.compileDisplayList(Vector3d::Ones(), model);
 	}
 
 	if(check_for_collisions && _collision) {
