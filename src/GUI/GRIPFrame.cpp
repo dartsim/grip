@@ -912,6 +912,14 @@ void GRIPFrame::OnSimulateStart(wxCommandEvent& event) {
         return;
     }
 
+    // clear out parts of the timeline that are "in the future"
+    // relative to the world that's about to start simulating
+    // curState = timeVector.begin();
+    // while cur.
+    
+    // and then reset the timer's bounds
+    InitTimer(string("Main"), mWorld->mTimeStep);
+    
     std::cout << "Simulating..." << std::endl << std::flush;
     continueSimulation = true;
     lastFrameTime = clock();
@@ -993,6 +1001,9 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
         GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
 	tab->GRIPEventSimulationAfterTimestep();
     }
+
+    // save state to timeline
+    AddWorld(mWorld);
 
     // calculate times - current time and how fast the simulation is
     // going. clock() has terrible resolution - upwards of ten
