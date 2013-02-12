@@ -56,7 +56,6 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/uninsta
 # Build Source
 include_directories(BEFORE src)
 set(GRIP_INCLUDEDIR src)
-set(GRIP_LIBRARIES grip)
 set(GRIP_LIBRARY_DIRS ${CMAKE_SOURCE_DIR}/lib)
 add_subdirectory(src)
 

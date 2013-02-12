@@ -8,5 +8,5 @@ Name: @PROJECT_NAME@
 Description: @PKG_DESC@
 Version: @GRIP_VERSION@
 Requires: @PKG_EXTERNAL_DEPS@
-Libs: -L${libdir} -lgrip -lggui -lgtabs -lgtools
+Libs: -L${libdir} -lgrip 
 Cflags: @CMAKE_CXX_FLAGS@
