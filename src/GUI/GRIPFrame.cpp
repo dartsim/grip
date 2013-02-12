@@ -1023,9 +1023,10 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
     timeRelText->SetInsertionPoint(0);
     timeRelText->AppendText(wxString::Format(wxT("%.3f"), filteredRelSimSpeed)); // simulation speed
 
-    // fire the event for the next simulation step. note that we
-    // actually do fire an event here, making sure that the rest of
-    // the UI gets its chance to do things.
+    // fire the event for the next simulation step. note that we use
+    // AddPendingEvent to actually do fire an event here, making sure
+    // that the rest of the UI gets its chance to do things. Just
+    // calling the event handler would get us caught in a loop.
     wxYield();
     int type = 0;
     wxCommandEvent evt(wxEVT_GRIP_SIMULATE_FRAME,GetId());
