@@ -60,13 +60,13 @@ void Viewer::drawWorld() {
   // Draw Objects
   for( unsigned int i = 0; i < mWorld->getNumObjects(); i++ ) {
     for( int j = 0; j < mWorld->getObject(i)->getNumNodes(); j++ ) {
-//      drawNode(mWorld->getObject(i)->getNode(j), mWorld->getObject(i)->getNode(j)->getColliding());
+      //drawNode(mWorld->getObject(i)->getNode(j), mWorld->getObject(i)->getNode(j)->getColliding());
       // Get worldTransform
       Eigen::Matrix4d poseMatrix = mWorld->getObject(i)->getNode(j)->getWorldTransform();    
       // Get visTransform
       Eigen::Matrix4d visTransform = mWorld->getObject(i)->getNode(j)->getShape()->getVisTransform();
       Eigen::Matrix4d poseFinal = poseMatrix*visTransform;
-
+      
       Transform<double,3,Affine> pose;
       pose.setIdentity();
       pose.matrix() = poseFinal;  
@@ -82,13 +82,13 @@ void Viewer::drawWorld() {
       Eigen::Matrix4d poseMatrix = mWorld->getRobot(i)->getNode(j)->getWorldTransform();
       Eigen::Matrix4d visTransform = mWorld->getRobot(i)->getNode(j)->getShape()->getVisTransform();
       Eigen::Matrix4d poseFinal = poseMatrix*visTransform;
-
+      
       Transform<double,3,Affine> pose;
       pose.matrix() = poseFinal;  
       drawModel( mWorld->getRobot(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getRobot(i)->getNode(j)->getColliding() );
     }
   }  
-
+  
 }
 
 /**
@@ -103,7 +103,7 @@ void Viewer::drawModel( const aiScene* _model, Transform<double, 3, Affine> *_po
 		glEnable(GL_COLOR_MATERIAL);
 		glColor3f(1.0f, .1f, .1f);
 	}
-
+   
    glPushMatrix();
    glMultMatrixd( _pose->data() );
 
