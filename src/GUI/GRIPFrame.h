@@ -41,7 +41,6 @@
 
 class GRIPSlider;
 class Viewer;
-class GRIPTimeSlice;
 #include <vector>
 
 #include "TreeView.h"
@@ -57,6 +56,10 @@ using namespace std;
 #endif
 #include <wx/notebook.h>
 
+typedef struct {
+    Eigen::VectorXd state;
+    double time;
+} GRIPTimeSlice;
 
 /**
  * @class GRIPFrame
@@ -123,7 +126,7 @@ public:
     void InitTimer(string title, double period);
     void AddWorld( robotics::World* world );
 
-    vector<GRIPTimeSlice*> timeVector;
+    vector<GRIPTimeSlice> timeVector;
     double tCurrent;
     double tMax;
     double tIncrement;

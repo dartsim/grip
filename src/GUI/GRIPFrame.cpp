@@ -49,7 +49,6 @@
 #include <Tabs/AllTabs.h>
 #include <Tabs/GRIPTab.h>
 #include "GRIPSlider.h"
-#include "GRIPTimeSlice.h"
 #include "GRIPFrame.h"
 #include <Tools/utils.h>
 
@@ -492,10 +491,6 @@ void GRIPFrame::DeleteWorld() {
 
     InitTimer("",0);
 
-    for( size_t i = 0; i<timeVector.size(); i++){
-        if( timeVector[i] != NULL )
-	    delete timeVector[i];
-    }
     timeVector.clear();
 
     if( mWorld != NULL) {
@@ -576,8 +571,7 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
 
     for( double s=0; s < timeVector.size(); s+= step) {
          int i = (int)s;
-
-		timeVector[i]->SetToWorld( mWorld );
+         mWorld->setState(timeVector[i].state);
 		movieViewer->DrawGLScene();
 		wxYield();
 
@@ -746,7 +740,7 @@ void GRIPFrame::updateTimeValue(double value, bool sendSignal) {
  
     if(timeIndex > timeVector.size()-1) timeIndex = timeVector.size()-1;
   
-    timeVector[timeIndex]->SetToWorld( mWorld );
+    mWorld->setState(timeVector[timeIndex].state);
     viewer->UpdateCamera();
     viewer->DrawGLScene();
 
@@ -770,7 +764,9 @@ void GRIPFrame::OnTimeScroll(wxScrollEvent& event) {
  * @date 2011-10-13
  */
 void GRIPFrame::AddWorld( robotics::World* _world) {
-    GRIPTimeSlice* tsnew = new GRIPTimeSlice( _world );
+    GRIPTimeSlice tsnew;
+    tsnew.time = _world->mTime;
+    tsnew.state = _world->getState();
     timeVector.push_back(tsnew);
     tMax += tIncrement;
     timeTrack->SetRange(0, tMax * tPrecision);
@@ -783,10 +779,6 @@ void GRIPFrame::AddWorld( robotics::World* _world) {
  * @date 2011-10-13
  */
 void GRIPFrame::InitTimer(string /* title */, double period) {
-
-    for(size_t i=0; i<timeVector.size(); i++){
-        delete timeVector[i];
-    }
     tMax = 0;
     timeVector.clear();
     tIncrement = period;
