@@ -905,12 +905,21 @@ void GRIPFrame::OnSimulateStart(wxCommandEvent& event) {
     }
 
     // clear out parts of the timeline that are "in the future"
-    // relative to the world that's about to start simulating
-    // curState = timeVector.begin();
-    // while cur.
-    
-    // and then reset the timer's bounds
-    InitTimer(string("Main"), mWorld->mTimeStep);
+    // relative to the world that's about to start simulating, then
+    // reset the timer's bounds
+    if (timeVector.size() != 0) {
+        std::vector<GRIPTimeSlice>::iterator curState = timeVector.begin();
+        std::cout << "Timeline has " << timeVector.size() << " entries" << std::endl;
+        while (curState->time < mWorld->mTime && curState != timeVector.end()) {
+            curState++;
+        }
+        if (curState != timeVector.end()) {
+            timeVector.erase(curState, timeVector.end());
+        }
+        std::cout << "Timeline has " << timeVector.size() << " entries" << std::endl;
+    }
+    tMax = mWorld->mTime;
+    tIncrement = mWorld->mTimeStep;
     
     std::cout << "Simulating..." << std::endl << std::flush;
     continueSimulation = true;
