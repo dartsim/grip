@@ -45,6 +45,7 @@
 #include "TreeView.h"
 #include "GRIPFrame.h"
 #include "../Tabs/InspectorTab.h"
+#include "../Tabs/VisualizationTab.h"
 #include "GUI.h"
 
 //TOOLBAR PICTURES
