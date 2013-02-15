@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Georgia Tech Research Corporation
+ * Copyright (c) 2013, Georgia Tech Research Corporation
  * 
  * Humanoid Robotics Lab      Georgia Institute of Technology
  * Director: Mike Stilman     http://www.golems.org
@@ -36,14 +36,56 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <Tabs/AllTabs.h>
-#include <Tabs/InspectorTab.h>
-#include <Tabs/VisualizationTab.h>
-// #include <Tabs/PlanningTab.h>
+#ifndef __VISUALIZATION_TAB__
+#define __VISUALIZATION_TAB__
 
-void addAllTabs() {
-	ADD_TAB(InspectorTab,wxT("Inspector"))
-	ADD_TAB(VisualizationTab,wxT("Visualization"))
-	// ADD_TAB(PlanningTab,wxT("Path Planner"))
-	tabView->SetSelection(0);
-}
+#include <Tabs/GRIPTab.h>
+#include <Tabs/GRIPThread.h>
+#include <Tools/Constants.h>
+
+namespace planning { class Controller; }
+
+/**
+ * @class VisualizationTab
+ */
+class VisualizationTab : public GRIPTab
+{
+public:
+    VisualizationTab(){};
+    VisualizationTab(wxWindow* parent,
+                wxWindowID id = -1,
+                const wxPoint& pos = wxDefaultPosition,
+                const wxSize& size = wxDefaultSize,
+                long style = wxTAB_TRAVERSAL);
+    virtual ~VisualizationTab() {};
+
+    wxCheckBox* checkShowContacts;
+    wxCheckBox* checkShowCollMesh;
+    wxCheckBox* checkShowCMP;
+    wxCheckBox* checkShowCMA;
+    wxSizer* sizerFull;
+
+    kinematics::BodyNode* selectedNode;
+  
+    void OnSlider(wxCommandEvent &evt);
+    void OnButton(wxCommandEvent &evt);
+    void OnCheckShowContacts(wxCommandEvent &evt);
+    void OnCheckShowCollMesh(wxCommandEvent &evt);
+    void OnCheckShowCMP(wxCommandEvent &evt);
+    void OnCheckShowCMA(wxCommandEvent &evt);
+
+
+    // *************************************  
+    virtual void GRIPEventSimulationBeforeTimestep();
+    virtual void GRIPEventSimulationAfterTimestep();
+    virtual void GRIPEventSimulationStart(); 
+    virtual void GRIPStateChange();
+    virtual void GRIPEventRender();
+    virtual void GRIPEventSceneLoaded();
+    // *************************************
+  
+    DECLARE_DYNAMIC_CLASS(VisualizationTab)
+        DECLARE_EVENT_TABLE()
+        };
+
+#endif /**  __VISUALIZATION_TAB__  */

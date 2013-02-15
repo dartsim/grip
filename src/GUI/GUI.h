@@ -53,6 +53,7 @@ class Viewer;
 class TreeView;
 class TreeViewReturn;
 class InspectorTab;
+class VisualizationTab;
 class TemplateTab;
 namespace robotics { class World; };
 
