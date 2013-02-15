@@ -77,7 +77,8 @@ enum DynamicSimulationTabEvents {
     id_checkbox_showcontacts = wxID_HIGHEST,
     id_checkbox_showcollmesh,
     id_checkbox_CMA,
-    id_checkbox_CMP
+    id_checkbox_CMP,
+    id_checkbox_usecollmesh
 };
 
 /** Handlers for events **/
@@ -88,6 +89,7 @@ EVT_CHECKBOX(id_checkbox_showcontacts, VisualizationTab::OnCheckShowContacts)
 EVT_CHECKBOX(id_checkbox_showcollmesh, VisualizationTab::OnCheckShowCollMesh)
 EVT_CHECKBOX(id_checkbox_CMP, VisualizationTab::OnCheckShowCMP)
 EVT_CHECKBOX(id_checkbox_CMA, VisualizationTab::OnCheckShowCMA)
+EVT_CHECKBOX(id_checkbox_usecollmesh, VisualizationTab::OnCheckUseCollMesh)
 END_EVENT_TABLE()
 
 // Class constructor for the tab: Each tab will be a subclass of GRIPTab
@@ -113,11 +115,13 @@ VisualizationTab::VisualizationTab(wxWindow *parent,
     checkShowCollMesh = new wxCheckBox(this, id_checkbox_showcollmesh, wxT("Show Collision Mesh"));
     checkShowCMP = new wxCheckBox(this, id_checkbox_CMP, wxT("Show Projected Center of Mass"));//show projected CM
     checkShowCMA = new wxCheckBox(this, id_checkbox_CMA, wxT("Show Actual Center of Mass"));//show actual CM
+    checkUseCollMesh = new wxCheckBox(this, id_checkbox_usecollmesh, wxT("Render using Collision Mesh"));
 
     ss1BoxS->Add(checkShowContacts, 0, wxALL, 1);
     ss1BoxS->Add(checkShowCollMesh, 0, wxALL, 1);
     ss1BoxS->Add(checkShowCMP, 0, wxALL, 1);
     ss1BoxS->Add(checkShowCMA, 0, wxALL, 1);
+    ss1BoxS->Add(checkUseCollMesh, 0, wxALL, 1);
     sizerFull->Add(ss1BoxS, 1, wxEXPAND | wxALL, 1);
     SetSizer(sizerFull);
 }
@@ -149,6 +153,10 @@ void VisualizationTab::OnCheckShowCMP(wxCommandEvent &evt){
 }
 
 void VisualizationTab::OnCheckShowCMA(wxCommandEvent &evt){
+}
+
+void VisualizationTab::OnCheckUseCollMesh(wxCommandEvent &evt) {
+	viewer->useCollMesh = !viewer->useCollMesh;
 }
 
 void VisualizationTab::GRIPEventSceneLoaded() {

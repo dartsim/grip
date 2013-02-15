@@ -58,7 +58,7 @@ using namespace std;
 void Viewer::drawWorld() {
 	// Draw skeletons
 	for(int i=0; i < mWorld->getNumSkeletons(); i++) {
-		renderer.draw(mWorld->getSkeleton(i), check_for_collisions, false);
+		renderer.draw(mWorld->getSkeleton(i), check_for_collisions, useCollMesh);
 	}
 }
 

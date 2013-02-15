@@ -63,6 +63,7 @@ public:
     wxCheckBox* checkShowCollMesh;
     wxCheckBox* checkShowCMP;
     wxCheckBox* checkShowCMA;
+    wxCheckBox* checkUseCollMesh;
     wxSizer* sizerFull;
 
     kinematics::BodyNode* selectedNode;
@@ -73,6 +74,7 @@ public:
     void OnCheckShowCollMesh(wxCommandEvent &evt);
     void OnCheckShowCMP(wxCommandEvent &evt);
     void OnCheckShowCMA(wxCommandEvent &evt);
+    void OnCheckUseCollMesh(wxCommandEvent &evt);
 
 
     // *************************************  
