@@ -457,6 +457,11 @@ void GRIPFrame::DoLoad(string filename)
     mWorld->addObject(ground);
     mWorld->rebuildCollision();
 
+    // Compile OpenGL displaylists
+    for(int i=0; i < mWorld->getNumSkeletons(); i++) {
+    	viewer->renderer.compileList(mWorld->getSkeleton(i));
+    }
+
 
     // UpdateTreeView();
     cout << "--(v) Done Parsing World information (v)--" << endl;

@@ -55,40 +55,44 @@ using namespace std;
  * @function drawWorld
  * @brief Draw World and everything inside it: Robots + Objects
  */
-void Viewer::drawWorld() { 
+void Viewer::drawWorld() {
+	// Draw skeletons
+	for(int i=0; i < mWorld->getNumSkeletons(); i++) {
+		renderer.draw(mWorld->getSkeleton(i));
+	}
 
-  // Draw Objects
-  for( unsigned int i = 0; i < mWorld->getNumObjects(); i++ ) {
-    for( int j = 0; j < mWorld->getObject(i)->getNumNodes(); j++ ) {
-      //drawNode(mWorld->getObject(i)->getNode(j), mWorld->getObject(i)->getNode(j)->getColliding());
-      // Get worldTransform
-      Eigen::Matrix4d poseMatrix = mWorld->getObject(i)->getNode(j)->getWorldTransform();    
-      // Get visTransform
-      Eigen::Matrix4d visTransform = mWorld->getObject(i)->getNode(j)->getShape()->getVisTransform();
-      Eigen::Matrix4d poseFinal = poseMatrix*visTransform;
-      
-      Transform<double,3,Affine> pose;
-      pose.setIdentity();
-      pose.matrix() = poseFinal;  
-      drawModel( mWorld->getObject(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getObject(i)->getNode(j)->getColliding() );
-    }
-  }
+	// Draw Objects
+	for( unsigned int i = 0; i < mWorld->getNumObjects(); i++ ) {
+		for( int j = 0; j < mWorld->getObject(i)->getNumNodes(); j++ ) {
+			//drawNode(mWorld->getObject(i)->getNode(j), mWorld->getObject(i)->getNode(j)->getColliding());
+			// Get worldTransform
+			//      Eigen::Matrix4d poseMatrix = mWorld->getObject(i)->getNode(j)->getWorldTransform();
+			//      // Get visTransform
+			//      Eigen::Matrix4d visTransform = mWorld->getObject(i)->getNode(j)->getShape()->getVisTransform();
+			//      Eigen::Matrix4d poseFinal = poseMatrix*visTransform;
+			//
+			//      Transform<double,3,Affine> pose;
+			//      pose.setIdentity();
+			//      pose.matrix() = poseFinal;
+			//      drawModel( mWorld->getObject(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getObject(i)->getNode(j)->getColliding() );
+		}
+	}
 
-  // Draw Robot
-  for( unsigned int i = 0; i < mWorld->getNumRobots(); i++ ) {
-    for( unsigned int j = 0; j < mWorld->getRobot(i)->getNumNodes(); j++ ) {
-      //drawNode(mWorld->getRobot(i)->getNode(j), mWorld->getRobot(i)->getNode(j)->getColliding());
-      // Get worldTransform
-      Eigen::Matrix4d poseMatrix = mWorld->getRobot(i)->getNode(j)->getWorldTransform();
-      Eigen::Matrix4d visTransform = mWorld->getRobot(i)->getNode(j)->getShape()->getVisTransform();
-      Eigen::Matrix4d poseFinal = poseMatrix*visTransform;
-      
-      Transform<double,3,Affine> pose;
-      pose.matrix() = poseFinal;  
-      drawModel( mWorld->getRobot(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getRobot(i)->getNode(j)->getColliding() );
-    }
-  }  
-  
+	// Draw Robot
+	for( unsigned int i = 0; i < mWorld->getNumRobots(); i++ ) {
+		for( unsigned int j = 0; j < mWorld->getRobot(i)->getNumNodes(); j++ ) {
+			//drawNode(mWorld->getRobot(i)->getNode(j), mWorld->getRobot(i)->getNode(j)->getColliding());
+			// Get worldTransform
+			//      Eigen::Matrix4d poseMatrix = mWorld->getRobot(i)->getNode(j)->getWorldTransform();
+			//      Eigen::Matrix4d visTransform = mWorld->getRobot(i)->getNode(j)->getShape()->getVisTransform();
+			//      Eigen::Matrix4d poseFinal = poseMatrix*visTransform;
+			//
+			//      Transform<double,3,Affine> pose;
+			//      pose.matrix() = poseFinal;
+			//      drawModel( mWorld->getRobot(i)->getNode(j)->getShape()->getVizMesh(), &pose, mWorld->getRobot(i)->getNode(j)->getColliding() );
+		}
+	}
+
 }
 
 /**
@@ -129,8 +133,11 @@ void Viewer::drawNode(kinematics::BodyNode* _node, bool _collision)
 	kinematics::Shape *shape = _node->getShape();
 	const aiScene* model = shape->getVizMesh();
 	if(shape->listIndex == 0) {
-		shape->listIndex = renderer.compileDisplayList(Vector3d::Ones(), model);
+		shape->listIndex = renderer.compileList(model);
 	}
+
+	cout << "DrawNode: Shape -> " << shape->getID() << endl;
+	cout << shape->getVizMesh()->mNumMeshes << endl;
 
 	if(check_for_collisions && _collision) {
 		glDisable(GL_TEXTURE_2D);
