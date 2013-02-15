@@ -65,6 +65,7 @@ using namespace std;
 #include <kinematics/Joint.h>
 #include <robotics/Object.h>
 #include <robotics/Robot.h>
+#include <utils/LoadOpengl.h>
 
 // **********************
 // Drawing Stuff
@@ -101,7 +102,9 @@ VisualizationTab::VisualizationTab(wxWindow *parent,
                          const wxPoint& pos,
                          const wxSize& size,
                          long style) :
-GRIPTab(parent, id, pos, size, style) {
+    GRIPTab(parent, id, pos, size, style),
+    selectedNode(NULL)
+{
     sizerFull = new wxBoxSizer(wxHORIZONTAL);
     wxStaticBox* ss1Box = new wxStaticBox(this, -1, wxT("Display Options"));
     wxStaticBoxSizer* ss1BoxS = new wxStaticBoxSizer(ss1Box, wxVERTICAL);
