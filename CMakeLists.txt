@@ -58,6 +58,7 @@ include_directories(BEFORE src)
 set(GRIP_INCLUDEDIR src)
 set(GRIP_LIBRARY_DIRS ${CMAKE_SOURCE_DIR}/lib)
 add_subdirectory(src)
+add_subdirectory(grip-run)
 
 ###############
 # Package Installer
