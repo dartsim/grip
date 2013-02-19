@@ -904,6 +904,11 @@ void GRIPFrame::OnViewChange(wxCommandEvent& event) {
  * @date 2013-01-15
  */
 void GRIPFrame::OnSimulateStart(wxCommandEvent& event) {
+    if (!mWorld) {
+        std::cout << "No world loaded. Can't simulate without a world!" << std::endl << std::flush;
+        return;
+    }
+
     if (continueSimulation) {
         std::cout << "Already simulating." << std::endl << std::flush;
         return;
@@ -953,6 +958,11 @@ void GRIPFrame::OnSimulateStart(wxCommandEvent& event) {
  * @date 2013-01-16
  */
 void GRIPFrame::OnSimulateSingle(wxCommandEvent& event) {
+    if (!mWorld) {
+        std::cout << "No world loaded. Can't simulate without a world!" << std::endl << std::flush;
+        return;
+    }
+
     std::cout << "Simulating Single..." << std::endl;
     continueSimulation = true;
     SimulateFrame(event);
@@ -965,6 +975,11 @@ void GRIPFrame::OnSimulateSingle(wxCommandEvent& event) {
  * @date 2013-01-15
  */
 void GRIPFrame::OnSimulateStop(wxCommandEvent& event) {
+    if (!mWorld) {
+        std::cout << "No world loaded. Can't do simulation things without a world!" << std::endl << std::flush;
+        return;
+    }
+
     // fire simulation start timestep hooks
     size_t numPages = tabView->GetPageCount();
     for(size_t i=0; i< numPages; i++) {
