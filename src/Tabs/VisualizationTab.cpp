@@ -160,33 +160,6 @@ void VisualizationTab::OnCheckUseCollMesh(wxCommandEvent &evt) {
 }
 
 void VisualizationTab::GRIPEventSceneLoaded() {
-    int mGroundIndex = -1;
-    for(int i = 0; i < mWorld->getNumObjects(); ++i) {
-        if(mWorld->getObject(i)->getName() == "ground") {
-            mGroundIndex = i; break;
-        }
-    }
-    if (mGroundIndex != -1) {
-        std::cout << "-- Found ground as object %d \n" << std::endl;
-    }
-    else {
-        robotics::Object* ground = new robotics::Object();
-        ground->setName("ground");
-        ground->addDefaultRootNode();
-        dynamics::BodyNodeDynamics* node = new dynamics::BodyNodeDynamics();
-        node->setShape(new kinematics::ShapeBox(Eigen::Vector3d(10.0, 10.0, 0.0001), 1.0));
-        kinematics::Joint* joint = new kinematics::Joint(ground->getRoot(), node);
-        ground->addNode(node);
-        ground->initSkel();
-        ground->update();
-        ground->setImmobileState(true);
-
-        mWorld->addObject(ground);
-        mWorld->rebuildCollision();
-        mGroundIndex = mWorld->getNumObjects() - 1;
-        printf("-- Added ground as object %d\n", mGroundIndex);
-    }
-    treeView->CreateFromWorld();
 }
 
 /**
