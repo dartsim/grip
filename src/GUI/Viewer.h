@@ -60,11 +60,11 @@ public:
 	Vector3d worldV, prevWorldV;
 	renderer::OpenGLRenderInterface renderer;
 
-	Viewer( wxWindow * parent, wxWindowID id, const wxPoint & pos,
+	Viewer( wxWindow * parent, wxGLCanvas* sharedCanvas, wxWindowID id, const wxPoint & pos,
 		const wxSize& size, long style = 0, const wxString & name =
 					_("GLCanvas"), int * attribList = 0,
 		const wxPalette & palette = wxNullPalette) :
-		wxGLCanvas(parent, id, pos, size, style, name, attribList, palette),
+		wxGLCanvas(parent, sharedCanvas, id, pos, size, style, name, attribList, palette),
 		backColor(0.0, 0.0, 0.0), gridColor(0.5, 0.5, 0.0),
 		camRotT(AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0))),
 		worldV(0.0, 0.0, 0.0),

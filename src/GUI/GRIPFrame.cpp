@@ -282,7 +282,7 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
 	WX_GL_DEPTH_SIZE, 16,
 	0
       };
-      viewer = new Viewer(this, -1, wxPoint(0, 0), wxSize(prefViewerWidth, prefViewerHeight),
+      viewer = new Viewer(this, NULL, -1, wxPoint(0, 0), wxSize(prefViewerWidth, prefViewerHeight),
 			  wxFULL_REPAINT_ON_RESIZE | wxSUNKEN_BORDER, _T("GLCanvas"), attrib);
     }
 #ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
@@ -548,7 +548,7 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
 	//#endif
 
 	int attrib[] = {WX_GL_DOUBLEBUFFER,WX_GL_RGBA,	WX_GL_DEPTH_SIZE, 16,0};
-	Viewer *movieViewer = new Viewer(movieFrame, wxID_ANY, wxPoint(0, 0), wxSize(renderW, renderH), 0, _T("MovieWindow"), attrib);
+	Viewer *movieViewer = new Viewer(movieFrame, viewer, wxID_ANY, wxPoint(0, 0), wxSize(renderW, renderH), 0, _T("MovieWindow"), attrib);
 	
 	//movieFrame.AddChild(
 	#ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
