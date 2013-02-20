@@ -431,9 +431,9 @@ void GRIPFrame::DoLoad(string filename)
 {
     continueSimulation = false;
 
+    size_t numPages = tabView->GetPageCount();
     if (mWorld) {
         // fire SceneUnloaded hooks
-        size_t numPages = tabView->GetPageCount();
         for(size_t i=0; i< numPages; i++) {
             GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
             tab->GRIPEventSceneUnloaded();
