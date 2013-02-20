@@ -10,6 +10,10 @@ set(PKG_DESC "GRIP is a robotics simulator based on the DART physics engine.")
 set(GRIP_VERSION "${GRIP_MAJOR_VERSION}.${GRIP_MINOR_VERSION}.${GRIP_PATCH_VERSION}")
 set(PKG_EXTERNAL_DEPS "dart, flann, ccd, fcl")
 
+find_package(OpenGL)
+message(STATUS "OpenGL libraries: ${OPENGL_LIBRARY}")
+link_libraries(grip ${OPENGL_LIBRARIES})
+
 message(STATUS "CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR}")
 
