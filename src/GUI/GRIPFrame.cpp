@@ -429,15 +429,19 @@ void GRIPFrame::OnQuickLoad(wxCommandEvent& WXUNUSED(event)) {
  */
 void GRIPFrame::DoLoad(string filename)
 {
-    size_t numPages = tabView->GetPageCount();
+    continueSimulation = false;
 
-    // fire SceneUnloaded hooks
-    for(size_t i=0; i< numPages; i++) {
-        GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
-        tab->GRIPEventSceneUnloaded();
+    size_t numPages = tabView->GetPageCount();
+    if (mWorld) {
+        // fire SceneUnloaded hooks
+        for(size_t i=0; i< numPages; i++) {
+            GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
+            tab->GRIPEventSceneUnloaded();
+        }
+        // delete the world
+        DeleteWorld();
     }
-    
-    DeleteWorld();
+
     DartLoader dl;
 
     mWorld = dl.parseWorld( filename.c_str() );
