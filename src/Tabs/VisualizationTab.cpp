@@ -284,7 +284,8 @@ void VisualizationTab::GRIPEventRender() {
         renderer::RenderInterface* ri = &viewer->renderer;
         kinematics::BodyNode* cnode = selectedNode;
         kinematics::Shape* shape = selectedNode->getShape();
-        const aiScene* sc = shape->getVizMesh();
+        //FIXME: Use OpenGLRenderInterface calls to avoid code duplication.
+        const aiScene* sc = shape->getShapeType() == kinematics::Shape::P_MESH ? ((kinematics::ShapeMesh*)shape)->getMesh() : 0;
         if (shape->getCollisionMesh() != NULL) { sc = shape->getCollisionMesh(); }
 
         if (sc != NULL) {
