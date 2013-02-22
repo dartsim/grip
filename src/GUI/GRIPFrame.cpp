@@ -445,48 +445,55 @@ void GRIPFrame::DoLoad(string filename)
     DartLoader dl;
 
     mWorld = dl.parseWorld( filename.c_str() );
-    mWorld->printInfo();
-
-    // Add floor
-    robotics::Object* ground = new robotics::Object();
-    ground->setName("ground");
-    ground->addDefaultRootNode();
-    dynamics::BodyNodeDynamics* node = new dynamics::BodyNodeDynamics();
-    node->setShape(new kinematics::ShapeBox(Eigen::Vector3d(10.0, 10.0, 0.0001), 1.0));
-    kinematics::Joint* joint = new kinematics::Joint(ground->getRoot(), node);
-    ground->addNode(node);
-    ground->initSkel();
-    ground->update();
-    ground->setImmobileState(true);
-    mWorld->addObject(ground);
-    mWorld->rebuildCollision();
-
-    // Compile OpenGL displaylists
-    for(int i=0; i < mWorld->getNumSkeletons(); i++) {
-    	viewer->renderer.compileList(mWorld->getSkeleton(i));
+    if( mWorld->getNumRobots() == 0 && mWorld->getNumObjects() == 0 ) {
+      std::cout<< "[GRIP] Empty world? Neither robots nor objects loaded. Try again loading a world urdf"<< std::endl;
+      return;
     }
+    else {
+      mWorld->printInfo();
+      
+      // Add floor
+      robotics::Object* ground = new robotics::Object();
+      ground->setName("ground");
+      ground->addDefaultRootNode();
+      dynamics::BodyNodeDynamics* node = new dynamics::BodyNodeDynamics();
+      node->setShape(new kinematics::ShapeBox(Eigen::Vector3d(10.0, 10.0, 0.0001), 1.0));
+      kinematics::Joint* joint = new kinematics::Joint(ground->getRoot(), node);
+      ground->addNode(node);
+      ground->initSkel();
+      ground->update();
+      ground->setImmobileState(true);
+      mWorld->addObject(ground);
+      mWorld->rebuildCollision();
+      
+      // Compile OpenGL displaylists
+      for(int i=0; i < mWorld->getNumSkeletons(); i++) {
+    	viewer->renderer.compileList(mWorld->getSkeleton(i));
+      }
+      
+      
+      // UpdateTreeView();
+      cout << "--(v) Done Parsing World information (v)--" << endl;
+      treeView->CreateFromWorld();
+      cout << "--(v) Done Updating TreeView (v)--" << endl;
+      SetStatusText(wxT("--(i) Done Loading and updating the View (i)--"));
+      
+      /// Extract path to executable & save "lastload" there
+      cout << "--(i) Saving " << filename << " to .lastload file (i)--" << endl;
+      wxString filename_string(filename.c_str(), wxConvUTF8);
+      saveText(filename_string,".lastload");
 
-
-    // UpdateTreeView();
-    cout << "--(v) Done Parsing World information (v)--" << endl;
-    treeView->CreateFromWorld();
-    cout << "--(v) Done Updating TreeView (v)--" << endl;
-    SetStatusText(wxT("--(i) Done Loading and updating the View (i)--"));
-
-    /// Extract path to executable & save "lastload" there
-    cout << "--(i) Saving " << filename << " to .lastload file (i)--" << endl;
-    wxString filename_string(filename.c_str(), wxConvUTF8);
-    saveText(filename_string,".lastload");
-
-    selectedTreeNode = 0;
-    treeView->ExpandAll();
-    updateAllTabs();
-
-    // fire SceneLoaded hooks
-    for(size_t i=0; i< numPages; i++) {
+      selectedTreeNode = 0;
+      treeView->ExpandAll();
+      updateAllTabs();
+      
+      // fire SceneLoaded hooks
+      for(size_t i=0; i< numPages; i++) {
         GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
         tab->GRIPEventSceneLoaded();
-    }
+      }
+      
+    } // end of else (world empty)
 
     viewer->DrawGLScene();
 }
