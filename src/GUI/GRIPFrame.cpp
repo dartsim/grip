@@ -68,7 +68,6 @@
 #include "icons/frontView.xpm"
 #include "icons/topView.xpm"
 
-#include <robotics/Object.h>
 #include <robotics/Robot.h>
 #include <kinematics/ShapeBox.h> // for floor
 #include <kinematics/Joint.h> // for floor
@@ -464,7 +463,7 @@ void GRIPFrame::DoLoad(string filename)
 	mWorld->printInfo();
 	
 	// Add floor
-	robotics::Object* ground = new robotics::Object();
+	robotics::Robot* ground = new robotics::Robot();
 	ground->setName("ground");
 
 	kinematics::Joint* joint;

@@ -50,7 +50,6 @@
 #include <kinematics/Joint.h>
 #include <kinematics/Dof.h>
 #include <robotics/Robot.h>
-#include <robotics/Object.h>
 
 using namespace std;
 using namespace Eigen;
@@ -127,7 +126,7 @@ InspectorTab::InspectorTab(wxWindow *parent, const wxWindowID id,
  */
 void InspectorTab::OnSlider(wxCommandEvent &evt) {
   
-  robotics::Object* pObject;
+  robotics::Robot* pObject;
   dynamics::BodyNodeDynamics* pBodyNode;
   robotics::Robot* pRobot;
   Eigen::Matrix<double, 6, 1> pose;
@@ -144,7 +143,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
   
   //-- If selected : OBJECT
   if(selected == Return_Type_Object){
-    pObject = (robotics::Object*)(selectedTreeNode->data);
+    pObject = (robotics::Robot*)(selectedTreeNode->data);
     
     switch(slnum) {
     case X_SLIDER:
@@ -242,7 +241,7 @@ void InspectorTab::GRIPStateChange() {
     return;
   }
 
-  robotics::Object* pObject;
+  robotics::Robot* pObject;
   dynamics::BodyNodeDynamics* pBodyNode;
   robotics::Robot* pRobot;
   
@@ -255,7 +254,7 @@ void InspectorTab::GRIPStateChange() {
   
   //-- Return type Object
   if(selected == Return_Type_Object){
-    pObject = (robotics::Object*)(selectedTreeNode->data);
+    pObject = (robotics::Robot*)(selectedTreeNode->data);
     
     statusBuf = " Selected Object: " + pObject->getName();
     buf = "Object: " + pObject->getName();

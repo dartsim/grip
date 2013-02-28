@@ -9,7 +9,6 @@
 #include <fstream>
 #include "../GUI/GUI.h"
 #include <robotics/Robot.h>
-#include <robotics/Object.h>
 #include <dynamics/BodyNodeDynamics.h>
 #include <kinematics/Joint.h>
 #include <kinematics/Dof.h>
