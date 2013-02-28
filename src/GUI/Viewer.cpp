@@ -46,7 +46,6 @@
 #include <Tools/Constants.h>
 #include <iostream>
 #include <robotics/World.h>
-#include <robotics/Object.h>
 #include <robotics/Robot.h>
 
 using namespace std;
@@ -58,6 +57,7 @@ using namespace std;
 void Viewer::drawWorld() {
 	// Draw skeletons
 	for(int i=0; i < mWorld->getNumSkeletons(); i++) {
+		//mWorld->getSkeleton(i)->draw(&renderer);
 		renderer.draw(mWorld->getSkeleton(i), check_for_collisions, useCollMesh);
 	}
 }

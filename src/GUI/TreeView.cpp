@@ -40,7 +40,6 @@
 #include <kinematics/Dof.h>
 #include <kinematics/Transformation.h>
 #include <robotics/Robot.h>
-#include <robotics/Object.h>
 
 #include "TreeView.h"
 #include "GRIPFrame.h"

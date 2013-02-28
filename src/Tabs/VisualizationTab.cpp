@@ -63,7 +63,6 @@ using namespace std;
 #include <kinematics/ShapeBox.h>
 #include <kinematics/Dof.h>
 #include <kinematics/Joint.h>
-#include <robotics/Object.h>
 #include <robotics/Robot.h>
 #include <utils/LoadOpengl.h>
 
@@ -341,7 +340,7 @@ void VisualizationTab::GRIPStateChange() {
 
     switch (selectedTreeNode->dType) {
     case Return_Type_Object: {
-        robotics::Object* pObject = (robotics::Object*)(selectedTreeNode->data);
+        robotics::Robot* pObject = (robotics::Robot*)(selectedTreeNode->data);
         selectedNode = pObject->mRoot;
         break;
     }
