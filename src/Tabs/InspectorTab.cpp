@@ -130,7 +130,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
   robotics::Object* pObject;
   dynamics::BodyNodeDynamics* pBodyNode;
   robotics::Robot* pRobot;
-  Eigen::VectorXd pose(6);
+  Eigen::Matrix<double, 6, 1> pose;
   pose << 0, 0, 0, 0, 0, 0;
   
   int slnum = evt.GetId();
@@ -246,7 +246,7 @@ void InspectorTab::GRIPStateChange() {
   dynamics::BodyNodeDynamics* pBodyNode;
   robotics::Robot* pRobot;
   
-  Eigen::VectorXd pose(6);
+  Eigen::Matrix<double, 6, 1> pose;
   pose << 0, 0, 0, 0, 0, 0;
   
   string statusBuf;
