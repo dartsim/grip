@@ -72,6 +72,9 @@
 #include <robotics/Robot.h>
 #include <kinematics/ShapeBox.h> // for floor
 #include <kinematics/Joint.h> // for floor
+#include <kinematics/TrfmTranslate.h> // for floor
+#include <kinematics/TrfmRotateEuler.h> // for floor
+#include <kinematics/Dof.h>
 
 // Parser
 #include <robotics/parser/dart_parser/DartLoader.h>
@@ -463,10 +466,48 @@ void GRIPFrame::DoLoad(string filename)
 	// Add floor
 	robotics::Object* ground = new robotics::Object();
 	ground->setName("ground");
-	ground->addDefaultRootNode();
-	dynamics::BodyNodeDynamics* node = new dynamics::BodyNodeDynamics();
+
+	kinematics::Joint* joint;
+	dynamics::BodyNodeDynamics* node;
+	kinematics::Transformation* trans;	
+
+	// Set the initial Rootnode that controls the position and orientation of the whole robot
+	node = (dynamics::BodyNodeDynamics*) ground->createBodyNode("rootBodyNode");
+	node->setShape(new kinematics::Shape());
+	joint = new kinematics::Joint( NULL, node, "rootJoint" );
+	
+	// Add DOFs for RPY and XYZ of the whole robot
+	trans = new kinematics::TrfmTranslateX( new kinematics::Dof( 0, "rootX" ), "Tx" );
+	joint->addTransform( trans, true );
+	ground->addTransform( trans );
+	
+	trans = new kinematics::TrfmTranslateY( new kinematics::Dof( 0, "rootY" ), "Ty" );
+	joint->addTransform( trans, true );
+	ground->addTransform( trans );
+	
+	trans = new kinematics::TrfmTranslateZ( new kinematics::Dof( 0, "rootZ" ), "Tz" );
+	joint->addTransform( trans, true );
+	ground->addTransform( trans );
+	
+	trans = new kinematics::TrfmRotateEulerZ( new kinematics::Dof( 0, "rootYaw" ), "Try" );
+	joint->addTransform( trans, true );
+	ground->addTransform( trans );
+	
+	trans = new kinematics::TrfmRotateEulerY( new kinematics::Dof( 0, "rootPitch" ), "Trp" );
+	joint->addTransform( trans, true );
+	ground->addTransform( trans );
+	
+	trans = new kinematics::TrfmRotateEulerX( new kinematics::Dof( 0, "rootRoll" ), "Trr" );
+	joint->addTransform( trans, true );
+	ground->addTransform( trans );
+	
+	// Set this first node as root node
+	ground->addNode( node );
+	ground->initSkel();    
+
+	node = new dynamics::BodyNodeDynamics();
 	node->setShape(new kinematics::ShapeBox(Eigen::Vector3d(10.0, 10.0, 0.0001), 1.0));
-	kinematics::Joint* joint = new kinematics::Joint(ground->getRoot(), node);
+	joint = new kinematics::Joint(ground->getRoot(), node);
 	ground->addNode(node);
 	ground->initSkel();
 	ground->update();
