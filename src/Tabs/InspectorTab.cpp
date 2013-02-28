@@ -130,6 +130,8 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
   robotics::Object* pObject;
   dynamics::BodyNodeDynamics* pBodyNode;
   robotics::Robot* pRobot;
+  Eigen::VectorXd pose(6);
+  pose << 0, 0, 0, 0, 0, 0;
   
   int slnum = evt.GetId();
   double pos = *(double*)evt.GetClientData();
@@ -146,28 +148,26 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
     
     switch(slnum) {
     case X_SLIDER:
-      pObject->setPositionX( pos );
-      sprintf(numBuf,"X Change: %7.4f", pos);
-      break;
     case Y_SLIDER:
-      pObject->setPositionY( pos );
-      sprintf(numBuf,"Y Change: %7.4f", pos);
-      break;
     case Z_SLIDER:
-      pObject->setPositionZ( pos );
-      sprintf(numBuf,"Z Change: %7.4f", pos);
-      break;
     case ROLL_SLIDER:
     case PITCH_SLIDER:
-    case YAW_SLIDER:
-      pObject->setRotationRPY(DEG2RAD(rollSlider->pos), DEG2RAD(pitchSlider->pos), DEG2RAD(yawSlider->pos));
-      sprintf(numBuf,"Angle Change: %7.4f", pos);
+    case YAW_SLIDER: {
+      pose(0) = xSlider->pos;
+      pose(1) = ySlider->pos;
+      pose(2) = zSlider->pos;
+      pose(3) = DEG2RAD(rollSlider->pos);
+      pose(4) = DEG2RAD(pitchSlider->pos);
+      pose(5) = DEG2RAD(yawSlider->pos);
+      pObject->setRootTransform( pose );
+    }
       break;
     default:
-      return; break;
-    }
-    pObject->update();
-  }
+      return; 
+      break;
+    } // end switch
+    
+  } // end pObject
   
   //-- If selected : NODE
   else if( selected == Return_Type_Node ){
@@ -199,29 +199,26 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
     
     switch(slnum) {
     case X_SLIDER:
-      pRobot->setPositionX( pos );
-      sprintf(numBuf,"X Change: %7.4f", pos);
-      break;
     case Y_SLIDER:
-      pRobot->setPositionY( pos );
-      sprintf(numBuf,"Y Change: %7.4f", pos);
-      break;
     case Z_SLIDER:
-      pRobot->setPositionZ( pos );
-      sprintf(numBuf,"Z Change: %7.4f", pos);
-      break;
     case ROLL_SLIDER:
     case PITCH_SLIDER:
-    case YAW_SLIDER:
-      pRobot->setRotationRPY( DEG2RAD(rollSlider->pos), DEG2RAD(pitchSlider->pos), DEG2RAD(yawSlider->pos) );
-      sprintf(numBuf,"Angle Change: %7.4f", pos);
+    case YAW_SLIDER: {
+      pose(0) = xSlider->pos;
+      pose(1) = ySlider->pos;
+      pose(2) = zSlider->pos;
+      pose(3) = DEG2RAD(rollSlider->pos);
+      pose(4) = DEG2RAD(pitchSlider->pos);
+      pose(5) = DEG2RAD(yawSlider->pos);
+      pRobot->setRootTransform( pose );
+    }
       break;
     default:
       return;
       break;
-    }
-    pRobot->update();
-  }
+    } // end switch 
+
+  } // end pRobot
   
     if(frame!=NULL) frame->SetStatusText(wxString(numBuf,wxConvUTF8));
 
@@ -249,8 +246,8 @@ void InspectorTab::GRIPStateChange() {
   dynamics::BodyNodeDynamics* pBodyNode;
   robotics::Robot* pRobot;
   
-  double x; double y; double z; 
-  double roll; double pitch; double yaw;
+  Eigen::VectorXd pose(6);
+  pose << 0, 0, 0, 0, 0, 0;
   
   string statusBuf;
   string buf,buf2;
@@ -267,11 +264,8 @@ void InspectorTab::GRIPStateChange() {
     parentName->SetLabel(wxString("",wxConvUTF8));
     jSlider->Hide();
     
-    //-- Get XYZ and RPY
-    pObject->getRotationRPY( roll, pitch, yaw );
-    pObject->getPositionX( x );
-    pObject->getPositionY( y );
-    pObject->getPositionZ( z );
+    //-- Get XYZ and RPY (pose)
+    pose = pObject->getRootTransform();
   }
   
   //-- Return type Node
@@ -318,12 +312,12 @@ void InspectorTab::GRIPStateChange() {
     
     //-- Get XYZ and RPY
     Eigen::Matrix4d tf = pBodyNode->getWorldTransform();
-    x = tf(0,3); 
-    y = tf(1,3); 
-    z = tf(2,3);
-    roll = atan2( tf(2,1), tf(2,2) );
-    pitch = -asin( tf(2,0) );
-    yaw = atan2( tf(1,0), tf(0,0) );  
+    pose(0) = tf(0,3); 
+    pose(1) = tf(1,3); 
+    pose(2) = tf(2,3);
+    pose(3) = atan2( tf(2,1), tf(2,2) );
+    pose(4) = -asin( tf(2,0) );
+    pose(5) = atan2( tf(1,0), tf(0,0) );  
     
   }
   
@@ -339,22 +333,19 @@ void InspectorTab::GRIPStateChange() {
     parentName->SetLabel(wxString("",wxConvUTF8));
     jSlider->Hide();
     
-    //-- Get XYZ and RPY
-    pRobot->getRotationRPY( roll, pitch, yaw);
-    pRobot->getPositionX( x );
-    pRobot->getPositionY( y );
-    pRobot->getPositionZ( z );
+    //-- Get XYZ and RPY (pose)
+    pose = pRobot->getRootTransform();
   }
   
   frame->SetStatusText(wxString(statusBuf.c_str(),wxConvUTF8));
   sizerFull->Layout(); 
   
-  xSlider->setValue( x, false);
-  ySlider->setValue( y, false);
-  zSlider->setValue( z, false);
+  xSlider->setValue( pose(0), false);
+  ySlider->setValue( pose(1), false);
+  zSlider->setValue( pose(2), false);
   
-  rollSlider->setValue( RAD2DEG(roll), false );
-  pitchSlider->setValue( RAD2DEG(pitch), false );
-  yawSlider->setValue( RAD2DEG(yaw), false );
+  rollSlider->setValue( RAD2DEG( pose(3) ), false );
+  pitchSlider->setValue( RAD2DEG( pose(4) ), false );
+  yawSlider->setValue( RAD2DEG( pose(5) ), false );
   
 }
