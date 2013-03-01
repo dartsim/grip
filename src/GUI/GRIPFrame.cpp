@@ -429,7 +429,7 @@ void GRIPFrame::OnQuickLoad(wxCommandEvent& WXUNUSED(event)) {
  * @function DoLoad
  * @brief Load world from RSDH file
  */
-void GRIPFrame::DoLoad(string filename)
+void GRIPFrame::DoLoad(string filename, bool savelastload)
 {
     continueSimulation = false;
 
@@ -527,9 +527,11 @@ void GRIPFrame::DoLoad(string filename)
 	SetStatusText(wxT("--(i) Done Loading and updating the View (i)--"));
 	
 	/// Extract path to executable & save "lastload" there
-	cout << "--(i) Saving " << filename << " to .lastload file (i)--" << endl;
-	wxString filename_string(filename.c_str(), wxConvUTF8);
-	saveText(filename_string,".lastload");
+        if (savelastload) {
+            cout << "--(i) Saving " << filename << " to .lastload file (i)--" << endl;
+            wxString filename_string(filename.c_str(), wxConvUTF8);
+            saveText(filename_string,".lastload");
+        }
 	
 	selectedTreeNode = 0;
 	treeView->ExpandAll();

@@ -138,7 +138,7 @@ public:
     void UpdateAndRedraw();
     void FireEventRender();
 
-    void DoLoad(string filename);
+    void DoLoad(string filename, bool savelastload=true);
     void DeleteWorld();
 
     void onTVChange(wxTreeEvent& event);
