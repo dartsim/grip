@@ -505,7 +505,8 @@ void GRIPFrame::DoLoad(string filename, bool savelastload)
 	ground->initSkel();    
 
 	node = new dynamics::BodyNodeDynamics();
-	node->setShape(new kinematics::ShapeBox(Eigen::Vector3d(10.0, 10.0, 0.0001), 1.0));
+	node->setShape(new kinematics::ShapeBox(Eigen::Vector3d(10.0, 10.0, 0.0001)));
+	node->setMass(1.0);
 	joint = new kinematics::Joint(ground->getRoot(), node);
 	ground->addNode(node);
 	ground->initSkel();
