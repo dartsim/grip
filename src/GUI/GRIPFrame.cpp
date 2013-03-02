@@ -472,7 +472,9 @@ void GRIPFrame::DoLoad(string filename, bool savelastload)
 
 	// Set the initial Rootnode that controls the position and orientation of the whole robot
 	node = (dynamics::BodyNodeDynamics*) ground->createBodyNode("rootBodyNode");
-	node->setShape(new kinematics::Shape());
+	kinematics::Shape* shape = new kinematics::Shape();
+	node->setVizShape(shape);
+	node->setColShape(shape);
 	joint = new kinematics::Joint( NULL, node, "rootJoint" );
 	
 	// Add DOFs for RPY and XYZ of the whole robot
@@ -505,7 +507,9 @@ void GRIPFrame::DoLoad(string filename, bool savelastload)
 	ground->initSkel();    
 
 	node = new dynamics::BodyNodeDynamics();
-	node->setShape(new kinematics::ShapeBox(Eigen::Vector3d(10.0, 10.0, 0.0001)));
+	shape = new kinematics::ShapeBox(Eigen::Vector3d(10.0, 10.0, 0.0001));
+	node->setVizShape(shape);
+	node->setColShape(shape);
 	node->setMass(1.0);
 	joint = new kinematics::Joint(ground->getRoot(), node);
 	ground->addNode(node);
