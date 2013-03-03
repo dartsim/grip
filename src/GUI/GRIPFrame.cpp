@@ -639,11 +639,11 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
 	movieViewer->camRadius = viewer->camRadius;
 	movieViewer->worldV = viewer->worldV;
 
-    double curTargetTime = 0.0d;
+    double curTargetTime = 0.0;
     std::vector<GRIPTimeSlice>::iterator it = timeVector.begin();
     int framesWritten = 0;
 
-    double framerate = 30.0d;
+    double framerate = 30.0;
 
     do {
         if (it == timeVector.end()) break; // call it done
@@ -666,7 +666,7 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
 
         framesWritten++;
 
-        curTargetTime += 1.0d / framerate;
+        curTargetTime += 1.0 / framerate;
     } while (curTargetTime < timeVector.back().time);
 
 
