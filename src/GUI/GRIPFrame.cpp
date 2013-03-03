@@ -639,28 +639,36 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
 	movieViewer->camRadius = viewer->camRadius;
 	movieViewer->worldV = viewer->worldV;
 
-    double step = 1.0;//.03333/tIncrement;
-    int count = 0;
+    double curTargetTime = 0.0d;
+    std::vector<GRIPTimeSlice>::iterator it = timeVector.begin();
+    int framesWritten = 0;
 
-    for( double s=0; s < timeVector.size(); s+= step) {
-         int i = (int)s;
-         mWorld->setState(timeVector[i].state);
-		movieViewer->DrawGLScene();
-		wxYield();
+    double framerate = 30.0d;
 
-		unsigned char* imageData = (unsigned char*) malloc(w * h * 3);
-		glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, imageData);
-		wxImage img_ud(w,h,imageData);
-		wxImage img = img_ud.Mirror(false);
+    do {
+        if (it == timeVector.end()) break; // call it done
+        while((*it).time < curTargetTime) it++;
 
-		sprintf(buf, "%s/%06d.png",path.c_str(),count);
+        mWorld->setState((*it).state);
+        movieViewer->DrawGLScene();
+        wxYield();
 
-		wxString fname = wxString(buf,wxConvUTF8);
-		cout << "Saving:" << buf << ":" << endl;
-		img.SaveFile(fname, wxBITMAP_TYPE_PNG);
+        unsigned char* imageData = (unsigned char*) malloc(w * h * 3);
+        glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+        wxImage img_ud(w,h,imageData);
+        wxImage img = img_ud.Mirror(false);
 
-		count++;
-    }
+        sprintf(buf, "%s/%06d.png",path.c_str(), framesWritten);
+
+        wxString fname = wxString(buf,wxConvUTF8);
+        cout << "Saving frame at t = " << (*it).time << " (targeting " << curTargetTime << ") into " << buf << "" << endl;
+        img.SaveFile(fname, wxBITMAP_TYPE_PNG);
+
+        framesWritten++;
+
+        curTargetTime += 1.0d / framerate;
+    } while (curTargetTime < timeVector.back().time);
+
 
 	delete movieViewer;
 	delete movieFrame;
