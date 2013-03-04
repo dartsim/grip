@@ -279,10 +279,10 @@ void VisualizationTab::GRIPEventRender() {
     }
 
     // draw collision meshes
-    if (checkShowCollMesh->IsChecked() && mWorld && selectedNode && selectedNode->getColShape()) {
+    if (checkShowCollMesh->IsChecked() && mWorld && selectedNode && selectedNode->getCollisionShape()) {
         renderer::RenderInterface* ri = &viewer->renderer;
         kinematics::BodyNode* cnode = selectedNode;
-        kinematics::ShapeMesh* shapeMesh = dynamic_cast<kinematics::ShapeMesh *>(selectedNode->getColShape());
+        kinematics::ShapeMesh* shapeMesh = dynamic_cast<kinematics::ShapeMesh *>(selectedNode->getCollisionShape());
         //FIXME: Use OpenGLRenderInterface calls to avoid code duplication.
         if(shapeMesh) {
         	const aiScene* sc = shapeMesh->getMesh();
