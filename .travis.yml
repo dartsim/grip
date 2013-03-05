@@ -19,6 +19,3 @@ before_install:
   - cd grip
 before_script: cmake .
 script: make
-branches:
-  only:
-    - master
