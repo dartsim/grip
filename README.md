@@ -1,4 +1,4 @@
-![alt text](https://api.travis-ci.org/golems/grip.png?branch=master "Current Build Status")
+[![Build Status](https://travis-ci.org/golems/grip.png?branch=master)](https://travis-ci.org/golems/grip)
 
 GRIP Simulator GUI
 ==================
