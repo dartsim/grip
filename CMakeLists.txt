@@ -5,7 +5,7 @@ message (STATUS "Creating Makefile for the GRIP project")
 
 set(GRIP_MAJOR_VERSION "2")
 set(GRIP_MINOR_VERSION "4")
-set(GRIP_PATCH_VERSION "0")
+set(GRIP_PATCH_VERSION "0precise")
 set(PKG_DESC "GRIP is a robotics simulator based on the DART physics engine.")
 set(GRIP_VERSION "${GRIP_MAJOR_VERSION}.${GRIP_MINOR_VERSION}.${GRIP_PATCH_VERSION}")
 set(PKG_EXTERNAL_DEPS "dart, flann, ccd, fcl")
