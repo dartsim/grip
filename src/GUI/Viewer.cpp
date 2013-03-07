@@ -92,12 +92,10 @@ void Viewer::UpdateCamera(void){
 int Viewer::DrawGLScene()
 {
 	glPolygonMode (GL_FRONT, GL_FILL);
+	glEnable(GL_BLEND);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
 
 	glHint(GL_FOG_HINT,GL_NICEST);
 	glHint(GL_POLYGON_SMOOTH_HINT,GL_NICEST);
@@ -106,40 +104,52 @@ int Viewer::DrawGLScene()
               0, 0, 0,                           // Target Vector in scene
               camT(0,2), camT(1,2), camT(2,2));  // Up Vector from Camera pose
 
-	GLfloat position[]= {static_cast<GLfloat>(camT(0,3)),
-			static_cast<GLfloat>(camT(1,3)),
-			static_cast<GLfloat>(camT(2,3)), 1.0}; // Camera position
 	glEnable(GL_TEXTURE_2D);
 	glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
 
+	// Lighting settings
+	GLfloat position[]= {static_cast<GLfloat>(camT(0,3)),
+						 static_cast<GLfloat>(camT(1,3)),
+						 static_cast<GLfloat>(camT(2,3)),
+						 1.0}; // Camera position
+	//	GLfloat position[] = {1.0,0.0,0.0,0.0};
+	GLfloat position1[] = {-1.0,0.0,0.0,0.0};
+
+	static float ambient[]             = {0.2, 0.2, 0.2, 1.0};
+	static float diffuse[]             = {0.6, 0.6, 0.6, 1.0};
+	static float front_mat_shininess[] = {60.0};
+	static float front_mat_specular[]  = {0.2, 0.2,  0.2,  1.0};
+	static float front_mat_diffuse[]   = {0.5, 0.28, 0.38, 1.0};
+	static float lmodel_ambient[]      = {0.2, 0.2,  0.2,  1.0};
+	static float lmodel_twoside[]      = {GL_FALSE};
+
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_AMBIENT,  ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE,  diffuse);
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
+
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT,  lmodel_ambient);
+	glLightModelfv(GL_LIGHT_MODEL_TWO_SIDE, lmodel_twoside);
+
+	// Back light
+	//	glEnable( GL_LIGHT1);
+	//	glLightfv(GL_LIGHT1,GL_DIFFUSE, diffuse);
+	//	glLightfv(GL_LIGHT1,GL_POSITION, position1);
+
 	glEnable(GL_LIGHTING);
-	glDisable(GL_LIGHT1);
-	glEnable(GL_LIGHT2);
+	glEnable(GL_COLOR_MATERIAL);
 
-	GLfloat no_mat[] = {0.0f, 0.0f, 0.0f, 1.0f};
-	GLfloat diffuse[] = {.7f, .7f, .7f, .7f};
-	GLfloat specular[] = {0.5f, 0.5f, 0.5f, 1.0f};
-	glLightfv(GL_LIGHT1, GL_POSITION, position);
-	glLightfv(GL_LIGHT1, GL_AMBIENT, no_mat);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, front_mat_shininess);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR,  front_mat_specular);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,   front_mat_diffuse);
 
-	GLfloat HeadlightAmb[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-	GLfloat HeadlightDif[4] = {1.0f, 1.0f, 1.0f, 0.0f};
-	GLfloat HeadlightSpc[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	glLightfv(GL_LIGHT2, GL_AMBIENT, HeadlightAmb);
-	glLightfv(GL_LIGHT2, GL_DIFFUSE, HeadlightDif);
-	glLightfv(GL_LIGHT2, GL_SPECULAR, HeadlightSpc);
-	glLightfv(GL_LIGHT2, GL_POSITION, position);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_NORMALIZE);
 
+	// Render
 	glTranslated(worldV[0],worldV[1],worldV[2]);
-
-	float ambRefl[] = {0.2f, 0.2f, 0.2f, 1.0f}; // default
-	glMaterialfv(GL_FRONT, GL_AMBIENT, ambRefl);
-	float diffRefl[] = {0.8f, 0.8f, 0.8f, 1.0f}; // default
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffRefl);
-	float specRefl[] = {1.0f, 1.0f, 1.0f, 1.0f}; // default
-	glMaterialfv(GL_FRONT, GL_SPECULAR, specRefl);
 
 	glPushMatrix();
 	if (gridActive){  addGrid(); }
@@ -150,11 +160,11 @@ int Viewer::DrawGLScene()
 
         // draw models
 	if( mWorld != NULL ) { 
-            drawWorld(); 
-        }
+		drawWorld();
+	}
 
-        // fire during-render hooks
-        ((GRIPFrame*)GetParent())->FireEventRender();
+	// fire during-render hooks
+	((GRIPFrame*)GetParent())->FireEventRender();
 
 	glFlush();
 	SwapBuffers();

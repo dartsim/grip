@@ -504,8 +504,7 @@ void GRIPFrame::DoLoad(string filename, bool savelastload)
 	
 	// Set this first node as root node
 	ground->addNode( node );
-	ground->initSkel();    
-
+	ground->initSkel();
 	node = new dynamics::BodyNodeDynamics("ground");
 	shape = new kinematics::ShapeBox(Eigen::Vector3d(10.0, 10.0, 0.0001));
 	shape->setColor(Eigen::Vector3d(.5,.5,1));
