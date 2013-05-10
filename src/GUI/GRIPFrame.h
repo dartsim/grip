@@ -44,7 +44,7 @@ class Viewer;
 #include <vector>
 
 #include "TreeView.h"
-#include <robotics/World.h>
+#include <simulation/World.h>
 
 #include <string>
 using namespace std;
@@ -93,8 +93,6 @@ public:
     int saveText(wxString scenepath, const char* llfile);
     void OnQuit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
-    void OnSaveScene(wxCommandEvent& event);
-    void OnSaveRobot(wxCommandEvent& event);
     void OnLoad(wxCommandEvent& event);
     void OnQuickLoad(wxCommandEvent& event);
     void OnToolOrder(wxCommandEvent& event);
@@ -124,7 +122,7 @@ public:
     void OnCameraReset(wxCommandEvent& event);
 
     void InitTimer(string title, double period);
-    void AddWorld( robotics::World* world );
+    void AddWorld( simulation::World* world );
 
     vector<GRIPTimeSlice> timeVector;
     double tCurrent;

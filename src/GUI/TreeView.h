@@ -57,9 +57,8 @@
 
 enum DataType
 {
-	Return_Type_Object,
 	Return_Type_Robot,
-        Return_Type_Node,
+	Return_Type_Node,
 	Return_Type_Tree_Root,
 	Return_Type_Other
 };

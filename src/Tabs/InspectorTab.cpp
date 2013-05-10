@@ -49,7 +49,7 @@
 #include <dynamics/BodyNodeDynamics.h>
 #include <kinematics/Joint.h>
 #include <kinematics/Dof.h>
-#include <robotics/Robot.h>
+#include <kinematics/Transformation.h>
 
 using namespace std;
 using namespace Eigen;
@@ -126,9 +126,8 @@ InspectorTab::InspectorTab(wxWindow *parent, const wxWindowID id,
  */
 void InspectorTab::OnSlider(wxCommandEvent &evt) {
   
-  robotics::Robot* pObject;
   dynamics::BodyNodeDynamics* pBodyNode;
-  robotics::Robot* pRobot;
+  dynamics::SkeletonDynamics* pRobot;
   Eigen::Matrix<double, 6, 1> pose;
   pose << 0, 0, 0, 0, 0, 0;
   
@@ -141,35 +140,8 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
   
   int selected = selectedTreeNode->dType;
   
-  //-- If selected : OBJECT
-  if(selected == Return_Type_Object){
-    pObject = (robotics::Robot*)(selectedTreeNode->data);
-    
-    switch(slnum) {
-    case X_SLIDER:
-    case Y_SLIDER:
-    case Z_SLIDER:
-    case ROLL_SLIDER:
-    case PITCH_SLIDER:
-    case YAW_SLIDER: {
-      pose(0) = xSlider->pos;
-      pose(1) = ySlider->pos;
-      pose(2) = zSlider->pos;
-      pose(3) = DEG2RAD(rollSlider->pos);
-      pose(4) = DEG2RAD(pitchSlider->pos);
-      pose(5) = DEG2RAD(yawSlider->pos);
-      pObject->setRootTransform( pose );
-    }
-      break;
-    default:
-      return; 
-      break;
-    } // end switch
-    
-  } // end pObject
-  
   //-- If selected : NODE
-  else if( selected == Return_Type_Node ){
+  if( selected == Return_Type_Node ){
     pBodyNode = (dynamics::BodyNodeDynamics*)(selectedTreeNode->data);
     
     switch(slnum) {
@@ -188,13 +160,13 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
       break;
     }
     /// Update the robot or object (both Skeletons)
-    ( (robotics::Robot*) pBodyNode->getSkel() )->update();
+    update((dynamics::SkeletonDynamics*)pBodyNode->getSkel());
     sprintf(numBuf,"Joint Change: %7.4f", pos);
     
   }
   //-- If selected : ROBOT
   else if(selected == Return_Type_Robot){
-    pRobot = (robotics::Robot*)(selectedTreeNode->data);
+    pRobot = (dynamics::SkeletonDynamics*)(selectedTreeNode->data);
     
     switch(slnum) {
     case X_SLIDER:
@@ -209,7 +181,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
       pose(3) = DEG2RAD(rollSlider->pos);
       pose(4) = DEG2RAD(pitchSlider->pos);
       pose(5) = DEG2RAD(yawSlider->pos);
-      pRobot->setRootTransform( pose );
+      setRootTransform(pRobot, pose);
     }
       break;
     default:
@@ -222,7 +194,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
     if(frame!=NULL) frame->SetStatusText(wxString(numBuf,wxConvUTF8));
 
     mWorld->checkCollision(true);
-	viewer->DrawGLScene();
+    viewer->DrawGLScene();
 }
 
 /**
@@ -241,9 +213,8 @@ void InspectorTab::GRIPStateChange() {
     return;
   }
 
-  robotics::Robot* pObject;
   dynamics::BodyNodeDynamics* pBodyNode;
-  robotics::Robot* pRobot;
+  dynamics::SkeletonDynamics* pRobot;
   
   Eigen::Matrix<double, 6, 1> pose;
   pose << 0, 0, 0, 0, 0, 0;
@@ -252,33 +223,18 @@ void InspectorTab::GRIPStateChange() {
   string buf,buf2;
   int selected = selectedTreeNode->dType;
   
-  //-- Return type Object
-  if(selected == Return_Type_Object){
-    pObject = (robotics::Robot*)(selectedTreeNode->data);
-    
-    statusBuf = " Selected Object: " + pObject->getName();
-    buf = "Object: " + pObject->getName();
-    itemName->SetLabel( wxString(buf.c_str(),wxConvUTF8) );
-    parentName->Show();
-    parentName->SetLabel(wxString("",wxConvUTF8));
-    jSlider->Hide();
-    
-    //-- Get XYZ and RPY (pose)
-    pose = pObject->getRootTransform();
-  }
-  
   //-- Return type Node
-  else if(selected == Return_Type_Node){
+  if(selected == Return_Type_Node){
     pBodyNode = (dynamics::BodyNodeDynamics*)(selectedTreeNode->data);
     
-    statusBuf = " Selected Node: " + string( pBodyNode->getName() ) + " of Robot: " + string( ((robotics::Robot*) pBodyNode->getSkel())->getName() );
+    statusBuf = " Selected Node: " + string( pBodyNode->getName() ) + " of Robot: " + string( pBodyNode->getSkel()->getName() );
     buf = "Node: " + string( pBodyNode->getName() );
     itemName->SetLabel(wxString(buf.c_str(),wxConvUTF8));
     
     if( pBodyNode->getParentNode() != NULL ) {
-      buf2 = "Parent Node: " + string( pBodyNode->getParentNode()->getName() ) + "   Robot: " + string( ((robotics::Robot*) pBodyNode->getSkel())->getName() );
+      buf2 = "Parent Node: " + string( pBodyNode->getParentNode()->getName() ) + "   Robot: " + string( pBodyNode->getSkel()->getName() );
     } else {
-      buf2 = "Parent Node: world (NULL)  Robot: " + string( ((robotics::Robot*) pBodyNode->getSkel())->getName() );
+      buf2 = "Parent Node: world (NULL)  Robot: " + string( pBodyNode->getSkel()->getName() );
     }
       
       /** If joint is hinge */
@@ -323,7 +279,7 @@ void InspectorTab::GRIPStateChange() {
   //-- Return type Robot
   else if(selected == Return_Type_Robot) {
     
-    pRobot = (robotics::Robot*)(selectedTreeNode->data);
+    pRobot = (dynamics::SkeletonDynamics*)(selectedTreeNode->data);
     
     statusBuf = " Selected Robot: " + pRobot->getName();
     buf = "Robot: " + pRobot->getName();
@@ -333,7 +289,7 @@ void InspectorTab::GRIPStateChange() {
     jSlider->Hide();
     
     //-- Get XYZ and RPY (pose)
-    pose = pRobot->getRootTransform();
+    pose = getRootTransform(pRobot);
   }
   
   frame->SetStatusText(wxString(statusBuf.c_str(),wxConvUTF8));
@@ -347,4 +303,52 @@ void InspectorTab::GRIPStateChange() {
   pitchSlider->setValue( RAD2DEG( pose(4) ), false );
   yawSlider->setValue( RAD2DEG( pose(5) ), false );
   
+}
+
+Eigen::Matrix<double, 6, 1> InspectorTab::getRootTransform(dynamics::SkeletonDynamics* robot) {
+  kinematics::Joint *joint = robot->getRoot()->getParentJoint();
+
+  assert(joint->getNumTransforms() >= 4);
+  assert(joint->getTransform(0)->getType() == kinematics::Transformation::T_TRANSLATE);
+  assert(joint->getTransform(1)->getType() == kinematics::Transformation::T_ROTATEZ);
+  assert(joint->getTransform(2)->getType() == kinematics::Transformation::T_ROTATEY);
+  assert(joint->getTransform(3)->getType() == kinematics::Transformation::T_ROTATEX);
+
+  Eigen::Matrix<double, 6, 1> pose;
+  pose(0) = joint->getTransform(0)->getDof(0)->getValue();
+  pose(1) = joint->getTransform(0)->getDof(1)->getValue();
+  pose(2) = joint->getTransform(0)->getDof(2)->getValue();
+  pose(3) = joint->getTransform(3)->getDof(0)->getValue();
+  pose(4) = joint->getTransform(2)->getDof(0)->getValue();
+  pose(5) = joint->getTransform(1)->getDof(0)->getValue();
+  return pose;
+}
+
+void InspectorTab::setRootTransform(dynamics::SkeletonDynamics* robot, const Eigen::Matrix<double, 6, 1>& pose) {
+  kinematics::Joint* joint = robot->getRoot()->getParentJoint();
+
+  assert(joint->getNumTransforms() >= 4);
+  assert(joint->getTransform(0)->getType() == kinematics::Transformation::T_TRANSLATE);
+  assert(joint->getTransform(1)->getType() == kinematics::Transformation::T_ROTATEZ);
+  assert(joint->getTransform(2)->getType() == kinematics::Transformation::T_ROTATEY);
+  assert(joint->getTransform(3)->getType() == kinematics::Transformation::T_ROTATEX);
+
+  joint->getTransform(0)->getDof(0)->setValue(pose(0));
+  joint->getTransform(0)->getDof(1)->setValue(pose(1));
+  joint->getTransform(0)->getDof(2)->setValue(pose(2));
+  joint->getTransform(1)->getDof(0)->setValue(pose(5));
+  joint->getTransform(2)->getDof(0)->setValue(pose(4));
+  joint->getTransform(3)->getDof(0)->setValue(pose(3));
+  joint->updateStaticTransform();
+  update(robot);
+}
+
+void InspectorTab::update(dynamics::SkeletonDynamics* robot) {
+  for(int i = 0; i < robot->getNumNodes(); i++) {
+    robot->getNode(i)->updateTransform();
+  }
+  
+  for(int i=0; i < robot->getNumNodes(); i++) {
+    robot->getNode(i)->updateFirstDerivatives();
+  }
 }

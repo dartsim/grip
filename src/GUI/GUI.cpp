@@ -41,7 +41,7 @@
 //   loaded files, robot, planners, and other intentions w.r.t. the GUI
 //---------------------------------------------------------------------
 
-robotics::World* mWorld = 0;
+simulation::World* mWorld = 0;
 
 GRIPFrame*	frame = 0;
 Viewer*		viewer = 0;

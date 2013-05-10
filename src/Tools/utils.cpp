@@ -8,13 +8,11 @@
 #include "utils.h"
 #include <fstream>
 #include "../GUI/GUI.h"
-#include <robotics/Robot.h>
 #include <dynamics/BodyNodeDynamics.h>
 #include <kinematics/Joint.h>
 #include <kinematics/Dof.h>
 #include <Tools/Constants.h>
 #include "../GUI/Viewer.h"
-#include <robotics/World.h>
 
 using namespace std;
 

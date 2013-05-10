@@ -45,8 +45,6 @@
 #include <Tools/GL/glcommon.h>
 #include <Tools/Constants.h>
 #include <iostream>
-#include <robotics/World.h>
-#include <robotics/Robot.h>
 
 using namespace std;
 

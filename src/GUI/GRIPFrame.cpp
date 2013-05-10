@@ -50,7 +50,6 @@
 #include <Tabs/GRIPTab.h>
 #include "GRIPSlider.h"
 #include "GRIPFrame.h"
-#include <Tools/utils.h>
 
 #include "icons/open.xpm"
 #include "icons/save.xpm"
@@ -68,7 +67,6 @@
 #include "icons/frontView.xpm"
 #include "icons/topView.xpm"
 
-#include <robotics/Robot.h>
 #include <kinematics/ShapeBox.h> // for floor
 #include <kinematics/Joint.h> // for floor
 #include <kinematics/TrfmTranslate.h> // for floor
@@ -361,40 +359,6 @@ GRIPFrame::GRIPFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title) {
     SetMenuBar(menuBar);
 }
 
-/**
- * @function OnSaveScene
- * @brief Checks if the input file is a .rscene file or not and then writes the scene to it.
- */
-void GRIPFrame::OnSaveScene( wxCommandEvent& WXUNUSED(event) ) {
-
-    wxString filepath;
-    string filename;
-    size_t endpath;
-    wxFileDialog *SaveDialog = new wxFileDialog( this, _("Save File As"), wxT("../scene/"), wxT(""),
-			                         _("*.rscene"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition );
-
-    if (SaveDialog->ShowModal() == wxID_OK) {
-
-	filepath = SaveDialog->GetPath();
-	filename = string(filepath.mb_str());
-	endpath = filename.find(".rscene");
-
-	if(endpath == (unsigned int)-1) filename += ".rscene";
-
-	saveRscene( filename );
-	wxString filename_string(filename.c_str(), wxConvUTF8);
-	saveText(filename_string,".lastload");
-    }
-}
-
-
-/**
- * @function OnSaveRobot
- */
-void GRIPFrame::OnSaveRobot(wxCommandEvent& WXUNUSED(event)) {
-
-}
-
 
 /**
  * @function OnLoad
@@ -454,16 +418,15 @@ void GRIPFrame::DoLoad(string filename, bool savelastload)
     }
     else {
       // Empty world
-      if( mWorld->getNumRobots() == 0 && mWorld->getNumObjects() == 0 ) {
+      if(mWorld->getNumSkeletons() == 0) {
 	std::cout<< "[GRIP] Empty world? Neither robots nor objects loaded. Try again loading a world urdf"<< std::endl;
 	return;
       }
       else {
 	// A world with at least an object or a robot
-	mWorld->printInfo();
 	
 	// Add floor
-	robotics::Robot* ground = new robotics::Robot();
+	dynamics::SkeletonDynamics* ground = new dynamics::SkeletonDynamics();
 	ground->setName("ground");
 
 	kinematics::Joint* joint;
@@ -514,10 +477,8 @@ void GRIPFrame::DoLoad(string filename, bool savelastload)
 	joint = new kinematics::Joint(ground->getRoot(), node);
 	ground->addNode(node);
 	ground->initSkel();
-	ground->update();
 	ground->setImmobileState(true);
-	mWorld->addObject(ground);
-	mWorld->rebuildCollision();
+	mWorld->addSkeleton(ground);
 	
 	// Compile OpenGL displaylists
 	for(int i=0; i < mWorld->getNumSkeletons(); i++) {
@@ -566,14 +527,12 @@ void GRIPFrame::DeleteWorld() {
 
     timeVector.clear();
 
-    if( mWorld != NULL) {
-        robotics::World* w = mWorld;
-	mWorld = 0;
-	selectedTreeNode = 0;
-	treeView->DeleteAllItems();
-	delete w;
+    if(mWorld) {
+        delete mWorld;
+        mWorld = 0;
+        selectedTreeNode = 0;
+        treeView->DeleteAllItems();
     }
-
 }
 
 /**
@@ -844,9 +803,9 @@ void GRIPFrame::OnTimeScroll(wxScrollEvent& event) {
  * @brief 
  * @date 2011-10-13
  */
-void GRIPFrame::AddWorld( robotics::World* _world) {
+void GRIPFrame::AddWorld( simulation::World* _world) {
     GRIPTimeSlice tsnew;
-    tsnew.time = _world->mTime;
+	tsnew.time = _world->getTime();
     tsnew.state = _world->getState();
     timeVector.push_back(tsnew);
     tMax += tIncrement;
@@ -996,7 +955,7 @@ void GRIPFrame::OnSimulateStart(wxCommandEvent& event) {
     if (timeVector.size() != 0) {
         std::vector<GRIPTimeSlice>::iterator curState = timeVector.begin();
         std::cout << "Timeline has " << timeVector.size() << " entries" << std::endl;
-        while (curState->time < mWorld->mTime && curState != timeVector.end()) {
+        while (curState->time < mWorld->getTime() && curState != timeVector.end()) {
             curState++;
         }
         if (curState != timeVector.end()) {
@@ -1004,8 +963,8 @@ void GRIPFrame::OnSimulateStart(wxCommandEvent& event) {
         }
         std::cout << "Timeline has " << timeVector.size() << " entries" << std::endl;
     }
-    tMax = mWorld->mTime;
-    tIncrement = mWorld->mTimeStep;
+    tMax = mWorld->getTime();
+    tIncrement = mWorld->getTimeStep();
     
     std::cout << "Simulating..." << std::endl << std::flush;
     continueSimulation = true;
@@ -1119,14 +1078,14 @@ void GRIPFrame::SimulateFrame(wxCommandEvent& event) {
     double filterStrength = .995;
     clock_t curFrameTime = clock();
     double frameDuration = (float)(curFrameTime - lastFrameTime) / (float)CLOCKS_PER_SEC;
-    double rawRelSimSpeed = frameDuration / mWorld->mTimeStep;
+    double rawRelSimSpeed = frameDuration / mWorld->getTimeStep();
     lastFrameTime = curFrameTime;
     filteredRelSimSpeed = (filteredRelSimSpeed * filterStrength) + (rawRelSimSpeed * (1.0-filterStrength));
     
     // and then display the results
     timeText->Clear();
     timeText->SetInsertionPoint(0);
-    timeText->AppendText(wxString::Format(wxT("%.3f"), mWorld->mTime)); // current time
+    timeText->AppendText(wxString::Format(wxT("%.3f"), mWorld->getTime())); // current time
     timeRelText->Clear();
     timeRelText->SetInsertionPoint(0);
     timeRelText->AppendText(wxString::Format(wxT("%.3f"), filteredRelSimSpeed)); // simulation speed
@@ -1157,12 +1116,6 @@ void GRIPFrame::OnRequestUpdateAndRender(wxCommandEvent& event) {
 }
 void GRIPFrame::UpdateAndRedraw()
 {
-    for (int j = 0; j < mWorld->getNumRobots(); j++) {
-        mWorld->getRobot(j)->update();
-    }
-    for (int j = 0; j < mWorld->getNumObjects(); j++) {
-        mWorld->getObject(j)->update();
-    }
     viewer->DrawGLScene();
     timeLastRedraw = clock();
 }
@@ -1181,8 +1134,6 @@ BEGIN_EVENT_TABLE(GRIPFrame, wxFrame)
 EVT_COMMAND_SCROLL(1009, GRIPFrame::OnTimeScroll)
 EVT_TEXT_ENTER(1008, GRIPFrame::OnTimeEnter)
 
-EVT_MENU(MenuSaveScene,  GRIPFrame::OnSaveScene)
-EVT_MENU(MenuSaveRobot,  GRIPFrame::OnSaveRobot)
 EVT_MENU(MenuLoad,  GRIPFrame::OnLoad)
 EVT_MENU(MenuQuickLoad,  GRIPFrame::OnQuickLoad)
 EVT_MENU(wxID_CLOSE,  GRIPFrame::OnClose)
@@ -1205,7 +1156,6 @@ EVT_MENU(MenuRenderHD, GRIPFrame::OnHD)
 
 EVT_MENU(wxID_OPEN, GRIPFrame::OnLoad)
 EVT_MENU(Tool_quickload, GRIPFrame::OnQuickLoad)
-EVT_MENU(wxID_SAVE, GRIPFrame::OnSaveScene)
 
 EVT_MENU(Tool_linkorder, GRIPFrame::OnToolOrder)
 EVT_MENU(Tool_checkcollisions, GRIPFrame::OnToolCheckColl)

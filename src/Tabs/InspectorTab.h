@@ -42,6 +42,8 @@
 #include <Tabs/GRIPTab.h>
 #include <Tools/Constants.h>
 
+namespace dynamics { class SkeletonDynamics; }
+
 /**
  * @class InspectorTab
  * @brief
@@ -75,6 +77,11 @@ public:
 
 	DECLARE_DYNAMIC_CLASS(InspectorTab)
 	DECLARE_EVENT_TABLE()
+
+private:
+	Eigen::Matrix<double, 6, 1> getRootTransform(dynamics::SkeletonDynamics* robot);
+	void setRootTransform(dynamics::SkeletonDynamics* robot, const Eigen::Matrix<double, 6, 1>& pose);
+	void update(dynamics::SkeletonDynamics* robot);
 };
 
 #endif

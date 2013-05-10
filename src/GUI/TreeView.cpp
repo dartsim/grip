@@ -39,7 +39,6 @@
 #include <kinematics/Joint.h>
 #include <kinematics/Dof.h>
 #include <kinematics/Transformation.h>
-#include <robotics/Robot.h>
 
 #include "TreeView.h"
 #include "GRIPFrame.h"
@@ -118,33 +117,19 @@ void TreeView::CreateFromWorld()
   
   wxTreeItemId hPrev = rootId;
   
-  ///-- Add objects to the tree
-  for ( unsigned int i = 0; i < mWorld->getNumObjects(); i++ )
+  ///-- Add  to the tree
+  for ( unsigned int i = 0; i < mWorld->getNumSkeletons(); i++ )
     {
       ret = new TreeViewReturn;
-      ret->data = mWorld->getObject(i);
-      ret->dType = Return_Type_Object;
-      hPrev = AppendItem( rootId,
-			  wxString( ( mWorld->getObject(i)->getName() ).c_str(), wxConvUTF8),
-			  Tree_Icon_Object,
-			  -1,
-			  ret );
-    }
-
-  ///-- Add robot(s) to the tree
-  for ( unsigned int i = 0; i < mWorld->getNumRobots(); i++ )
-    {
-      ret = new TreeViewReturn;
-      ret->data = mWorld->getRobot(i);
+      ret->data = mWorld->getSkeleton(i);
       ret->dType = Return_Type_Robot;
       hPrev = AppendItem( rootId,
-			  wxString( ( mWorld->getRobot(i)->getName() ).c_str(),wxConvUTF8),
+			  wxString( ( mWorld->getSkeleton(i)->getName() ).c_str(), wxConvUTF8),
 			  Tree_Icon_Robot,
 			  -1,
 			  ret );
-
       // Start from root Node
-      hPrev = AddNodeTree( (dynamics::BodyNodeDynamics*)mWorld->getRobot(i)->getRoot(), hPrev, hPrev, false );
+      hPrev = AddNodeTree((dynamics::BodyNodeDynamics*)mWorld->getSkeleton(i)->getRoot(), hPrev, hPrev, false);
     }
 }
 

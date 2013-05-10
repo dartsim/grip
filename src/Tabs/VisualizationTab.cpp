@@ -63,7 +63,6 @@ using namespace std;
 #include <kinematics/ShapeBox.h>
 #include <kinematics/Dof.h>
 #include <kinematics/Joint.h>
-#include <robotics/Robot.h>
 #include <utils/LoadOpengl.h>
 
 // **********************
@@ -202,10 +201,10 @@ void VisualizationTab::GRIPEventRender() {
         glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
         glEnable ( GL_COLOR_MATERIAL );
         glColor3f(1.0f,0.0f,0.0f);
-        for(int x =0 ; x<mWorld->getNumRobots();x++){
+        for(int x =0 ; x<mWorld->getNumSkeletons();x++){
             glPushMatrix();
             GLUquadricObj * quadric1 = gluNewQuadric();
-            Eigen::Vector3d cm1Pos = mWorld->getRobot(x)->getWorldCOM();
+            Eigen::Vector3d cm1Pos = mWorld->getSkeleton(x)->getWorldCOM();
             glTranslatef(cm1Pos(0),cm1Pos(1),cm1Pos(2));
             gluSphere(quadric1,0.1,5,5);
             gluDeleteQuadric(quadric1);
@@ -217,10 +216,10 @@ void VisualizationTab::GRIPEventRender() {
         glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
         glEnable ( GL_COLOR_MATERIAL );
         glColor3f(1.0f,0.0f,0.0f);
-        for(int x =0 ; x<mWorld->getNumRobots();x++){
+        for(int x =0 ; x<mWorld->getNumSkeletons();x++){
             glPushMatrix();
             GLUquadricObj * quadric2 = gluNewQuadric();
-            Eigen::Vector3d cm2Pos = mWorld->getRobot(x)->getWorldCOM();
+            Eigen::Vector3d cm2Pos = mWorld->getSkeleton(x)->getWorldCOM();
             glTranslatef(cm2Pos(0),cm2Pos(1),0.0);
             gluSphere(quadric2,0.1,5,5);
             gluDeleteQuadric(quadric2);
@@ -229,18 +228,18 @@ void VisualizationTab::GRIPEventRender() {
         }
     }
     // draw contact points
-    if (checkShowContacts->IsChecked() && mWorld && mWorld->mCollisionHandle) {
+	if (checkShowContacts->IsChecked() && mWorld && mWorld->getCollisionHandle()) {
         // some preprocessing. calculate vector lengths and find max
         // length, scale down the force measurements, and figure out
         // which contact points involve to the selected body nodes
-        int nContacts = mWorld->mCollisionHandle->getCollisionChecker()->getNumContact();
+        int nContacts = mWorld->getCollisionHandle()->getCollisionChecker()->getNumContact();
         vector<Eigen::Vector3d> vs(nContacts);
         vector<Eigen::Vector3d> fs(nContacts);
         vector<float> lens(nContacts);
         vector<bool> selected(nContacts);
         float maxl = 0;
         for (int k = 0; k < nContacts; k++) {
-            collision_checking::ContactPoint contact = mWorld->mCollisionHandle->getCollisionChecker()->getContact(k);
+            collision_checking::ContactPoint contact = mWorld->getCollisionHandle()->getCollisionChecker()->getContact(k);
             vs[k] = contact.point;
             fs[k] = contact.force.normalized() * .1 * log(contact.force.norm());
             lens[k] = (vs[k] - fs[k]).norm();
@@ -340,26 +339,16 @@ void VisualizationTab::GRIPStateChange() {
     }
 
     switch (selectedTreeNode->dType) {
-    case Return_Type_Object: {
-        robotics::Robot* pObject = (robotics::Robot*)(selectedTreeNode->data);
-        selectedNode = pObject->mRoot;
+    case Return_Type_Robot:
+        selectedNode = ((dynamics::SkeletonDynamics*)selectedTreeNode->data)->mRoot;
         break;
-    }
-    case Return_Type_Robot: {
-        robotics::Robot* pRobot = (robotics::Robot*)(selectedTreeNode->data);
-        selectedNode = pRobot->mRoot;
+    case Return_Type_Node:
+        selectedNode = (dynamics::BodyNodeDynamics*)selectedTreeNode->data;
         break;
-    }
-    case Return_Type_Node: {
-        dynamics::BodyNodeDynamics* pBodyNode = (dynamics::BodyNodeDynamics*)(selectedTreeNode->data);
-        selectedNode = pBodyNode;
-        break;
-    }
-    default: {
+    default:
         fprintf(stderr, "someone else's problem.");
         assert(0);
         exit(1);
-    }
     }
     int type = 0;
     wxCommandEvent evt(wxEVT_GRIP_UPDATE_AND_RENDER,GetId());
