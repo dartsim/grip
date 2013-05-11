@@ -63,7 +63,7 @@ using namespace std;
 #include <kinematics/ShapeBox.h>
 #include <kinematics/Dof.h>
 #include <kinematics/Joint.h>
-#include <utils/LoadOpengl.h>
+#include <renderer/LoadOpengl.h>
 
 // **********************
 // Drawing Stuff
