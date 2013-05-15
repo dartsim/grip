@@ -56,7 +56,7 @@ using namespace std;
 // **********************
 // Dynamics Stuff
 #include <collision/CollisionShapes.h>
-#include <collision/CollisionSkeleton.h>
+#include <collision/CollisionDetector.h>
 #include <dynamics/SkeletonDynamics.h>
 #include <dynamics/ContactDynamics.h>
 #include <dynamics/BodyNodeDynamics.h>
@@ -232,20 +232,20 @@ void VisualizationTab::GRIPEventRender() {
         // some preprocessing. calculate vector lengths and find max
         // length, scale down the force measurements, and figure out
         // which contact points involve to the selected body nodes
-        int nContacts = mWorld->getCollisionHandle()->getCollisionChecker()->getNumContact();
+        int nContacts = mWorld->getCollisionHandle()->getCollisionChecker()->getNumContacts();
         vector<Eigen::Vector3d> vs(nContacts);
         vector<Eigen::Vector3d> fs(nContacts);
         vector<float> lens(nContacts);
         vector<bool> selected(nContacts);
         float maxl = 0;
         for (int k = 0; k < nContacts; k++) {
-            collision_checking::ContactPoint contact = mWorld->getCollisionHandle()->getCollisionChecker()->getContact(k);
+            collision::Contact contact = mWorld->getCollisionHandle()->getCollisionChecker()->getContact(k);
             vs[k] = contact.point;
             fs[k] = contact.force.normalized() * .1 * log(contact.force.norm());
             lens[k] = (vs[k] - fs[k]).norm();
             if (lens[k] > maxl) maxl = lens[k];
             selected[k] = false;
-            if (contact.bd1 == selectedNode || contact.bd2 == selectedNode) {
+            if (contact.collisionNode1->getBodyNode() == selectedNode || contact.collisionNode2->getBodyNode() == selectedNode) {
                 selected[k] = true;
             }
         }
