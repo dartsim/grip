@@ -59,6 +59,7 @@ using namespace std;
 #include <dynamics/SkeletonDynamics.h>
 #include <dynamics/ContactDynamics.h>
 #include <dynamics/BodyNodeDynamics.h>
+#include <dynamics/ConstraintDynamics.h>
 #include <kinematics/ShapeBox.h>
 #include <kinematics/Dof.h>
 #include <kinematics/Joint.h>
