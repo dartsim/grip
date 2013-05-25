@@ -57,7 +57,7 @@ using namespace std;
 // Dynamics Stuff
 #include <collision/CollisionDetector.h>
 #include <dynamics/SkeletonDynamics.h>
-#include <dynamics/ContactDynamics.h>
+#include <dynamics/ConstraintDynamics.h>
 #include <dynamics/BodyNodeDynamics.h>
 #include <kinematics/ShapeBox.h>
 #include <kinematics/Dof.h>
