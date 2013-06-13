@@ -339,7 +339,7 @@ void VisualizationTab::GRIPStateChange() {
 
     switch (selectedTreeNode->dType) {
     case Return_Type_Robot:
-        selectedNode = ((dynamics::SkeletonDynamics*)selectedTreeNode->data)->mRoot;
+        selectedNode = ((dynamics::SkeletonDynamics*)selectedTreeNode->data)->getRoot();
         break;
     case Return_Type_Node:
         selectedNode = (dynamics::BodyNodeDynamics*)selectedTreeNode->data;
