@@ -277,48 +277,50 @@ void VisualizationTab::GRIPEventRender() {
     }
 
     // draw collision meshes
-    if (checkShowCollMesh->IsChecked() && mWorld && selectedNode && selectedNode->getCollisionShape()) {
+    if (checkShowCollMesh->IsChecked() && mWorld && selectedNode) {
         renderer::RenderInterface* ri = &viewer->renderer;
         kinematics::BodyNode* cnode = selectedNode;
-        kinematics::ShapeMesh* shapeMesh = dynamic_cast<kinematics::ShapeMesh *>(selectedNode->getCollisionShape());
-        //FIXME: Use OpenGLRenderInterface calls to avoid code duplication.
-        if(shapeMesh) {
-        	const aiScene* sc = shapeMesh->getMesh();
+        for(int i = 0; i < selectedNode->getNumCollisionShapes(); i++) {
+            kinematics::ShapeMesh* shapeMesh = dynamic_cast<kinematics::ShapeMesh *>(selectedNode->getCollisionShape(i));
+            //FIXME: Use OpenGLRenderInterface calls to avoid code duplication.
+            if(shapeMesh) {
+            	const aiScene* sc = shapeMesh->getMesh();
 
-        	if (sc != NULL) {
-        		int verts = 0;
-        		const aiNode* nd = sc->mRootNode;
+            	if (sc != NULL) {
+            		int verts = 0;
+            		const aiNode* nd = sc->mRootNode;
 
-        		// put in the proper transform
-        		glPushMatrix();
-        		double M[16];
-        		Eigen::Matrix4d worldTrans = selectedNode->getWorldTransform();
-        		for(int i=0;i<4;i++)
-        			for(int j=0;j<4;j++)
-        				M[j*4+i] = worldTrans(i, j);
-        		glMultMatrixd(M);
+            		// put in the proper transform
+            		glPushMatrix();
+            		double M[16];
+            		Eigen::Matrix4d worldTrans = selectedNode->getWorldTransform();
+            		for(int i=0;i<4;i++)
+            			for(int j=0;j<4;j++)
+            				M[j*4+i] = worldTrans(i, j);
+            		glMultMatrixd(M);
 
-        		for (unsigned int n = 0; n < nd->mNumMeshes; ++n) {
-        			const struct aiMesh* mesh = sc->mMeshes[nd->mMeshes[n]];
-        			for (unsigned int t = 0; t < mesh->mNumFaces; ++t) {
-        				const struct aiFace* face = &mesh->mFaces[t];
-        				glBegin(GL_LINE_STRIP);
-        				for(unsigned int i = 0; i < face->mNumIndices; i++) {
-        					int index = face->mIndices[i];
-        					glColor4d(0.0, 0.0, 1.0, 1.0);
-        					if(mesh->mNormals != NULL)
-        						glNormal3fv(&mesh->mNormals[index].x);
-        					glVertex3fv(&mesh->mVertices[index].x);
-        					verts++;
-        				}
-        				glEnd();
-        			}
-        		}
-        		glPopMatrix();
-        	}
+            		for (unsigned int n = 0; n < nd->mNumMeshes; ++n) {
+            			const struct aiMesh* mesh = sc->mMeshes[nd->mMeshes[n]];
+            			for (unsigned int t = 0; t < mesh->mNumFaces; ++t) {
+            				const struct aiFace* face = &mesh->mFaces[t];
+            				glBegin(GL_LINE_STRIP);
+            				for(unsigned int i = 0; i < face->mNumIndices; i++) {
+            					int index = face->mIndices[i];
+            					glColor4d(0.0, 0.0, 1.0, 1.0);
+            					if(mesh->mNormals != NULL)
+            						glNormal3fv(&mesh->mNormals[index].x);
+            					glVertex3fv(&mesh->mVertices[index].x);
+            					verts++;
+            				}
+            				glEnd();
+            			}
+            		}
+            		glPopMatrix();
+            	}
 
-        	glPopMatrix();
-        	glEnd();
+            	glPopMatrix();
+            	glEnd();
+            }
         }
     }
 }

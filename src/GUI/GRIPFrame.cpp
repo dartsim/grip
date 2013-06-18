@@ -469,7 +469,7 @@ void GRIPFrame::DoLoad(string filename, bool savelastload)
 	kinematics::Shape* shape = new kinematics::ShapeBox(Eigen::Vector3d(10.0, 10.0, 0.0001));
 	shape->setColor(Eigen::Vector3d(.5,.5,1));
 	//node->setVisualizationShape(shape);
-	node->setCollisionShape(shape);
+	node->addCollisionShape(shape);
 	node->setMass(1.0);
 	joint = new kinematics::Joint(ground->getRoot(), node);
 	ground->addNode(node);
