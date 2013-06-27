@@ -119,6 +119,9 @@ InspectorTab::InspectorTab(wxWindow *parent, const wxWindowID id,
   
  }
 
+inline double DEG2RAD(double d)  { return (d * 0.01745329251994329577); }
+inline double RAD2DEG(double r)	 { return (r * 57.2957795130823208768); }
+
 /**
  * @function OnSlider
  * @brief Handle slider changes

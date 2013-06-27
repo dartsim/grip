@@ -47,7 +47,6 @@
 #include <kinematics/BodyNode.h>
 #include <kinematics/ShapeMesh.h>
 #include <renderer/OpenGLRenderInterface.h>
-#include <Tools/Constants.h>
 
 using namespace Eigen;
 
@@ -66,7 +65,7 @@ public:
 		const wxPalette & palette = wxNullPalette) :
 		wxGLCanvas(parent, sharedCanvas, id, pos, size, style, name, attribList, palette),
 		backColor(0.0, 0.0, 0.0), gridColor(0.5, 0.5, 0.0),
-		camRotT(AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0))),
+		camRotT(AngleAxis<double>(-M_PI / 6.0, Vector3d(0.0, 1.0, 0.0))),
 		worldV(0.0, 0.0, 0.0),
 		camRadius(10.0),
 		useCollMesh(false)

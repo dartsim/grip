@@ -41,7 +41,6 @@
 
 #include <Tabs/GRIPTab.h>
 #include <Tabs/GRIPThread.h>
-#include <Tools/Constants.h>
 
 namespace planning { class Controller; }
 

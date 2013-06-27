@@ -906,7 +906,7 @@ void GRIPFrame::OnHD(wxCommandEvent& WXUNUSED(event)){
  * @date 2011-10-13
  */
 void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)) {
-  viewer->camRotT = AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0));
+  viewer->camRotT = AngleAxis<double>(-M_PI / 6.0, Vector3d(0.0, 1.0, 0.0));
   viewer->worldV = Vector3d(0.0, 0.0, 0.0);
   viewer->camRadius = 10.0;
   viewer->UpdateCamera();
@@ -921,11 +921,11 @@ void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)) {
  */
 void GRIPFrame::OnViewChange(wxCommandEvent& event) {
 	if((event.GetId() == Tool_topView) || (event.GetId() == MenuTopView))
-		viewer->camRotT = AngleAxis<double>(DEG2RAD(-90.0), Vector3d(0.0, 1.0, 0.0));
+		viewer->camRotT = AngleAxis<double>(-M_PI / 2.0, Vector3d(0.0, 1.0, 0.0));
 	else if((event.GetId() == Tool_rightSideView) || (event.GetId() == MenuRightSideView))
-		viewer->camRotT = AngleAxis<double>(DEG2RAD(90.0), Vector3d(0.0, 0.0, 1.0));
+		viewer->camRotT = AngleAxis<double>(M_PI / 2.0, Vector3d(0.0, 0.0, 1.0));
 	else if((event.GetId() == Tool_frontView) || (event.GetId() == MenuFrontView))
-		viewer->camRotT = AngleAxis<double>(DEG2RAD(0.0), Vector3d(0.0, 1.0, 0.0));
+		viewer->camRotT = AngleAxis<double>(0.0, Vector3d(0.0, 1.0, 0.0));
 	viewer->UpdateCamera();
 	viewer->DrawGLScene();
 }

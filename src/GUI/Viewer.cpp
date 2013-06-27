@@ -43,7 +43,6 @@
 #include <wx/glcanvas.h>
 
 #include <Tools/GL/glcommon.h>
-#include <Tools/Constants.h>
 #include <iostream>
 
 using namespace std;

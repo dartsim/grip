@@ -40,7 +40,6 @@
 #define GRIP_INSPECTOR_TAB
 
 #include <Tabs/GRIPTab.h>
-#include <Tools/Constants.h>
 
 namespace dynamics { class SkeletonDynamics; }
 
