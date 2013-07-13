@@ -10,12 +10,12 @@
 # GRIP_LIBRARIES - Libraries needed to use GRIP.
 # GRIP_DEFINITIONS - Compiler flags for GRIP.
 
-set(GRIP_FOUND FALSE)
+set(GRIP_FOUND_2 FALSE)
 set(SYS_INSTALL_PREFIX @CMAKE_INSTALL_PREFIX@)
 
 set(GRIP_INCLUDEDIR ${SYS_INSTALL_PREFIX}/include/grip)
 if(EXISTS ${GRIP_INCLUDEDIR}/GRIPApp.h)
-    set(GRIP_FOUND TRUE)
+    set(GRIP_FOUND_2 TRUE)
 else()
     find_package(PkgConfig QUIET)
     if(PKG_CONFIG_FOUND)
@@ -30,7 +30,7 @@ else()
 endif()
 
 if(EXISTS GRIP_INCLUDEDIR/kinematics/Skeleton.h)
-    set(GRIP_FOUND TRUE)
+    set(GRIP_FOUND_2 TRUE)
 endif()
    
 set(DART_LIBRARY_DIRS "${SYS_INSTALL_PREFIX}/lib")
@@ -40,6 +40,6 @@ set(GRIP_LIBS grip)
 set(GRIP_LIBRARIES optimized ${GRIP_LIBS} debug ${GRIP_LIBS}d)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(GRIP DEFAULT_MSG GRIP_FOUND)
+find_package_handle_standard_args(GRIP DEFAULT_MSG GRIP_FOUND_2)
 
 mark_as_advanced(GRIP_FOUND GRIP_LIBRARY_DIRS GRIP_INCLUDEDIR GRIP_LIBRARIES)
