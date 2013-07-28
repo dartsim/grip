@@ -90,12 +90,12 @@ public:
 
 	GRIPThreadError CreateThread() {
 		if(wxThread::Create() != wxTHREAD_NO_ERROR) {
-			cout << "Error creating GRIP Thread" << endl;
+			std::cout << "Error creating GRIP Thread" << std::endl;
 			return GRIPTHREAD_MISC_ERROR;
 		}
 
 		if(wxThread::Run() != wxTHREAD_NO_ERROR) {
-			cout<< "Error starting GRIP Thread" << endl;
+			std::cout<< "Error starting GRIP Thread" << std::endl;
 			return GRIPTHREAD_MISC_ERROR;
 		}
 

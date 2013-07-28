@@ -200,12 +200,15 @@ void VisualizationTab::GRIPEventRender() {
         glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
         glEnable ( GL_COLOR_MATERIAL );
         glColor3f(1.0f,0.0f,0.0f);
-        for(int x =0 ; x<mWorld->getNumSkeletons();x++){
+				dynamics::SkeletonDynamics* krang = mWorld->getSkeleton("Krang");
+        for(int x =0 ; x < krang->getNumNodes(); x++){
+						kinematics::BodyNode* node = krang->getNode(x);
+						if(strcmp(node->getName(), "L4") != 0) continue;
             glPushMatrix();
             GLUquadricObj * quadric1 = gluNewQuadric();
-            Eigen::Vector3d cm1Pos = mWorld->getSkeleton(x)->getWorldCOM();
+            Eigen::Vector3d cm1Pos = node->getWorldCOM();
             glTranslatef(cm1Pos(0),cm1Pos(1),cm1Pos(2));
-            gluSphere(quadric1,0.1,5,5);
+            gluSphere(quadric1,0.02,20,20);
             gluDeleteQuadric(quadric1);
             glPopMatrix();
         }

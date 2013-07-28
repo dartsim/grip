@@ -55,6 +55,8 @@
 #include "icons/fixed.xpm"
 #include <string>
 
+using namespace std;
+
 IMPLEMENT_DYNAMIC_CLASS(TreeView, wxTreeCtrl)
 
 BEGIN_EVENT_TABLE(TreeView, wxTreeCtrl)

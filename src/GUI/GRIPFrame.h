@@ -120,10 +120,10 @@ public:
     void OnHD(wxCommandEvent& event); 
     void OnCameraReset(wxCommandEvent& event);
 
-    void InitTimer(string title, double period);
+    void InitTimer(std::string title, double period);
     void AddWorld( simulation::World* world );
 
-    vector<GRIPTimeSlice> timeVector;
+    std::vector<GRIPTimeSlice> timeVector;
     double tCurrent;
     double tMax;
     double tIncrement;
@@ -135,7 +135,7 @@ public:
     void UpdateAndRedraw();
     void FireEventRender();
 
-    void DoLoad(string filename, bool savelastload=true);
+    void DoLoad(std::string filename, bool savelastload=true);
     void DeleteWorld();
 
     void onTVChange(wxTreeEvent& event);

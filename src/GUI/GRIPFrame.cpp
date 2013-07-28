@@ -79,6 +79,8 @@
 #define ID_TOOLBAR 1257
 #define ID_TIMESLIDER 1258
 
+using namespace std;
+
 enum toolNums{
     Tool_open= 1262,
     Tool_save= 1263,
