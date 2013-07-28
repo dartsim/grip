@@ -47,7 +47,6 @@ class Viewer;
 #include <simulation/World.h>
 
 #include <string>
-using namespace std;
 
 #define Uses_wxThread
 #include "wx/wxprec.h"

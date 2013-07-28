@@ -42,8 +42,6 @@
 #include <wx/wx.h>
 #include <string>
 
-using namespace std;
-
 DECLARE_EVENT_TYPE(wxEVT_GRIP_SLIDER_CHANGE, -1)
 
 class GRIPSlider : public wxPanel
