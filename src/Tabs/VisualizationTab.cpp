@@ -390,11 +390,11 @@ void VisualizationTab::GRIPEventRender() {
 			    kinematics::BodyNode* node = rob->getNode(nodeidx);
 			    Eigen::Matrix3d rot = node->getWorldTransform().topLeftCorner<3,3>();
 			    Eigen::Vector3d body_origin = node->getWorldTransform().topRightCorner<3,1>();
-			    glColor4d(0.0, 0.0, 1.0, 0.5);
+			    glColor4d(1.0, 0.0, 0.0, 0.5);
 			    yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,0), .1, .005, .01);
 			    glColor4d(0.0, 1.0, 0.0, 0.5);
 			    yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,1), .1, .005, .01);
-			    glColor4d(1.0, 0.0, 0.0, 0.5);
+			    glColor4d(0.0, 0.0, 1.0, 0.5);
 			    yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,2), .1, .005, .01);
 		    }
 	    }
