@@ -6,15 +6,15 @@
 #
 # This sets the following variables:
 # GRIP_FOUND - True if GRIP was found.
-# GRIP_INCLUDEDIR - Directories containing the GRIP include files.
+# GRIP_INCLUDE_DIRS - Directories containing the GRIP include files.
 # GRIP_LIBRARIES - Libraries needed to use GRIP.
 # GRIP_DEFINITIONS - Compiler flags for GRIP.
 
 set(GRIP_FOUND_2 FALSE)
 set(SYS_INSTALL_PREFIX @CMAKE_INSTALL_PREFIX@)
 
-set(GRIP_INCLUDEDIR ${SYS_INSTALL_PREFIX}/include/grip)
-if(EXISTS ${GRIP_INCLUDEDIR}/GRIPApp.h)
+set(GRIP_INCLUDE_DIRS ${SYS_INSTALL_PREFIX}/include/grip)
+if(EXISTS ${GRIP_INCLUDE_DIRS}/GRIPApp.h)
     set(GRIP_FOUND_2 TRUE)
 else()
     find_package(PkgConfig QUIET)
@@ -23,13 +23,13 @@ else()
        set(GRIP_DEFINITIONS ${PC_GRIP_CFLAGS_OTHER})
     endif()
     
-    unset(GRIP_INCLUDEDIR)
-    find_path(GRIP_INCLUDEDIR GRIPApp.h
+    unset(GRIP_INCLUDE_DIRS)
+    find_path(GRIP_INCLUDE_DIRS GRIPApp.h
         PATHS ${PC_GRIP_INCLUDEDIR} ${SYS_INSTALL_PREFIX}/include
         PATH_SUFFIXES grip)    
 endif()
 
-if(EXISTS GRIP_INCLUDEDIR/kinematics/Skeleton.h)
+if(EXISTS GRIP_INCLUDE_DIRS/kinematics/Skeleton.h)
     set(GRIP_FOUND_2 TRUE)
 endif()
    
@@ -42,4 +42,4 @@ set(GRIP_LIBRARIES optimized ${GRIP_LIBS} debug ${GRIP_LIBS}d)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GRIP DEFAULT_MSG GRIP_FOUND_2)
 
-mark_as_advanced(GRIP_FOUND GRIP_LIBRARY_DIRS GRIP_INCLUDEDIR GRIP_LIBRARIES)
+mark_as_advanced(GRIP_FOUND GRIP_LIBRARY_DIRS GRIP_INCLUDE_DIRS GRIP_LIBRARIES)
