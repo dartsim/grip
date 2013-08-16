@@ -2,7 +2,6 @@ cmake_minimum_required (VERSION 2.6)
 project (grip-run)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_INSTALL_PREFIX}/share/dart")
-find_package(DARTExt REQUIRED)
 find_package(DART REQUIRED CONFIG)
 
 # Search all header and source files

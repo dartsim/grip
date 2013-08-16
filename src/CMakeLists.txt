@@ -13,7 +13,6 @@ foreach(SUBDIR ${SUBDIRS})
     source_group(${SUBDIR} FILES ${dir_files})
 endforeach()
 
-find_package(DARTExt REQUIRED)
 find_package(DART REQUIRED CONFIG)
 
 if(WIN32)
@@ -25,20 +24,18 @@ endif(WIN32)
 find_package (wxWidgets)
 if (wxWidgets_FOUND) 
   include (${wxWidgets_USE_FILE})
-  include_directories(${DARTExt_INCLUDE_DIRS})
   include_directories(${DART_INCLUDE_DIRS})
   include_directories(${WXWIDGETS_SHARED_INCLUDE_DIRS})
   link_directories(${CMAKE_SOURCE_DIR}/lib ${WXWIDGETS_SHARED_LIBRARY_DIRS})
 
   # Library
   add_library(grip ${grip_srcs} ${grip_hdrs})
-  target_link_libraries(grip ${DART_LIBRARIES} ${DARTExt_LIBRARIES} ${wxWidgets_LIBRARIES})
+  target_link_libraries(grip ${DART_LIBRARIES} ${wxWidgets_LIBRARIES})
   set_target_properties(grip PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib"
       ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
   if(MSVC)
       set_target_properties(${target} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
   endif()
-  link_directories(${DARTExt_LIBRARY_DIRS})
   link_directories(${DART_LIBRARY_DIRS})
 endif()
 
