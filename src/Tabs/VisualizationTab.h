@@ -58,11 +58,13 @@ public:
                 long style = wxTAB_TRAVERSAL);
     virtual ~VisualizationTab() {};
 
-    wxCheckBox* checkShowContacts;
     wxCheckBox* checkShowCollMesh;
-    wxCheckBox* checkShowCMP;
-    wxCheckBox* checkShowCMA;
     wxCheckBox* checkUseCollMesh;
+    wxCheckBox* checkShowContacts;
+    wxCheckBox* checkShowCOMProj;
+    wxCheckBox* checkShowCOMActual;
+    wxCheckBox* checkShowJointAxes;
+    wxCheckBox* checkShowNodeFrames;
     wxSizer* sizerFull;
 
     kinematics::BodyNode* selectedNode;

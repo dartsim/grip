@@ -37,6 +37,7 @@
  */
 
 #include "VisualizationTab.h"
+#include "dynamics/ConstraintDynamics.h"
 
 // **********************
 // STL
@@ -57,9 +58,11 @@ using namespace std;
 // Dynamics Stuff
 #include <collision/CollisionDetector.h>
 #include <dynamics/SkeletonDynamics.h>
-#include <dynamics/ConstraintDynamics.h>
+#include <dynamics/ContactDynamics.h>
 #include <dynamics/BodyNodeDynamics.h>
 #include <kinematics/ShapeBox.h>
+#include <kinematics/Transformation.h>
+#include <kinematics/TrfmRotateAxis.h>
 #include <kinematics/Dof.h>
 #include <kinematics/Joint.h>
 #include <renderer/LoadOpengl.h>
@@ -67,26 +70,29 @@ using namespace std;
 // **********************
 // Drawing Stuff
 #include <wx/glcanvas.h>
+#include <yui/GLFuncs.h>
 #include <GUI/Viewer.h>
 
 /** UI Control IDs */
 enum DynamicSimulationTabEvents {
-    id_checkbox_showcontacts = wxID_HIGHEST,
-    id_checkbox_showcollmesh,
-    id_checkbox_CMA,
-    id_checkbox_CMP,
-    id_checkbox_usecollmesh
+    event_checkbox_showcontacts = wxID_HIGHEST + 23985,
+    event_checkbox_showcollmesh,
+    event_checkbox_show_com_actual,
+    event_checkbox_show_com_proj,
+    event_checkbox_usecollmesh,
+    event_checkbox_show_joint_axes,
+    event_checkbox_show_node_frames,
 };
 
 /** Handlers for events **/
 BEGIN_EVENT_TABLE(VisualizationTab, wxPanel)
 EVT_COMMAND (wxID_ANY, wxEVT_COMMAND_BUTTON_CLICKED, VisualizationTab::OnButton)
 EVT_COMMAND (wxID_ANY, wxEVT_GRIP_SLIDER_CHANGE, VisualizationTab::OnSlider)
-EVT_CHECKBOX(id_checkbox_showcontacts, VisualizationTab::OnCheckShowContacts)
-EVT_CHECKBOX(id_checkbox_showcollmesh, VisualizationTab::OnCheckShowCollMesh)
-EVT_CHECKBOX(id_checkbox_CMP, VisualizationTab::OnCheckShowCMP)
-EVT_CHECKBOX(id_checkbox_CMA, VisualizationTab::OnCheckShowCMA)
-EVT_CHECKBOX(id_checkbox_usecollmesh, VisualizationTab::OnCheckUseCollMesh)
+EVT_CHECKBOX(event_checkbox_showcontacts, VisualizationTab::OnCheckShowContacts)
+EVT_CHECKBOX(event_checkbox_showcollmesh, VisualizationTab::OnCheckShowCollMesh)
+EVT_CHECKBOX(event_checkbox_show_com_proj, VisualizationTab::OnCheckShowCMP)
+EVT_CHECKBOX(event_checkbox_show_com_actual, VisualizationTab::OnCheckShowCMA)
+EVT_CHECKBOX(event_checkbox_usecollmesh, VisualizationTab::OnCheckUseCollMesh)
 END_EVENT_TABLE()
 
 // Class constructor for the tab: Each tab will be a subclass of GRIPTab
@@ -105,21 +111,33 @@ VisualizationTab::VisualizationTab(wxWindow *parent,
     selectedNode(NULL)
 {
     sizerFull = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticBox* ss1Box = new wxStaticBox(this, -1, wxT("Display Options"));
+    wxStaticBox* ss1Box = new wxStaticBox(this, -1, wxT("Mesh Options"));
+    wxStaticBox* ss2Box = new wxStaticBox(this, -1, wxT("Dynamics Options"));
+    wxStaticBox* ss3Box = new wxStaticBox(this, -1, wxT("Frame Options"));
     wxStaticBoxSizer* ss1BoxS = new wxStaticBoxSizer(ss1Box, wxVERTICAL);
+    wxStaticBoxSizer* ss2BoxS = new wxStaticBoxSizer(ss2Box, wxVERTICAL);
+    wxStaticBoxSizer* ss3BoxS = new wxStaticBoxSizer(ss3Box, wxVERTICAL);
 
-    checkShowContacts = new wxCheckBox(this, id_checkbox_showcontacts, wxT("Show Contact Forces"));
-    checkShowCollMesh = new wxCheckBox(this, id_checkbox_showcollmesh, wxT("Show Collision Mesh"));
-    checkShowCMP = new wxCheckBox(this, id_checkbox_CMP, wxT("Show Projected Center of Mass"));//show projected CM
-    checkShowCMA = new wxCheckBox(this, id_checkbox_CMA, wxT("Show Actual Center of Mass"));//show actual CM
-    checkUseCollMesh = new wxCheckBox(this, id_checkbox_usecollmesh, wxT("Render using Collision Mesh"));
-
-    ss1BoxS->Add(checkShowContacts, 0, wxALL, 1);
+    checkShowCollMesh = new wxCheckBox(this, event_checkbox_showcollmesh, wxT("Show Collision Mesh"));
+    checkUseCollMesh = new wxCheckBox(this, event_checkbox_usecollmesh, wxT("Render using Collision Mesh"));
     ss1BoxS->Add(checkShowCollMesh, 0, wxALL, 1);
-    ss1BoxS->Add(checkShowCMP, 0, wxALL, 1);
-    ss1BoxS->Add(checkShowCMA, 0, wxALL, 1);
     ss1BoxS->Add(checkUseCollMesh, 0, wxALL, 1);
+
+    checkShowContacts = new wxCheckBox(this, event_checkbox_showcontacts, wxT("Show Contact Forces"));
+    checkShowCOMProj = new wxCheckBox(this, event_checkbox_show_com_proj, wxT("Show Projected Center of Mass"));
+    checkShowCOMActual = new wxCheckBox(this, event_checkbox_show_com_actual, wxT("Show Actual Center of Mass"));
+    ss2BoxS->Add(checkShowContacts, 0, wxALL, 1);
+    ss2BoxS->Add(checkShowCOMProj, 0, wxALL, 1);
+    ss2BoxS->Add(checkShowCOMActual, 0, wxALL, 1);
+
+    checkShowJointAxes = new wxCheckBox(this, event_checkbox_show_joint_axes, wxT("Show Joint Axes"));
+    checkShowNodeFrames = new wxCheckBox(this, event_checkbox_show_node_frames, wxT("Show BodyNode Frames"));
+    ss3BoxS->Add(checkShowJointAxes, 0, wxALL, 1);
+    ss3BoxS->Add(checkShowNodeFrames, 0, wxALL, 1);
+
     sizerFull->Add(ss1BoxS, 1, wxEXPAND | wxALL, 1);
+    sizerFull->Add(ss2BoxS, 1, wxEXPAND | wxALL, 1);
+    sizerFull->Add(ss3BoxS, 1, wxEXPAND | wxALL, 1);
     SetSizer(sizerFull);
 }
 
@@ -196,22 +214,25 @@ void VisualizationTab::GRIPEventRender() {
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POINT_SMOOTH);
     //draw actual center of mass
-    if(mWorld!=NULL&& checkShowCMA->IsChecked()){
+    if(mWorld!=NULL&& checkShowCOMActual->IsChecked()){
         glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
         glEnable ( GL_COLOR_MATERIAL );
         glColor3f(1.0f,0.0f,0.0f);
-        for(int x =0 ; x<mWorld->getNumSkeletons();x++){
+				dynamics::SkeletonDynamics* krang = mWorld->getSkeleton("Krang");
+        for(int x =0 ; x < krang->getNumNodes(); x++){
+						kinematics::BodyNode* node = krang->getNode(x);
+						if(strcmp(node->getName(), "L4") != 0) continue;
             glPushMatrix();
             GLUquadricObj * quadric1 = gluNewQuadric();
-            Eigen::Vector3d cm1Pos = mWorld->getSkeleton(x)->getWorldCOM();
+            Eigen::Vector3d cm1Pos = node->getWorldCOM();
             glTranslatef(cm1Pos(0),cm1Pos(1),cm1Pos(2));
-            gluSphere(quadric1,0.1,5,5);
+            gluSphere(quadric1,0.02,20,20);
             gluDeleteQuadric(quadric1);
             glPopMatrix();
         }
     }
     //draw projected center of mass
-    if(mWorld!=NULL&& checkShowCMP->IsChecked()){
+    if(mWorld!=NULL&& checkShowCOMProj->IsChecked()){
         glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
         glEnable ( GL_COLOR_MATERIAL );
         glColor3f(1.0f,0.0f,0.0f);
@@ -277,51 +298,107 @@ void VisualizationTab::GRIPEventRender() {
     }
 
     // draw collision meshes
-    if (checkShowCollMesh->IsChecked() && mWorld && selectedNode) {
+    if (checkShowCollMesh->IsChecked() && mWorld && selectedNode && selectedNode->getCollisionShape(0)) {
         renderer::RenderInterface* ri = &viewer->renderer;
         kinematics::BodyNode* cnode = selectedNode;
-        for(int i = 0; i < selectedNode->getNumCollisionShapes(); i++) {
-            kinematics::ShapeMesh* shapeMesh = dynamic_cast<kinematics::ShapeMesh *>(selectedNode->getCollisionShape(i));
-            //FIXME: Use OpenGLRenderInterface calls to avoid code duplication.
-            if(shapeMesh) {
-            	const aiScene* sc = shapeMesh->getMesh();
+        kinematics::ShapeMesh* shapeMesh = dynamic_cast<kinematics::ShapeMesh *>(selectedNode->getCollisionShape(0));
+        //FIXME: Use OpenGLRenderInterface calls to avoid code duplication.
+        if(shapeMesh) {
+        	const aiScene* sc = shapeMesh->getMesh();
 
-            	if (sc != NULL) {
-            		int verts = 0;
-            		const aiNode* nd = sc->mRootNode;
+        	if (sc != NULL) {
+        		int verts = 0;
+        		const aiNode* nd = sc->mRootNode;
 
-            		// put in the proper transform
-            		glPushMatrix();
-            		double M[16];
-            		Eigen::Matrix4d worldTrans = selectedNode->getWorldTransform();
-            		for(int i=0;i<4;i++)
-            			for(int j=0;j<4;j++)
-            				M[j*4+i] = worldTrans(i, j);
-            		glMultMatrixd(M);
+        		// put in the proper transform
+        		glPushMatrix();
+        		double M[16];
+        		Eigen::Matrix4d worldTrans = selectedNode->getWorldTransform();
+        		for(int i=0;i<4;i++)
+        			for(int j=0;j<4;j++)
+        				M[j*4+i] = worldTrans(i, j);
+        		glMultMatrixd(M);
 
-            		for (unsigned int n = 0; n < nd->mNumMeshes; ++n) {
-            			const struct aiMesh* mesh = sc->mMeshes[nd->mMeshes[n]];
-            			for (unsigned int t = 0; t < mesh->mNumFaces; ++t) {
-            				const struct aiFace* face = &mesh->mFaces[t];
-            				glBegin(GL_LINE_STRIP);
-            				for(unsigned int i = 0; i < face->mNumIndices; i++) {
-            					int index = face->mIndices[i];
-            					glColor4d(0.0, 0.0, 1.0, 1.0);
-            					if(mesh->mNormals != NULL)
-            						glNormal3fv(&mesh->mNormals[index].x);
-            					glVertex3fv(&mesh->mVertices[index].x);
-            					verts++;
-            				}
-            				glEnd();
-            			}
-            		}
-            		glPopMatrix();
-            	}
+        		for (unsigned int n = 0; n < nd->mNumMeshes; ++n) {
+        			const struct aiMesh* mesh = sc->mMeshes[nd->mMeshes[n]];
+        			for (unsigned int t = 0; t < mesh->mNumFaces; ++t) {
+        				const struct aiFace* face = &mesh->mFaces[t];
+        				glBegin(GL_LINE_STRIP);
+        				for(unsigned int i = 0; i < face->mNumIndices; i++) {
+        					int index = face->mIndices[i];
+        					glColor4d(0.0, 0.0, 1.0, 1.0);
+        					if(mesh->mNormals != NULL)
+        						glNormal3fv(&mesh->mNormals[index].x);
+        					glVertex3fv(&mesh->mVertices[index].x);
+        					verts++;
+        				}
+        				glEnd();
+        			}
+        		}
+        		glPopMatrix();
+        	}
 
-            	glPopMatrix();
-            	glEnd();
-            }
+        	glPopMatrix();
+        	glEnd();
         }
+    }
+
+    // draw joint axes
+    if (checkShowJointAxes->IsChecked() && mWorld) {
+	    for(int robidx = 0; robidx < mWorld->getNumSkeletons(); robidx++) {
+		    dynamics::SkeletonDynamics* rob = mWorld->getSkeleton(robidx);
+		    for(int nodeidx = 0; nodeidx < rob->getNumNodes(); nodeidx++) {
+			    kinematics::BodyNode* node = rob->getNode(nodeidx);
+			    kinematics::BodyNode* parnode = node->getParentNode();
+			    kinematics::Joint* parjoint = node->getParentJoint();
+			    if (parnode != NULL && parjoint != NULL) {
+				    for(int dofidx = 0; dofidx < parjoint->getNumDofs(); dofidx++) {
+					    kinematics::Dof* dof = parjoint->getDof(dofidx);
+					    Eigen::Matrix3d rot = node->getWorldTransform().topLeftCorner<3,3>();
+					    Eigen::Vector3d body_origin = node->getWorldTransform().topRightCorner<3,1>();
+					    kinematics::Transformation* tf = dof->getTrans();
+					    switch(tf->getType()) {
+					    case kinematics::Transformation::T_ROTATEX: {
+						    glColor4d(1.0, 0.0, 1.0, 0.5);
+						    yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,0), .15, .003, .006);
+					    } break;
+					    case kinematics::Transformation::T_ROTATEY: {
+						    glColor4d(1.0, 0.0, 1.0, 0.5);
+						    yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,1), .15, .003, .006);
+					    } break;
+					    case kinematics::Transformation::T_ROTATEZ: {
+						    glColor4d(1.0, 0.0, 1.0, 0.5);
+						    yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,2), .15, .003, .006);
+					    } break;
+					    case kinematics::Transformation::T_ROTATEAXIS: {
+						    kinematics::TrfmRotateAxis* tf_axis = static_cast<kinematics::TrfmRotateAxis*>(tf);
+						    Eigen::Vector3d axis = tf_axis->getAxis();
+						    glColor4d(1.0, 0.0, 1.0, 0.5);
+						    yui::drawArrow3D(body_origin, rot * axis, .15, .003, .006);
+					    } break;
+					    }
+				    }
+			    }
+		    }
+	    }
+    }
+    
+    // draw body node frames
+    if (checkShowNodeFrames->IsChecked() && mWorld) {
+	    for(int robidx = 0; robidx < mWorld->getNumSkeletons(); robidx++) {
+		    dynamics::SkeletonDynamics* rob = mWorld->getSkeleton(robidx);
+		    for(int nodeidx = 0; nodeidx < rob->getNumNodes(); nodeidx++) {
+			    kinematics::BodyNode* node = rob->getNode(nodeidx);
+			    Eigen::Matrix3d rot = node->getWorldTransform().topLeftCorner<3,3>();
+			    Eigen::Vector3d body_origin = node->getWorldTransform().topRightCorner<3,1>();
+			    glColor4d(1.0, 0.0, 0.0, 0.5);
+			    yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,0), .1, .005, .01);
+			    glColor4d(0.0, 1.0, 0.0, 0.5);
+			    yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,1), .1, .005, .01);
+			    glColor4d(0.0, 0.0, 1.0, 0.5);
+			    yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,2), .1, .005, .01);
+		    }
+	    }
     }
 }
 
