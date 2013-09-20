@@ -67,14 +67,13 @@
 #include "icons/frontView.xpm"
 #include "icons/topView.xpm"
 
-#include <kinematics/ShapeBox.h> // for floor
-#include <kinematics/Joint.h> // for floor
-#include <kinematics/TrfmTranslate.h> // for floor
-#include <kinematics/TrfmRotateEuler.h> // for floor
-#include <kinematics/Dof.h>
+#include <dynamics/Skeleton.h>
+#include <dynamics/BoxShape.h> // for floor
+#include <dynamics/WeldJoint.h> // for floor
+#include <dynamics/GenCoord.h>
 
 // Parser
-#include <robotics/parser/dart_parser/DartLoader.h>
+#include <utils/urdf/DartLoader.h>
 
 #define ID_TOOLBAR 1257
 #define ID_TIMESLIDER 1258
@@ -381,7 +380,7 @@ void GRIPFrame::OnQuickLoad(wxCommandEvent& WXUNUSED(event)) {
     lastloadFile.open(".lastload", ios::in);
     if(lastloadFile.fail()){
         cout << "--(!) No previously loaded files (!)--" << endl;
-	return;
+        return;
     }
     string line;
     getline(lastloadFile,line);
@@ -408,107 +407,67 @@ void GRIPFrame::DoLoad(string filename, bool savelastload)
         DeleteWorld();
     }
 
-    DartLoader dl;
+    dart::utils::DartLoader dl;
 
     mWorld = dl.parseWorld( filename.c_str() );
     // NULL World
     if( !mWorld ) {
-      std::cout<< "[GRIP] World pointer null. Try again with a good URDF file"<<std::endl;
-      return;
+        std::cout<< "[GRIP] World pointer null. Try again with a good URDF file"<<std::endl;
+        return;
     }
-    else {
-      // Empty world
-      if(mWorld->getNumSkeletons() == 0) {
-	std::cout<< "[GRIP] Empty world? Neither robots nor objects loaded. Try again loading a world urdf"<< std::endl;
-	return;
-      }
-      else {
-	// A world with at least an object or a robot
-	
-	// Add floor
-	dynamics::SkeletonDynamics* ground = new dynamics::SkeletonDynamics();
-	ground->setName("ground");
+    else if(mWorld->getNumSkeletons() == 0) {
+        std::cout<< "[GRIP] Empty world? Neither robots nor objects loaded. Try again loading a world urdf"<< std::endl;
+        return;
+    }
 
-	kinematics::Joint* joint;
-	dynamics::BodyNodeDynamics* node;
-	kinematics::Transformation* trans;	
+    // Add floor
+    dart::dynamics::Skeleton* ground = new dart::dynamics::Skeleton();
+    ground->setName("ground");
 
-	// Set the initial Rootnode that controls the position and orientation of the whole robot
-	node = (dynamics::BodyNodeDynamics*) ground->createBodyNode("rootBodyNode");
-	joint = new kinematics::Joint( NULL, node, "rootJoint" );
-	
-	// Add DOFs for RPY and XYZ of the whole robot
-	trans = new kinematics::TrfmTranslateX( new kinematics::Dof( 0, "rootX" ), "Tx" );
-	joint->addTransform( trans, true );
-	ground->addTransform( trans );
-	
-	trans = new kinematics::TrfmTranslateY( new kinematics::Dof( 0, "rootY" ), "Ty" );
-	joint->addTransform( trans, true );
-	ground->addTransform( trans );
-	
-	trans = new kinematics::TrfmTranslateZ( new kinematics::Dof( 0, "rootZ" ), "Tz" );
-	joint->addTransform( trans, true );
-	ground->addTransform( trans );
-	
-	trans = new kinematics::TrfmRotateEulerZ( new kinematics::Dof( 0, "rootYaw" ), "Try" );
-	joint->addTransform( trans, true );
-	ground->addTransform( trans );
-	
-	trans = new kinematics::TrfmRotateEulerY( new kinematics::Dof( 0, "rootPitch" ), "Trp" );
-	joint->addTransform( trans, true );
-	ground->addTransform( trans );
-	
-	trans = new kinematics::TrfmRotateEulerX( new kinematics::Dof( 0, "rootRoll" ), "Trr" );
-	joint->addTransform( trans, true );
-	ground->addTransform( trans );
-	
-	// Set this first node as root node
-	ground->addNode( node );
-	ground->initSkel();
-	node = new dynamics::BodyNodeDynamics("ground");
-	kinematics::Shape* shape = new kinematics::ShapeBox(Eigen::Vector3d(10.0, 10.0, 0.0001));
-	shape->setColor(Eigen::Vector3d(.5,.5,1));
-	//node->setVisualizationShape(shape);
-	node->addCollisionShape(shape);
-	node->setMass(1.0);
-	joint = new kinematics::Joint(ground->getRoot(), node);
-	ground->addNode(node);
-	ground->initSkel();
-	ground->setImmobileState(true);
-	mWorld->addSkeleton(ground);
-	
-	// Compile OpenGL displaylists
-	for(int i=0; i < mWorld->getNumSkeletons(); i++) {
-	  viewer->renderer.compileList(mWorld->getSkeleton(i));
-	}
-	
-	
-	// UpdateTreeView();
-	cout << "--(v) Done Parsing World information (v)--" << endl;
-	treeView->CreateFromWorld();
-	cout << "--(v) Done Updating TreeView (v)--" << endl;
-	SetStatusText(wxT("--(i) Done Loading and updating the View (i)--"));
-	
-	/// Extract path to executable & save "lastload" there
-        if (savelastload) {
-            cout << "--(i) Saving " << filename << " to .lastload file (i)--" << endl;
-            wxString filename_string(filename.c_str(), wxConvUTF8);
-            saveText(filename_string,".lastload");
-        }
-	
-	selectedTreeNode = 0;
-	treeView->ExpandAll();
-	updateAllTabs();
-	
-	// fire SceneLoaded hooks
-	for(size_t i=0; i< numPages; i++) {
-	  GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
-	  tab->GRIPEventSceneLoaded();
-	}
-	
-      } // end of else (world empty)
- 
-    } // end of else (world no NULL)
+    dart::dynamics::BodyNode* node = new dart::dynamics::BodyNode("ground");
+    node->setMass(1.0);
+    
+    dart::dynamics::Shape* shape = new dart::dynamics::BoxShape(Eigen::Vector3d(10.0, 10.0, 0.0001));
+    shape->setColor(Eigen::Vector3d(0.5, 0.5, 1.0));
+    node->addCollisionShape(shape);
+    
+    dart::dynamics::Joint* joint = new dart::dynamics::WeldJoint();
+    joint->setName("groundJoint");
+    joint->setTransformFromParentBodyNode(Eigen::Isometry3d::Identity());
+    joint->setTransformFromChildBodyNode(Eigen::Isometry3d::Identity());
+    node->setParentJoint(joint);
+
+    ground->addBodyNode(node);
+    ground->setImmobileState(true);
+    mWorld->addSkeleton(ground);
+    
+    // Compile OpenGL displaylists
+    for(int i=0; i < mWorld->getNumSkeletons(); i++) {
+        viewer->renderer.compileList(mWorld->getSkeleton(i));
+    }
+
+    // UpdateTreeView();
+    cout << "--(v) Done Parsing World information (v)--" << endl;
+    treeView->CreateFromWorld();
+    cout << "--(v) Done Updating TreeView (v)--" << endl;
+    SetStatusText(wxT("--(i) Done Loading and updating the View (i)--"));
+
+    /// Extract path to executable & save "lastload" there
+    if (savelastload) {
+        cout << "--(i) Saving " << filename << " to .lastload file (i)--" << endl;
+        wxString filename_string(filename.c_str(), wxConvUTF8);
+        saveText(filename_string,".lastload");
+    }
+
+    selectedTreeNode = 0;
+    treeView->ExpandAll();
+    updateAllTabs();
+
+    // fire SceneLoaded hooks
+    for(size_t i=0; i< numPages; i++) {
+        GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
+        tab->GRIPEventSceneLoaded();
+    }
 
     viewer->DrawGLScene();
 }
@@ -800,9 +759,9 @@ void GRIPFrame::OnTimeScroll(wxScrollEvent& event) {
  * @brief 
  * @date 2011-10-13
  */
-void GRIPFrame::AddWorld( simulation::World* _world) {
+void GRIPFrame::AddWorld( dart::simulation::World* _world) {
     GRIPTimeSlice tsnew;
-	tsnew.time = _world->getTime();
+    tsnew.time = _world->getTime();
     tsnew.state = _world->getState();
     timeVector.push_back(tsnew);
     tMax += tIncrement;

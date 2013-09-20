@@ -41,7 +41,7 @@
 
 #include <Tabs/GRIPTab.h>
 
-namespace dynamics { class SkeletonDynamics; }
+namespace dart { namespace dynamics { class Skeleton; } }
 
 /**
  * @class InspectorTab
@@ -78,9 +78,10 @@ public:
 	DECLARE_EVENT_TABLE()
 
 private:
-	Eigen::Matrix<double, 6, 1> getRootTransform(dynamics::SkeletonDynamics* robot);
-	void setRootTransform(dynamics::SkeletonDynamics* robot, const Eigen::Matrix<double, 6, 1>& pose);
-	void update(dynamics::SkeletonDynamics* robot);
+	Eigen::Matrix<double, 6, 1> getRootTransform(dart::dynamics::Skeleton* robot);
+	void setRootTransform(dart::dynamics::Skeleton* robot, const Eigen::Matrix<double, 6, 1>& pose);
+	void update(dart::dynamics::Skeleton* robot);
+	Eigen::Matrix<double, 6, 1> getPoseFromTransform(const Eigen::Isometry3d& tf);
 };
 
 #endif

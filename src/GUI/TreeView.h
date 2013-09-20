@@ -49,7 +49,7 @@
 #include "wx/treectrl.h"
 
 ////
-#include <dynamics/BodyNodeDynamics.h> 
+#include <dynamics/BodyNode.h> 
 ///
 
 
@@ -97,7 +97,7 @@ public:
 	virtual ~TreeView(){}
 
 	void CreateFromWorld();
-	wxTreeItemId AddNodeTree( dynamics::BodyNodeDynamics* _node, wxTreeItemId hPrev, wxTreeItemId hParent, bool inChain );
+	wxTreeItemId AddNodeTree( dart::dynamics::BodyNode* _node, wxTreeItemId hPrev, wxTreeItemId hParent, bool inChain );
 
 	void OnSelChanged(wxTreeEvent& event);
 	void ExpandAll();

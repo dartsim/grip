@@ -122,7 +122,7 @@ public:
     void OnCameraReset(wxCommandEvent& event);
 
     void InitTimer(string title, double period);
-    void AddWorld( simulation::World* world );
+    void AddWorld( dart::simulation::World* world );
 
     vector<GRIPTimeSlice> timeVector;
     double tCurrent;

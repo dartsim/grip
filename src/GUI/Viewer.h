@@ -43,9 +43,9 @@
 #include <Eigen/Geometry>
 #include <wx/wx.h>
 #include <wx/glcanvas.h>
-#include <kinematics/Shape.h>
-#include <kinematics/BodyNode.h>
-#include <kinematics/ShapeMesh.h>
+#include <dynamics/Shape.h>
+#include <dynamics/BodyNode.h>
+#include <dynamics/MeshShape.h>
 #include <renderer/OpenGLRenderInterface.h>
 
 using namespace Eigen;
@@ -57,7 +57,7 @@ public:
 
 	Matrix3d camRotT;
 	Vector3d worldV, prevWorldV;
-	renderer::OpenGLRenderInterface renderer;
+	dart::renderer::OpenGLRenderInterface renderer;
 
 	Viewer( wxWindow * parent, wxGLCanvas* sharedCanvas, wxWindowID id, const wxPoint & pos,
 		const wxSize& size, long style = 0, const wxString & name =

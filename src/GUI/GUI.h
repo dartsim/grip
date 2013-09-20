@@ -55,11 +55,11 @@ class TreeViewReturn;
 class InspectorTab;
 class VisualizationTab;
 class TemplateTab;
-namespace simulation { class World; };
+namespace dart { namespace simulation { class World; } }
 
 // The actual variables that are global to GUI elements
 
-extern simulation::World  *mWorld;
+extern dart::simulation::World  *mWorld;
 
 extern int renderW,renderH,vgaW,vgaH,xgaW,xgaH,hd720W,hd720H;
 

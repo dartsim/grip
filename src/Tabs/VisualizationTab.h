@@ -67,7 +67,7 @@ public:
     wxCheckBox* checkShowNodeFrames;
     wxSizer* sizerFull;
 
-    kinematics::BodyNode* selectedNode;
+    dart::dynamics::BodyNode* selectedNode;
   
     void OnSlider(wxCommandEvent &evt);
     void OnButton(wxCommandEvent &evt);

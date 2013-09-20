@@ -37,7 +37,7 @@
  */
 
 #include "VisualizationTab.h"
-#include "dynamics/ConstraintDynamics.h"
+#include "constraint/ConstraintDynamics.h"
 
 // **********************
 // STL
@@ -57,14 +57,13 @@ using namespace std;
 // **********************
 // Dynamics Stuff
 #include <collision/CollisionDetector.h>
-#include <dynamics/SkeletonDynamics.h>
-#include <dynamics/BodyNodeDynamics.h>
-#include <kinematics/ShapeBox.h>
-#include <kinematics/Transformation.h>
-#include <kinematics/TrfmRotateAxis.h>
-#include <kinematics/Dof.h>
-#include <kinematics/Joint.h>
+#include <dynamics/Skeleton.h>
+#include <dynamics/BodyNode.h>
+#include <dynamics/BoxShape.h>
+#include <dynamics/GenCoord.h>
+#include <dynamics/Joint.h>
 #include <renderer/LoadOpengl.h>
+#include <dynamics/RevoluteJoint.h>
 
 // **********************
 // Drawing Stuff
@@ -219,9 +218,9 @@ void VisualizationTab::GRIPEventRender() {
         glEnable ( GL_COLOR_MATERIAL );
         glColor3f(1.0f,0.0f,0.0f);
         for(int skel_id = 0 ; skel_id < mWorld->getNumSkeletons(); skel_id++) {
-            dynamics::SkeletonDynamics* skel = mWorld->getSkeleton(skel_id);
-            for(int x =0 ; x < skel->getNumNodes(); x++){
-                kinematics::BodyNode* node = skel->getNode(x);
+            dart::dynamics::Skeleton* skel = mWorld->getSkeleton(skel_id);
+            for(int x =0 ; x < skel->getNumBodyNodes(); x++){
+                dart::dynamics::BodyNode* node = skel->getBodyNode(x);
                 glPushMatrix();
                 GLUquadricObj * quadric1 = gluNewQuadric();
                 Eigen::Vector3d cm1Pos = node->getWorldCOM();
@@ -262,7 +261,7 @@ void VisualizationTab::GRIPEventRender() {
         vector<bool> selected(nContacts);
         float maxl = 0;
         for (int k = 0; k < nContacts; k++) {
-            collision::Contact contact = mWorld->getCollisionHandle()->getCollisionChecker()->getContact(k);
+            dart::collision::Contact contact = mWorld->getCollisionHandle()->getCollisionChecker()->getContact(k);
             vs[k] = contact.point;
             fs[k] = contact.force.normalized() * .1 * log(contact.force.norm());
             lens[k] = (vs[k] - fs[k]).norm();
@@ -302,11 +301,11 @@ void VisualizationTab::GRIPEventRender() {
 
     // draw collision meshes
     if (checkShowCollMesh->IsChecked() && mWorld && selectedNode && selectedNode->getCollisionShape(0)) {
-        renderer::RenderInterface* ri = &viewer->renderer;
-        kinematics::BodyNode* cnode = selectedNode;
+        dart::renderer::RenderInterface* ri = &viewer->renderer;
+        dart::dynamics::BodyNode* cnode = selectedNode;
 
         for(int i = 0; i < selectedNode->getNumCollisionShapes(); i++) {
-            kinematics::ShapeMesh* shapeMesh = dynamic_cast<kinematics::ShapeMesh *>(selectedNode->getCollisionShape(i));
+            dart::dynamics::MeshShape* shapeMesh = dynamic_cast<dart::dynamics::MeshShape *>(selectedNode->getCollisionShape(i));
 
             //FIXME: Use OpenGLRenderInterface calls to avoid code duplication.
             if(shapeMesh) {
@@ -319,7 +318,7 @@ void VisualizationTab::GRIPEventRender() {
                     // put in the proper transform
                     glPushMatrix();
                     double M[16];
-                    Eigen::Matrix4d worldTrans = selectedNode->getWorldTransform();
+                    Eigen::Isometry3d worldTrans = selectedNode->getWorldTransform();
                     for(int i=0;i<4;i++)
                         for(int j=0;j<4;j++)
                             M[j*4+i] = worldTrans(i, j);
@@ -353,37 +352,16 @@ void VisualizationTab::GRIPEventRender() {
     // draw joint axes
     if (checkShowJointAxes->IsChecked() && mWorld) {
         for(int robidx = 0; robidx < mWorld->getNumSkeletons(); robidx++) {
-            dynamics::SkeletonDynamics* rob = mWorld->getSkeleton(robidx);
-            for(int nodeidx = 0; nodeidx < rob->getNumNodes(); nodeidx++) {
-                kinematics::BodyNode* node = rob->getNode(nodeidx);
-                kinematics::BodyNode* parnode = node->getParentNode();
-                kinematics::Joint* parjoint = node->getParentJoint();
+            dart::dynamics::Skeleton* rob = mWorld->getSkeleton(robidx);
+            for(int nodeidx = 0; nodeidx < rob->getNumBodyNodes(); nodeidx++) {
+                dart::dynamics::BodyNode* node = rob->getBodyNode(nodeidx);
+                dart::dynamics::BodyNode* parnode = node->getParentBodyNode();
+                dart::dynamics::Joint* parjoint = node->getParentJoint();
                 if (parnode != NULL && parjoint != NULL) {
-                    for(int dofidx = 0; dofidx < parjoint->getNumDofs(); dofidx++) {
-                        kinematics::Dof* dof = parjoint->getDof(dofidx);
-                        Eigen::Matrix3d rot = node->getWorldTransform().topLeftCorner<3,3>();
-                        Eigen::Vector3d body_origin = node->getWorldTransform().topRightCorner<3,1>();
-                        kinematics::Transformation* tf = dof->getTrans();
-                        switch(tf->getType()) {
-                        case kinematics::Transformation::T_ROTATEX: {
-                            glColor4d(1.0, 0.0, 1.0, 0.5);
-                            yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,0), .15, .003, .006);
-                        } break;
-                        case kinematics::Transformation::T_ROTATEY: {
-                            glColor4d(1.0, 0.0, 1.0, 0.5);
-                            yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,1), .15, .003, .006);
-                        } break;
-                        case kinematics::Transformation::T_ROTATEZ: {
-                            glColor4d(1.0, 0.0, 1.0, 0.5);
-                            yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,2), .15, .003, .006);
-                        } break;
-                        case kinematics::Transformation::T_ROTATEAXIS: {
-                            kinematics::TrfmRotateAxis* tf_axis = static_cast<kinematics::TrfmRotateAxis*>(tf);
-                            Eigen::Vector3d axis = tf_axis->getAxis();
-                            glColor4d(1.0, 0.0, 1.0, 0.5);
-                            yui::drawArrow3D(body_origin, rot * axis, .15, .003, .006);
-                        } break;
-                        }
+                    if(dart::dynamics::RevoluteJoint* joint = dynamic_cast<dart::dynamics::RevoluteJoint*>(parjoint)) {
+                        Eigen::Isometry3d transform = parnode->getWorldTransform() * joint->getTransformFromParentBodyNode();
+                        glColor4d(1.0, 0.0, 1.0, 0.5);
+                        dart::yui::drawArrow3D(transform.translation(), transform.linear() * joint->getAxis(), .15, .003, .006);
                     }
                 }
             }
@@ -393,17 +371,16 @@ void VisualizationTab::GRIPEventRender() {
     // draw body node frames
     if (checkShowNodeFrames->IsChecked() && mWorld) {
         for(int robidx = 0; robidx < mWorld->getNumSkeletons(); robidx++) {
-            dynamics::SkeletonDynamics* rob = mWorld->getSkeleton(robidx);
-            for(int nodeidx = 0; nodeidx < rob->getNumNodes(); nodeidx++) {
-                kinematics::BodyNode* node = rob->getNode(nodeidx);
-                Eigen::Matrix3d rot = node->getWorldTransform().topLeftCorner<3,3>();
-                Eigen::Vector3d body_origin = node->getWorldTransform().topRightCorner<3,1>();
+            dart::dynamics::Skeleton* rob = mWorld->getSkeleton(robidx);
+            for(int nodeidx = 0; nodeidx < rob->getNumBodyNodes(); nodeidx++) {
+                dart::dynamics::BodyNode* node = rob->getBodyNode(nodeidx);
+                Eigen::Isometry3d transform = node->getWorldTransform();
                 glColor4d(1.0, 0.0, 0.0, 0.5);
-                yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,0), .1, .005, .01);
+                dart::yui::drawArrow3D(transform.translation(), transform.linear() * Eigen::Vector3d::UnitX(), .1, .005, .01);
                 glColor4d(0.0, 1.0, 0.0, 0.5);
-                yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,1), .1, .005, .01);
+                dart::yui::drawArrow3D(transform.translation(), transform.linear() * Eigen::Vector3d::UnitY(), .1, .005, .01);
                 glColor4d(0.0, 0.0, 1.0, 0.5);
-                yui::drawArrow3D(body_origin, rot * Eigen::VectorXd::Unit(3,2), .1, .005, .01);
+                dart::yui::drawArrow3D(transform.translation(), transform.linear() * Eigen::Vector3d::UnitZ(), .1, .005, .01);
             }
         }
     }
@@ -425,10 +402,10 @@ void VisualizationTab::GRIPStateChange() {
 
     switch (selectedTreeNode->dType) {
     case Return_Type_Robot:
-        selectedNode = ((dynamics::SkeletonDynamics*)selectedTreeNode->data)->getRoot();
+        selectedNode = ((dart::dynamics::Skeleton*)selectedTreeNode->data)->getRootBodyNode();
         break;
     case Return_Type_Node:
-        selectedNode = (dynamics::BodyNodeDynamics*)selectedTreeNode->data;
+        selectedNode = (dart::dynamics::BodyNode*)selectedTreeNode->data;
         break;
     default:
         fprintf(stderr, "someone else's problem.");

@@ -36,13 +36,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "GRIPApp.h"
 #include <GUI/GRIPFrame.h>
 #include <Tabs/AllTabs.h>
 #include <GUI/GUI.h>
 #include <wx/icon.h>
 
 #include "GUI/icons/robot.xpm"
-#include "GRIPApp.h"
 
 /**
  * @function OnInit

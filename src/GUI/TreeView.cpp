@@ -36,15 +36,21 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <kinematics/Joint.h>
-#include <kinematics/Dof.h>
-#include <kinematics/Transformation.h>
-
 #include "TreeView.h"
 #include "GRIPFrame.h"
 #include "../Tabs/InspectorTab.h"
 #include "../Tabs/VisualizationTab.h"
 #include "GUI.h"
+
+#include <simulation/World.h>
+#include <dynamics/Skeleton.h>
+#include <dynamics/BodyNode.h>
+#include <dynamics/Joint.h>
+#include <dynamics/PrismaticJoint.h>
+#include <dynamics/RevoluteJoint.h>
+#include <dynamics/FreeJoint.h>
+#include <dynamics/WeldJoint.h>
+#include <dynamics/GenCoord.h>
 
 //TOOLBAR PICTURES
 #include "icons/robot.xpm"
@@ -124,12 +130,12 @@ void TreeView::CreateFromWorld()
       ret->data = mWorld->getSkeleton(i);
       ret->dType = Return_Type_Robot;
       hPrev = AppendItem( rootId,
-			  wxString( ( mWorld->getSkeleton(i)->getName() ).c_str(), wxConvUTF8),
-			  Tree_Icon_Robot,
-			  -1,
-			  ret );
+                          wxString( ( mWorld->getSkeleton(i)->getName() ).c_str(), wxConvUTF8),
+                          Tree_Icon_Robot,
+                          -1,
+                          ret );
       // Start from root Node
-      hPrev = AddNodeTree((dynamics::BodyNodeDynamics*)mWorld->getSkeleton(i)->getRoot(), hPrev, hPrev, false);
+      hPrev = AddNodeTree(mWorld->getSkeleton(i)->getRootBodyNode(), hPrev, hPrev, false);
     }
 }
 
@@ -138,43 +144,39 @@ void TreeView::CreateFromWorld()
  * @brief Add sub-tree from node of Robot
  * @date 2011-10-13
  */
-wxTreeItemId TreeView::AddNodeTree( dynamics::BodyNodeDynamics* _node, wxTreeItemId hPrev, wxTreeItemId hParent, bool inChain )
+wxTreeItemId TreeView::AddNodeTree( dart::dynamics::BodyNode* _node, wxTreeItemId hPrev, wxTreeItemId hParent, bool inChain )
 {
   
   TreeViewReturn* ret;
   int iconIndex = Tree_Icon_Object;
   
-  int type = _node->getParentJoint()->getJointType();
-  switch (type)
-    {
-      /** Prismatic Joint: 1 DOF */
-    case ( kinematics::Joint::J_TRANS ):
+  /** Prismatic Joint: 1 DOF */
+  if(dart::dynamics::PrismaticJoint* joint = dynamic_cast<dart::dynamics::PrismaticJoint*>(_node->getParentJoint())) {
       iconIndex = Tree_Icon_Prismatic;
-      break;
-      /** Revolute Joint: 1 DOF */
-    case (kinematics::Joint::J_HINGE ):
+  }
+  /** Revolute Joint: 1 DOF */
+  else if(dart::dynamics::RevoluteJoint* joint = dynamic_cast<dart::dynamics::RevoluteJoint*>(_node->getParentJoint())) {
       iconIndex = Tree_Icon_Revolute; 
-      break;
-      /** Floating Joint: 6 DOF */
-    case (kinematics::Joint::J_FREEEULER ): 
-      iconIndex = Tree_Icon_Free;
-      break;
-      /** Fixed Joint: 0 DOF */
-    case (kinematics::Joint::J_UNKNOWN ):
+  }
+  /** Floating Joint: 6 DOF */
+  else if(dart::dynamics::FreeJoint* joint = dynamic_cast<dart::dynamics::FreeJoint*>(_node->getParentJoint())) {
+     iconIndex = Tree_Icon_Free;
+  }
+  /** Fixed Joint: 0 DOF */
+  else if(dart::dynamics::WeldJoint* joint = dynamic_cast<dart::dynamics::WeldJoint*>(_node->getParentJoint())) {
       iconIndex = Tree_Icon_Fixed;
-      break;
-    default:
+  }
+  else {
       iconIndex = Tree_Icon_Object;
-      break;
-    } 
+  }
   
   wxTreeItemId newParent = hParent;
   
-  if ( _node->getNumChildJoints() == 1) {
+  if ( _node->getNumChildBodyNodes() == 1) {
     ret = new TreeViewReturn;
     ret->data = _node;
     ret->dType = Return_Type_Node;
-    if ( _node->getChildNode(0)->getNumChildJoints() == 1 && !inChain )
+    if ( _node->getChildBodyNode(0)->getNumChildBodyNodes() == 1 && !inChain )
       {    /*_node->idNum = */hPrev = newParent = AppendItem( hParent,
 							      wxString( string(_node->getName() ).c_str(),wxConvUTF8),
 							      iconIndex,
@@ -187,7 +189,7 @@ wxTreeItemId TreeView::AddNodeTree( dynamics::BodyNodeDynamics* _node, wxTreeIte
 					     -1,
 					     ret );
     }
-    hPrev=AddNodeTree( (dynamics::BodyNodeDynamics*)( _node->getChildNode(0) ), hPrev, newParent, true );
+    hPrev=AddNodeTree( _node->getChildBodyNode(0), hPrev, newParent, true );
     
   }else {
     ret = new TreeViewReturn;
@@ -198,12 +200,9 @@ wxTreeItemId TreeView::AddNodeTree( dynamics::BodyNodeDynamics* _node, wxTreeIte
 				    iconIndex,
 				    -1,
 				    ret );
-    for (int i = 0; i < _node->getNumChildJoints(); i++)
-      {    /*_node->idNum = */hPrev=AddNodeTree( (dynamics::BodyNodeDynamics*)( _node->getChildNode(i) ), 
-						 hPrev, 
-						 newParent, 
-						 false );
-      }
+    for (int i = 0; i < _node->getNumChildBodyNodes(); i++) {
+        hPrev = AddNodeTree( _node->getChildBodyNode(i) , hPrev, newParent, false );
+    }
   }
   return hPrev;
 }
