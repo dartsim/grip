@@ -166,7 +166,7 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
       break;
     }
     /// Update the robot or object (both Skeletons)
-    update(pBodyNode->getSkeleton());
+    pBodyNode->getSkeleton()->updateForwardKinematics();
     sprintf(numBuf,"Joint Change: %7.4f", pos);
     
   }
@@ -333,17 +333,7 @@ void InspectorTab::setRootTransform(dart::dynamics::Skeleton* robot, const Eigen
     transform.translation() = pose.head<3>();
     joint->setTransformFromParentBodyNode(transform);
   }
-  update(robot);
-}
-
-void InspectorTab::update(dart::dynamics::Skeleton* robot) {
-  for(int i = 0; i < robot->getNumBodyNodes(); i++) {
-    robot->getBodyNode(i)->updateTransform();
-  }
-  
-  for(int i=0; i < robot->getNumBodyNodes(); i++) {
-    robot->getBodyNode(i)->updateVelocity();
-  }
+  robot->updateForwardKinematics();
 }
 
 Eigen::Matrix<double, 6, 1> InspectorTab::getPoseFromTransform(const Eigen::Isometry3d& tf) {
