@@ -250,18 +250,18 @@ void VisualizationTab::GRIPEventRender() {
     }
 
     // draw contact points
-    if (checkShowContacts->IsChecked() && mWorld && mWorld->getCollisionHandle()) {
+    if (checkShowContacts->IsChecked() && mWorld && mWorld->getConstraintHandler()) {
         // some preprocessing. calculate vector lengths and find max
         // length, scale down the force measurements, and figure out
         // which contact points involve to the selected body nodes
-        int nContacts = mWorld->getCollisionHandle()->getCollisionChecker()->getNumContacts();
+        int nContacts = mWorld->getConstraintHandler()->getCollisionDetector()->getNumContacts();
         vector<Eigen::Vector3d> vs(nContacts);
         vector<Eigen::Vector3d> fs(nContacts);
         vector<float> lens(nContacts);
         vector<bool> selected(nContacts);
         float maxl = 0;
         for (int k = 0; k < nContacts; k++) {
-            dart::collision::Contact contact = mWorld->getCollisionHandle()->getCollisionChecker()->getContact(k);
+            dart::collision::Contact contact = mWorld->getConstraintHandler()->getCollisionDetector()->getContact(k);
             vs[k] = contact.point;
             fs[k] = contact.force.normalized() * .1 * log(contact.force.norm());
             lens[k] = (vs[k] - fs[k]).norm();

@@ -438,7 +438,7 @@ void GRIPFrame::DoLoad(string filename, bool savelastload)
     node->setParentJoint(joint);
 
     ground->addBodyNode(node);
-    ground->setImmobileState(true);
+    ground->setMobile(false);
     mWorld->addSkeleton(ground);
     
     // Compile OpenGL displaylists
