@@ -42,15 +42,15 @@
 #include "../Tabs/VisualizationTab.h"
 #include "GUI.h"
 
-#include <simulation/World.h>
-#include <dynamics/Skeleton.h>
-#include <dynamics/BodyNode.h>
-#include <dynamics/Joint.h>
-#include <dynamics/PrismaticJoint.h>
-#include <dynamics/RevoluteJoint.h>
-#include <dynamics/FreeJoint.h>
-#include <dynamics/WeldJoint.h>
-#include <dynamics/GenCoord.h>
+#include <dart/simulation/World.h>
+#include <dart/dynamics/Skeleton.h>
+#include <dart/dynamics/BodyNode.h>
+#include <dart/dynamics/Joint.h>
+#include <dart/dynamics/PrismaticJoint.h>
+#include <dart/dynamics/RevoluteJoint.h>
+#include <dart/dynamics/FreeJoint.h>
+#include <dart/dynamics/WeldJoint.h>
+#include <dart/dynamics/GenCoord.h>
 
 //TOOLBAR PICTURES
 #include "icons/robot.xpm"

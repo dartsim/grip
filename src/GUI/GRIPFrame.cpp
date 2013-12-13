@@ -67,13 +67,13 @@
 #include "icons/frontView.xpm"
 #include "icons/topView.xpm"
 
-#include <dynamics/Skeleton.h>
-#include <dynamics/BoxShape.h> // for floor
-#include <dynamics/WeldJoint.h> // for floor
-#include <dynamics/GenCoord.h>
+#include <dart/dynamics/Skeleton.h>
+#include <dart/dynamics/BoxShape.h> // for floor
+#include <dart/dynamics/WeldJoint.h> // for floor
+#include <dart/dynamics/GenCoord.h>
 
 // Parser
-#include <utils/urdf/DartLoader.h>
+#include <dart/utils/urdf/DartLoader.h>
 
 #define ID_TOOLBAR 1257
 #define ID_TIMESLIDER 1258

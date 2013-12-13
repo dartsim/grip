@@ -44,7 +44,7 @@ class Viewer;
 #include <vector>
 
 #include "TreeView.h"
-#include <simulation/World.h>
+#include <dart/simulation/World.h>
 
 #include <string>
 using namespace std;

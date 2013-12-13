@@ -46,13 +46,13 @@
 #include <GUI/GRIPSlider.h>
 #include <GUI/GRIPFrame.h>
 
-#include <dynamics/Skeleton.h>
-#include <dynamics/BodyNode.h>
-#include <dynamics/Joint.h>
-#include <dynamics/FreeJoint.h>
-#include <dynamics/RevoluteJoint.h>
-#include <dynamics/PrismaticJoint.h>
-#include <dynamics/GenCoord.h>
+#include <dart/dynamics/Skeleton.h>
+#include <dart/dynamics/BodyNode.h>
+#include <dart/dynamics/Joint.h>
+#include <dart/dynamics/FreeJoint.h>
+#include <dart/dynamics/RevoluteJoint.h>
+#include <dart/dynamics/PrismaticJoint.h>
+#include <dart/dynamics/GenCoord.h>
 
 using namespace std;
 using namespace Eigen;
@@ -154,20 +154,24 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
       //-- Change joint value
     case J_SLIDER:
       if(dynamic_cast<dart::dynamics::RevoluteJoint*>(pBodyNode->getParentJoint())) {
-        pBodyNode->getParentJoint()->getGenCoord(0)->set_q( DEG2RAD(pos) ); 
+        std::vector<int> index(1);
+        index[0] = pBodyNode->getSkeletonIndex();
+        Eigen::VectorXd config(1);
+        config[0] = DEG2RAD(pos);
+        pBodyNode->getSkeleton()->setConfig(index, config);
       } 
       else if (dynamic_cast<dart::dynamics::PrismaticJoint*>(pBodyNode->getParentJoint())) {
-        pBodyNode->getParentJoint()->getGenCoord(0)->set_q( pos ); 
+        std::vector<int> index(1);
+        index[0] = pBodyNode->getSkeletonIndex();
+        Eigen::VectorXd config(1);
+        config[0] = DEG2RAD(pos);
+        pBodyNode->getSkeleton()->setConfig(index, config);
       }
       break;
     default:
       printf("None, you are supposed to show this \n");
       return;
       break;
-    }
-    /// Update the robot or object (both Skeletons)
-    for (int i = 0; i < pBodyNode->getSkeleton()->getNumBodyNodes(); ++i) {
-        pBodyNode->getSkeleton()->getBodyNode(i)->updateTransform();
     }
 
     sprintf(numBuf,"Joint Change: %7.4f", pos);

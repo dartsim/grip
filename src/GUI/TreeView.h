@@ -49,7 +49,7 @@
 #include "wx/treectrl.h"
 
 ////
-#include <dynamics/BodyNode.h> 
+#include <dart/dynamics/BodyNode.h> 
 ///
 
 

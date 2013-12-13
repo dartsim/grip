@@ -37,7 +37,7 @@
  */
 
 #include "VisualizationTab.h"
-#include "constraint/ConstraintDynamics.h"
+#include <dart/constraint/ConstraintDynamics.h>
 
 // **********************
 // STL
@@ -56,19 +56,19 @@ using namespace std;
 
 // **********************
 // Dynamics Stuff
-#include <collision/CollisionDetector.h>
-#include <dynamics/Skeleton.h>
-#include <dynamics/BodyNode.h>
-#include <dynamics/BoxShape.h>
-#include <dynamics/GenCoord.h>
-#include <dynamics/Joint.h>
-#include <renderer/LoadOpengl.h>
-#include <dynamics/RevoluteJoint.h>
+#include <dart/collision/CollisionDetector.h>
+#include <dart/dynamics/Skeleton.h>
+#include <dart/dynamics/BodyNode.h>
+#include <dart/dynamics/BoxShape.h>
+#include <dart/dynamics/GenCoord.h>
+#include <dart/dynamics/Joint.h>
+#include <dart/renderer/LoadOpengl.h>
+#include <dart/dynamics/RevoluteJoint.h>
 
 // **********************
 // Drawing Stuff
 #include <wx/glcanvas.h>
-#include <yui/GLFuncs.h>
+#include <dart/yui/GLFuncs.h>
 #include <GUI/Viewer.h>
 
 /** UI Control IDs */

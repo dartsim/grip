@@ -43,10 +43,10 @@
 #include <Eigen/Geometry>
 #include <wx/wx.h>
 #include <wx/glcanvas.h>
-#include <dynamics/Shape.h>
-#include <dynamics/BodyNode.h>
-#include <dynamics/MeshShape.h>
-#include <renderer/OpenGLRenderInterface.h>
+#include <dart/dynamics/Shape.h>
+#include <dart/dynamics/BodyNode.h>
+#include <dart/dynamics/MeshShape.h>
+#include <dart/renderer/OpenGLRenderInterface.h>
 
 using namespace Eigen;
 
