@@ -214,13 +214,16 @@ void VisualizationTab::GRIPEventRender() {
     glEnable(GL_POINT_SMOOTH);
     //draw actual center of mass
     if(mWorld!=NULL&& checkShowCOMActual->IsChecked()){
+
+        // Setup color stuff
         glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
         glEnable ( GL_COLOR_MATERIAL );
         glColor3f(1.0f,0.0f,0.0f);
-				dynamics::SkeletonDynamics* krang = mWorld->getSkeleton("Krang");
+
+        // Draw com of each node
+        dynamics::SkeletonDynamics* krang = mWorld->getSkeleton("Krang");
         for(int x =0 ; x < krang->getNumNodes(); x++){
-						kinematics::BodyNode* node = krang->getNode(x);
-						if(strcmp(node->getName(), "L4") != 0) continue;
+            kinematics::BodyNode* node = krang->getNode(x);
             glPushMatrix();
             GLUquadricObj * quadric1 = gluNewQuadric();
             Eigen::Vector3d cm1Pos = node->getWorldCOM();
@@ -229,7 +232,19 @@ void VisualizationTab::GRIPEventRender() {
             gluDeleteQuadric(quadric1);
             glPopMatrix();
         }
+
+        // Draw com of the entire robot
+        glColor3f(0.0f,1.0f,0.0f);
+        glPushMatrix();
+        GLUquadricObj * quadric1 = gluNewQuadric();
+        Eigen::Vector3d cmPos = krang->getWorldCOM();
+        glTranslatef(cmPos(0),cmPos(1),cmPos(2));
+        gluSphere(quadric1,0.02,20,20);
+        gluDeleteQuadric(quadric1);
+        glPopMatrix();
+
     }
+
     //draw projected center of mass
     if(mWorld!=NULL&& checkShowCOMProj->IsChecked()){
         glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
