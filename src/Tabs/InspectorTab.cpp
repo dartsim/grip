@@ -306,15 +306,20 @@ void InspectorTab::GRIPStateChange() {
   
 }
 
-
+/**
+ * @function getRootTransform
+ * @brief Return <x,y,z, r, p, y> Remember that get_q() gives you the screw so 
+ * do NOT use it directly
+ */
 Eigen::Matrix<double, 6, 1> InspectorTab::getRootTransform(dart::dynamics::Skeleton* robot) {
   dart::dynamics::Joint *joint = robot->getRootBodyNode()->getParentJoint();
   Eigen::Matrix<double, 6, 1> pose;
 
   if(joint->getJointType() == dart::dynamics::Joint::FREE) {
     Matrix<double, 6, 1> q = joint->get_q();
-    pose.head<3>() = q.tail<3>();
-    pose.tail<3>() = dart::math::matrixToEulerXYZ(dart::math::expMapRot(q.head<3>()));
+    Eigen::Isometry3d Tf = dart::math::expMap( joint->get_q() );
+    pose.head<3>() = Tf.translation();
+    pose.tail<3>() = dart::math::matrixToEulerXYZ( Tf.linear() );
   }
   else {
     pose = getPoseFromTransform(joint->getTransformFromParentBodyNode());
@@ -323,15 +328,22 @@ Eigen::Matrix<double, 6, 1> InspectorTab::getRootTransform(dart::dynamics::Skele
   return pose;
 }
 
-
-void InspectorTab::setRootTransform(dart::dynamics::Skeleton* robot, const Eigen::Matrix<double, 6, 1>& pose) {
+/**
+ * @function setRootTransform
+ * @brief Set q (SCREW) from pose <x,y,z,r,p,y> 
+ */
+void InspectorTab::setRootTransform( dart::dynamics::Skeleton* robot, 
+				     const Eigen::Matrix<double, 6, 1>& pose ) {
   dart::dynamics::Joint* joint = robot->getRootBodyNode()->getParentJoint();
 
   if(dynamic_cast<dart::dynamics::FreeJoint*>(joint)) {
     Matrix<double, 6, 1> q;
-    q.tail<3>() = pose.head<3>();
-    q.head<3>() = dart::math::logMap(dart::math::eulerXYZToMatrix(pose.tail<3>()));
-    joint->set_q(q);
+    Eigen::Isometry3d transform = Eigen::Isometry3d::Identity();
+    transform.translation() = pose.head<3>();
+    transform.linear() = dart::math::eulerXYZToMatrix(pose.tail<3>());
+    q = dart::math::logMap(transform);
+    joint->set_q( q );
+  
   }
   else {
     Eigen::Isometry3d transform;
@@ -340,11 +352,16 @@ void InspectorTab::setRootTransform(dart::dynamics::Skeleton* robot, const Eigen
     transform.translation() = pose.head<3>();
     joint->setTransformFromParentBodyNode(transform);
   }
+  
   for (int i = 0; i < robot->getNumBodyNodes(); ++i) {
     robot->getBodyNode(i)->updateTransform();
   }
 }
 
+/**
+ * @function getPoseTransform
+ * @brief Get a vector <x,y,z,r,p,y> from Transform. NO SCREW
+ */
 Eigen::Matrix<double, 6, 1> InspectorTab::getPoseFromTransform(const Eigen::Isometry3d& tf) {
   Eigen::Matrix<double, 6, 1> pose;
   pose.head<3>() = tf.translation();
