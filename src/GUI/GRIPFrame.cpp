@@ -535,7 +535,9 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
 
 	int attrib[] = {WX_GL_DOUBLEBUFFER,WX_GL_RGBA,	WX_GL_DEPTH_SIZE, 16,0};
 	Viewer *movieViewer = new Viewer(movieFrame, viewer, wxID_ANY, wxPoint(0, 0), wxSize(renderW, renderH), 0, _T("MovieWindow"), attrib);
-	
+	movieViewer->backColor = viewer->backColor;
+	movieViewer->gridColor = viewer->gridColor;	
+
 	//movieFrame.AddChild(
 	#ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
 	movieViewer->MSWSetOldWndProc((WXFARPROC)DefWindowProc);
