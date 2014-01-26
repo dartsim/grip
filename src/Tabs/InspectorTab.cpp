@@ -155,14 +155,14 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
     case J_SLIDER:
       if(dynamic_cast<dart::dynamics::RevoluteJoint*>(pBodyNode->getParentJoint())) {
         std::vector<int> index(1);
-        index[0] = pBodyNode->getSkeletonIndex();
+        index[0] = pBodyNode->getParentJoint()->getGenCoord(0)->getSkeletonIndex();
         Eigen::VectorXd config(1);
         config[0] = DEG2RAD(pos);
         pBodyNode->getSkeleton()->setConfig(index, config);
       } 
       else if (dynamic_cast<dart::dynamics::PrismaticJoint*>(pBodyNode->getParentJoint())) {
         std::vector<int> index(1);
-        index[0] = pBodyNode->getSkeletonIndex();
+        index[0] = pBodyNode->getParentJoint()->getGenCoord(0)->getSkeletonIndex();
         Eigen::VectorXd config(1);
         config[0] = DEG2RAD(pos);
         pBodyNode->getSkeleton()->setConfig(index, config);
