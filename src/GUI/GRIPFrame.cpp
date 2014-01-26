@@ -97,6 +97,9 @@ extern bool check_for_collisions;
 
 //wxSTD_MDIPARENTFRAME ICON wxICON(ROBOT_xpm)
 
+// For DART Issue 122 - Initialize correctly mT_Joint for FREE JOINTS
+void setState_Issue122( Eigen::VectorXd _newState );
+
 /**
  * @function GRIPFrame
  * @brief Constructor 
@@ -532,7 +535,9 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
 
 	int attrib[] = {WX_GL_DOUBLEBUFFER,WX_GL_RGBA,	WX_GL_DEPTH_SIZE, 16,0};
 	Viewer *movieViewer = new Viewer(movieFrame, viewer, wxID_ANY, wxPoint(0, 0), wxSize(renderW, renderH), 0, _T("MovieWindow"), attrib);
-	
+	movieViewer->backColor = viewer->backColor;
+	movieViewer->gridColor = viewer->gridColor;	
+
 	//movieFrame.AddChild(
 	#ifdef WIN32  // Weird hack to make wxWidgets work with VC++ debug
 	movieViewer->MSWSetOldWndProc((WXFARPROC)DefWindowProc);
@@ -564,7 +569,11 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
         if (it == timeVector.end()) break; // call it done
         while((*it).time < curTargetTime) it++;
 
-        mWorld->setState((*it).state);
+		// Issue 122 from DART
+        //mWorld->setState((*it).state);
+		Eigen::VectorXd newState = (*it).state;   
+    	setState_Issue122( newState );
+
         movieViewer->DrawGLScene();
         wxYield();
 
@@ -736,7 +745,10 @@ void GRIPFrame::updateTimeValue(double value, bool sendSignal) {
  
     if(timeIndex > timeVector.size()-1) timeIndex = timeVector.size()-1;
   
-    mWorld->setState(timeVector[timeIndex].state);
+    //mWorld->setState(timeVector[timeIndex].state);
+	Eigen::VectorXd newState = timeVector[timeIndex].state;   
+    setState_Issue122( newState );
+
     viewer->UpdateCamera();
     viewer->DrawGLScene();
 
@@ -1133,5 +1145,22 @@ EVT_COMMAND(wxID_ANY, wxEVT_GRIP_UPDATE_AND_RENDER, GRIPFrame::OnRequestUpdateAn
 //	EVT_BUTTON (BUTTON_Hello, GRIPFrame::OnQuit )
 END_EVENT_TABLE()
 
+/**
+  * @function setState_Issue122
+  * @brief Work around to replay worlds with skeletons using FREE JOINTS. Culprit: Issue 122 from DART
+ */
+void setState_Issue122( Eigen::VectorXd _newState ) {
 
+	// Before setting states, make sure the FreeJoints get their mT_Joints set
+    for (int i = 0; i < mWorld->getNumSkeletons(); i++) {
+     	int start = 2 * mWorld->getIndex(i);
+        int size = 2 * (mWorld->getSkeleton(i)->getNumGenCoords());
+		Eigen::VectorXd q = _newState.segment( start, size / 2);
+		// Set config calls updateTransform() [NO updateTransform_Issue122], which correctly initializes mT_Joint for FREE JOINT
+		mWorld->getSkeleton(i)->setConfig(q);
+		// The usual line. The line above is actually repeating some processing, but there is no other way, unless you want to touch DART itself
+        mWorld->getSkeleton(i)->setState(_newState.segment(start, size));
+     }
+
+}
 
