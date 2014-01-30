@@ -56,6 +56,7 @@ class GRIPApp : public wxApp
 public:
     virtual bool OnInit();
 	virtual void AddTabs() {}
+	virtual void processArgs ();
 };
 
 #endif /* GRIPAPP_H_ */

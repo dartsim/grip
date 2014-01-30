@@ -40,10 +40,39 @@
 #include <Tabs/AllTabs.h>
 #include <GUI/GUI.h>
 #include <wx/icon.h>
+#include <wx/cmdline.h>
 
 #include "GUI/icons/robot.xpm"
 #include "GRIPApp.h"
 
+#include <stdio.h>
+#include <iostream>
+
+/**
+ * @function processArgs 
+ * @brief Processes the -f argument to get the input scene file
+ * @date 2014-01-29
+ */
+void GRIPApp::processArgs (){
+ 
+	// Setup the items to check in the command line
+  wxCmdLineEntryDesc cmdLineDesc[] = {
+   { wxCMD_LINE_OPTION, wxT("f"), },
+   { wxCMD_LINE_NONE }
+  };
+ 
+	// Parse the arguments
+  wxCmdLineParser parser (cmdLineDesc, argc, argv);
+  parser.Parse();
+ 
+	// Check if the file option is given; if so, load the file
+  wxString optf;
+  if(parser.Found( wxT("f"), &optf)) {
+		std::cout << "Will try to load the file: '" << optf.mb_str() << "'" << std::endl;
+		frame->DoLoad(std::string(optf.mb_str()));
+	}
+ }
+ 
 /**
  * @function OnInit
  * @brief Initialize GRIP window
@@ -62,9 +91,8 @@ bool GRIPApp::OnInit()
 #endif
 	// --- Console ---
 
-    if ( !wxApp::OnInit() )
-        return false;
-    frame = new GRIPFrame(wxT("GRIP"));
+ // if ( !wxApp::OnInit() ) return false;
+  frame = new GRIPFrame(wxT("GRIP"));
 	frame->SetFocus();
 
 	AddTabs();
@@ -82,6 +110,7 @@ bool GRIPApp::OnInit()
 	frame->SetIcon(ico);
     frame->Show(true);
 
-    return true;
+	processArgs();
+	return true;
 }
 
