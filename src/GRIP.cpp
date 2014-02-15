@@ -47,6 +47,42 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+
+using namespace std;
+
+/**
+ * @function setConfiguration
+ * @brief Reads the joint indices and angles from a file. The first line is indices,
+ * the second is angles.
+ * @date 2014-02-10
+ */
+void GRIPApp::setConfiguration (const char* filepath) {
+
+  // Open the file
+  fstream file (filepath);
+  assert(file.is_open() && "Could not open the file!");
+
+  // Read the first line
+  std::string line;
+	assert(getline(file, line) && "Two lines: first indices, then angles.");
+	int index;
+	vector <int> dofs;
+	stringstream stream (line, stringstream::in);
+	while(stream >> index) dofs.push_back(index);
+
+	// Read the second line
+	Eigen::VectorXd q (dofs.size());
+	double angle;
+	size_t i = 0;
+	assert(getline(file, line) && "Two lines: first indices, then angles.");
+	stringstream stream2 (line, stringstream::in);
+	while(stream2 >> angle) q(i++) = angle;
+	
+	// Set the robot configuration
+	mWorld->getSkeleton("Krang")->setConfig(dofs, q);
+}
 
 /**
  * @function processArgs 
@@ -58,6 +94,7 @@ void GRIPApp::processArgs (){
 	// Setup the items to check in the command line
   wxCmdLineEntryDesc cmdLineDesc[] = {
    { wxCMD_LINE_OPTION, wxT("f"), },
+   { wxCMD_LINE_OPTION, wxT("q"), },
    { wxCMD_LINE_NONE }
   };
  
@@ -67,10 +104,18 @@ void GRIPApp::processArgs (){
  
 	// Check if the file option is given; if so, load the file
   wxString optf;
+	bool loadedFile = false;
   if(parser.Found( wxT("f"), &optf)) {
 		std::cout << "Will try to load the file: '" << optf.mb_str() << "'" << std::endl;
 		frame->DoLoad(std::string(optf.mb_str()));
+		loadedFile = true;
 	}
+  if(parser.Found( wxT("q"), &optf)) {
+		assert(loadedFile && "Can not load configuration unless urdf file is given with 'f'");
+		std::cout << "Will try to load the configuration file: '" << optf.mb_str() << "'" << std::endl;
+		setConfiguration(optf.mb_str());
+	}
+	
  }
  
 /**
