@@ -61,8 +61,11 @@ using namespace std;
 void GRIPApp::setConfiguration (const char* filepath) {
 
   // Open the file
-  fstream file (filepath);
-  assert(file.is_open() && "Could not open the file!");
+  fstream file (filepath, fstream::in);
+	if(!file.is_open()) {
+		printf("Could not open the file '%s'\n", filepath);
+		assert(false);
+	}
 
   // Read the first line
   std::string line;
