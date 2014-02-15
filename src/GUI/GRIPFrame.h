@@ -67,8 +67,10 @@ typedef struct {
 class GRIPFrame : public wxFrame
 {
 public:
+		
     GRIPFrame(const wxString& title);
 
+		std::string cmdarg;
     int continueSimulation;
     clock_t timeLastRedraw;
     int renderDuringSimulation;

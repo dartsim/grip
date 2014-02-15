@@ -95,6 +95,7 @@ void GRIPApp::processArgs (){
   wxCmdLineEntryDesc cmdLineDesc[] = {
    { wxCMD_LINE_OPTION, wxT("f"), },
    { wxCMD_LINE_OPTION, wxT("q"), },
+   { wxCMD_LINE_OPTION, wxT("b"), },
    { wxCMD_LINE_NONE }
   };
  
@@ -115,6 +116,8 @@ void GRIPApp::processArgs (){
 		std::cout << "Will try to load the configuration file: '" << optf.mb_str() << "'" << std::endl;
 		setConfiguration(optf.mb_str());
 	}
+  if(parser.Found( wxT("b"), &optf)) 
+		frame->cmdarg = std::string(optf.mb_str());
 	
  }
  
@@ -139,6 +142,7 @@ bool GRIPApp::OnInit()
  // if ( !wxApp::OnInit() ) return false;
   frame = new GRIPFrame(wxT("GRIP"));
 	frame->SetFocus();
+	processArgs();
 
 	AddTabs();
 
@@ -155,7 +159,6 @@ bool GRIPApp::OnInit()
 	frame->SetIcon(ico);
     frame->Show(true);
 
-	processArgs();
 	return true;
 }
 
