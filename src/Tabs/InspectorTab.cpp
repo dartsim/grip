@@ -36,6 +36,8 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#define protected public
+
 #include <iostream>
 #include <wx/wx.h>
 

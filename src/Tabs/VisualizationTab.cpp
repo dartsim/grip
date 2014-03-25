@@ -68,7 +68,7 @@ using namespace std;
 // **********************
 // Drawing Stuff
 #include <wx/glcanvas.h>
-#include <dart/yui/GLFuncs.h>
+#include <dart/gui/GLFuncs.h>
 #include <GUI/Viewer.h>
 
 /** UI Control IDs */
@@ -361,7 +361,7 @@ void VisualizationTab::GRIPEventRender() {
                     if(dart::dynamics::RevoluteJoint* joint = dynamic_cast<dart::dynamics::RevoluteJoint*>(parjoint)) {
                         Eigen::Isometry3d transform = parnode->getWorldTransform() * joint->getTransformFromParentBodyNode();
                         glColor4d(1.0, 0.0, 1.0, 0.5);
-                        dart::yui::drawArrow3D(transform.translation(), transform.linear() * joint->getAxis(), .15, .003, .006);
+                        dart::gui::drawArrow3D(transform.translation(), transform.linear() * joint->getAxis(), .15, .003, .006);
                     }
                 }
             }
@@ -376,11 +376,11 @@ void VisualizationTab::GRIPEventRender() {
                 dart::dynamics::BodyNode* node = rob->getBodyNode(nodeidx);
                 Eigen::Isometry3d transform = node->getWorldTransform();
                 glColor4d(1.0, 0.0, 0.0, 0.5);
-                dart::yui::drawArrow3D(transform.translation(), transform.linear() * Eigen::Vector3d::UnitX(), .1, .005, .01);
+                dart::gui::drawArrow3D(transform.translation(), transform.linear() * Eigen::Vector3d::UnitX(), .1, .005, .01);
                 glColor4d(0.0, 1.0, 0.0, 0.5);
-                dart::yui::drawArrow3D(transform.translation(), transform.linear() * Eigen::Vector3d::UnitY(), .1, .005, .01);
+                dart::gui::drawArrow3D(transform.translation(), transform.linear() * Eigen::Vector3d::UnitY(), .1, .005, .01);
                 glColor4d(0.0, 0.0, 1.0, 0.5);
-                dart::yui::drawArrow3D(transform.translation(), transform.linear() * Eigen::Vector3d::UnitZ(), .1, .005, .01);
+                dart::gui::drawArrow3D(transform.translation(), transform.linear() * Eigen::Vector3d::UnitZ(), .1, .005, .01);
             }
         }
     }
