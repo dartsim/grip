@@ -147,7 +147,9 @@ int Viewer::DrawGLScene()
 
 	// Render
 	glTranslated(worldV[0],worldV[1],worldV[2]);
+	((GRIPFrame*)GetParent())->FireEventRender();
 
+	// fire during-render hooks
 	glPushMatrix();
 	if (gridActive){  addGrid(); }
 	glPopMatrix();
@@ -160,8 +162,6 @@ int Viewer::DrawGLScene()
 		drawWorld();
 	}
 
-	// fire during-render hooks
-	((GRIPFrame*)GetParent())->FireEventRender();
 
 	glFlush();
 	SwapBuffers();

@@ -122,7 +122,9 @@ VisualizationTab::VisualizationTab(wxWindow *parent,
     ss1BoxS->Add(checkUseCollMesh, 0, wxALL, 1);
 
     checkShowContacts = new wxCheckBox(this, event_checkbox_showcontacts, wxT("Show Contact Forces"));
+		checkShowContacts->SetValue(true);
     checkShowCOMProj = new wxCheckBox(this, event_checkbox_show_com_proj, wxT("Show Projected Center of Mass"));
+		checkShowCOMProj->SetValue(true);
     checkShowCOMActual = new wxCheckBox(this, event_checkbox_show_com_actual, wxT("Show Actual Center of Mass"));
     ss2BoxS->Add(checkShowContacts, 0, wxALL, 1);
     ss2BoxS->Add(checkShowCOMProj, 0, wxALL, 1);
@@ -236,16 +238,29 @@ void VisualizationTab::GRIPEventRender() {
     if(mWorld!=NULL&& checkShowCOMProj->IsChecked()){
         glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
         glEnable ( GL_COLOR_MATERIAL );
-        glColor3f(1.0f,0.0f,0.0f);
         for(int x =0 ; x<mWorld->getNumSkeletons();x++){
+						if(mWorld->getSkeleton(x)->getName().compare("Hubo") != 0) continue;
+						glColor3f(0.0f,1.0f,0.0f);
             glPushMatrix();
             GLUquadricObj * quadric2 = gluNewQuadric();
             Eigen::Vector3d cm2Pos = mWorld->getSkeleton(x)->getWorldCOM();
             glTranslatef(cm2Pos(0),cm2Pos(1),0.0);
-            gluSphere(quadric2,0.1,5,5);
+            gluSphere(quadric2,0.025,5,5);
             gluDeleteQuadric(quadric2);
             glPopMatrix();
 
+						for(size_t i = 0; i < 2; i++) {
+							glColor3f(0.0f,0.0f,1.0f);
+							Eigen::Vector3d temp = mWorld->getSkeleton(x)->getBodyNode(
+								i == 0 ? "leftFoot" : "rightFoot")->getWorldTransform().translation();
+							glPushMatrix();
+							GLUquadricObj * quadric2 = gluNewQuadric();
+							Eigen::Vector3d cm2Pos = mWorld->getSkeleton(x)->getWorldCOM();
+							glTranslatef(cm2Pos(0),cm2Pos(1),temp(2));
+							gluSphere(quadric2,0.023,5,5);
+							gluDeleteQuadric(quadric2);
+							glPopMatrix();
+						}
         }
     }
 
