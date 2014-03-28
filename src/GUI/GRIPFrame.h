@@ -39,12 +39,15 @@
 #ifndef GRIP_GRIPFRAME_H
 #define GRIP_GRIPFRAME_H
 
+#define protected public
 class GRIPSlider;
 class Viewer;
 #include <vector>
 
 #include "TreeView.h"
 #include <dart/simulation/World.h>
+#include <dart/constraint/ConstraintDynamics.h>
+#include <dart/collision/CollisionDetector.h>
 
 #include <string>
 using namespace std;
@@ -58,6 +61,8 @@ using namespace std;
 
 typedef struct {
     Eigen::VectorXd state;
+		std::vector <Eigen::Vector3d> vs;
+		std::vector <Eigen::Vector3d> fs;
     double time;
 } GRIPTimeSlice;
 

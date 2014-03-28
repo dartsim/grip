@@ -203,6 +203,7 @@ void VisualizationTab::GRIPEventSimulationStart() {
  * @brief
  */
 void VisualizationTab::GRIPEventRender() {
+	cout << "hi" << endl;
     glDisable(GL_FOG);
     glEnable(GL_COLOR_MATERIAL);
     glDisable(GL_TEXTURE_2D);
@@ -275,6 +276,7 @@ void VisualizationTab::GRIPEventRender() {
         vector<float> lens(nContacts);
         vector<bool> selected(nContacts);
         float maxl = 0;
+				cout << "nContacts: " <<nContacts << endl;
         for (int k = 0; k < nContacts; k++) {
             dart::collision::Contact contact = mWorld->getConstraintHandler()->getCollisionDetector()->getContact(k);
             vs[k] = contact.point;
@@ -282,6 +284,7 @@ void VisualizationTab::GRIPEventRender() {
             lens[k] = (vs[k] - fs[k]).norm();
             if (lens[k] > maxl) maxl = lens[k];
             selected[k] = false;
+						continue;
             if (contact.collisionNode1->getBodyNode() == selectedNode || contact.collisionNode2->getBodyNode() == selectedNode) {
                 selected[k] = true;
             }
@@ -313,6 +316,7 @@ void VisualizationTab::GRIPEventRender() {
         }
         glEnd();
     }
+		else cout << "f'ed up if" << endl;
 
     // draw collision meshes
     if (checkShowCollMesh->IsChecked() && mWorld && selectedNode && selectedNode->getCollisionShape(0)) {

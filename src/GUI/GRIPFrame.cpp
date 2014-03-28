@@ -98,7 +98,7 @@ extern bool check_for_collisions;
 //wxSTD_MDIPARENTFRAME ICON wxICON(ROBOT_xpm)
 
 // For DART Issue 122 - Initialize correctly mT_Joint for FREE JOINTS
-void setState_Issue122( Eigen::VectorXd _newState );
+void setState_Issue122( GRIPTimeSlice* slice);
 
 /**
  * @function GRIPFrame
@@ -572,7 +572,7 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
 		// Issue 122 from DART
         //mWorld->setState((*it).state);
 		Eigen::VectorXd newState = (*it).state;   
-    	setState_Issue122( newState );
+    	setState_Issue122((GRIPTimeSlice*) &(*it));
 
         movieViewer->DrawGLScene();
         wxYield();
@@ -589,7 +589,6 @@ void GRIPFrame::OnToolMovie(wxCommandEvent& event){
         img.SaveFile(fname, wxBITMAP_TYPE_PNG);
 
         framesWritten++;
-
         curTargetTime += 1.0 / framerate;
     } while (curTargetTime < timeVector.back().time);
 
@@ -742,15 +741,22 @@ void GRIPFrame::updateTimeValue(double value, bool sendSignal) {
     timeText->ChangeValue(posString);
 
     unsigned int timeIndex = (int)((tCurrent/tMax)*((double)timeVector.size()));
+		cout << "tCurrent: " << tCurrent << ", timeIndex: " << timeIndex << endl;
  
     if(timeIndex > timeVector.size()-1) timeIndex = timeVector.size()-1;
   
     //mWorld->setState(timeVector[timeIndex].state);
 	Eigen::VectorXd newState = timeVector[timeIndex].state;   
-    setState_Issue122( newState );
+    setState_Issue122( &timeVector[timeIndex]);
 
     viewer->UpdateCamera();
     viewer->DrawGLScene();
+
+				size_t numPages = tabView->GetPageCount();
+				for(size_t i=0; i< numPages; i++){
+					GRIPTab* tab = (GRIPTab*)tabView->GetPage(i);
+					tab->GRIPEventPlaybackAfterFrame();
+				}
 
     if(sendSignal) updateAllTabs();
 }
@@ -763,6 +769,7 @@ void GRIPFrame::updateTimeValue(double value, bool sendSignal) {
 void GRIPFrame::OnTimeScroll(wxScrollEvent& event) {
     tCurrent = (double)(event.GetPosition())/(double)tPrecision;
    
+		cout << "scroll tCurrent: " << tCurrent << endl;
     updateTimeValue(tCurrent,true); 
 }
 
@@ -775,6 +782,17 @@ void GRIPFrame::AddWorld( dart::simulation::World* _world) {
     GRIPTimeSlice tsnew;
     tsnew.time = _world->getTime();
     tsnew.state = _world->getState();
+		if(_world && _world->getConstraintHandler()) {
+        int nContacts = _world->getConstraintHandler()->getCollisionDetector()->getNumContacts();
+				tsnew.vs = vector<Eigen::Vector3d> (nContacts);
+        tsnew.fs = vector<Eigen::Vector3d> (nContacts);
+        for (int k = 0; k < nContacts; k++) {
+            dart::collision::Contact contact = _world->getConstraintHandler()->getCollisionDetector()->getContact(k);
+            tsnew.vs[k] = contact.point;
+            tsnew.fs[k] = contact.force;
+        }
+		}
+
     timeVector.push_back(tsnew);
     tMax += tIncrement;
     timeTrack->SetRange(0, tMax * tPrecision);
@@ -812,7 +830,7 @@ void GRIPFrame::OnTimeEnter(wxCommandEvent& WXUNUSED(event)){
  * @date 2011-10-13
  */
 void GRIPFrame::OnWhite(wxCommandEvent& WXUNUSED(event)){
-    viewer->backColor = Vector3d(1,1,1);
+    viewer->backColor = Vector3d(1.0,1.0,1);
     viewer->gridColor = Vector3d(.8,.8,1);
     viewer->setClearColor();
     viewer->DrawGLScene();
@@ -1149,18 +1167,28 @@ END_EVENT_TABLE()
   * @function setState_Issue122
   * @brief Work around to replay worlds with skeletons using FREE JOINTS. Culprit: Issue 122 from DART
  */
-void setState_Issue122( Eigen::VectorXd _newState ) {
+void setState_Issue122(GRIPTimeSlice* slice ) {
 
 	// Before setting states, make sure the FreeJoints get their mT_Joints set
-    for (int i = 0; i < mWorld->getNumSkeletons(); i++) {
-     	int start = 2 * mWorld->getIndex(i);
-        int size = 2 * (mWorld->getSkeleton(i)->getNumGenCoords());
-		Eigen::VectorXd q = _newState.segment( start, size / 2);
+	for (int i = 0; i < mWorld->getNumSkeletons(); i++) {
+		int start = 2 * mWorld->getIndex(i);
+		int size = 2 * (mWorld->getSkeleton(i)->getNumGenCoords());
+		Eigen::VectorXd q = slice->state.segment( start, size / 2);
 		// Set config calls updateTransform() [NO updateTransform_Issue122], which correctly initializes mT_Joint for FREE JOINT
 		mWorld->getSkeleton(i)->setConfig(q);
 		// The usual line. The line above is actually repeating some processing, but there is no other way, unless you want to touch DART itself
-        mWorld->getSkeleton(i)->setState(_newState.segment(start, size));
-     }
+		mWorld->getSkeleton(i)->setState(slice->state.segment(start, size));
+		dart::collision::CollisionDetector* cd = mWorld->getConstraintHandler()->getCollisionDetector();
+		cd->mContacts.clear();
+		for(size_t i = 0; i < slice->vs.size(); i++) {
+			dart::collision::Contact contact;
+			contact.point= slice->vs[i];
+			contact.force = slice->fs[i];
+			contact.collisionNode1 = contact.collisionNode2 = NULL;
+			cd->mContacts.push_back(contact);
+		}
+
+	}
 
 }
 

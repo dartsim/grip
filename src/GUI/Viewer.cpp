@@ -41,6 +41,7 @@
 #include "GUI.h"
 #include "GRIPFrame.h"
 #include <wx/glcanvas.h>
+#include <dart/dynamics/Skeleton.h>
 
 #include <Tools/GL/glcommon.h>
 #include <iostream>
@@ -55,6 +56,19 @@ void Viewer::drawWorld() {
 	// Draw skeletons
 	for(int i=0; i < mWorld->getNumSkeletons(); i++) {
 		//mWorld->getSkeleton(i)->draw(&renderer);
+		if(mWorld->getSkeleton(i)->getName().compare("ObstacleF") == 0) continue;
+		if(mWorld->getSkeleton(i)->getName().compare("ObstacleG") == 0) continue;
+		if(mWorld->getSkeleton(i)->getName().compare("ObstacleH") == 0) continue;
+		if(mWorld->getSkeleton(i)->getName().compare("Door") == 0) continue;
+		if(mWorld->getSkeleton(i)->getName().compare("Wall1") == 0) continue;
+		if(mWorld->getSkeleton(i)->getName().compare("Wall2") == 0) continue;
+		if(mWorld->getSkeleton(i)->getName().compare("Wall3") == 0) continue;
+		if(mWorld->getSkeleton(i)->getName().compare("Wall4") == 0) continue;
+		if(mWorld->getSkeleton(i)->getName().compare("ObstacleA") == 0) continue;
+		if(mWorld->getSkeleton(i)->getName().compare("ObstacleB") == 0) continue;
+		if(mWorld->getSkeleton(i)->getName().compare("ObstacleC") == 0) continue;
+		if(mWorld->getSkeleton(i)->getName().compare("ObstacleD") == 0) continue;
+		if(mWorld->getSkeleton(i)->getName().compare("ObstacleE") == 0) continue;
 		renderer.draw(mWorld->getSkeleton(i), check_for_collisions, useCollMesh);
 	}
 }
@@ -147,7 +161,66 @@ int Viewer::DrawGLScene()
 
 	// Render
 	glTranslated(worldV[0],worldV[1],worldV[2]);
+
+	bool badCamera = (camT(0,0) > 0.1);
+	bool badCamera2 = (worldV(0) < -3.4);
+	if(!badCamera && (mWorld != NULL)) {
+		dart::dynamics::Skeleton* skel = mWorld->getSkeleton("ObstacleF");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("ObstacleG");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("ObstacleH");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+	}
+	if(badCamera2 && (mWorld != NULL)) {
+		dart::dynamics::Skeleton* skel = mWorld->getSkeleton("ObstacleA");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("ObstacleB");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("ObstacleC");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("ObstacleD");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("ObstacleE");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+	}
+	if((mWorld != NULL)) {
+		dart::dynamics::Skeleton* skel = mWorld->getSkeleton("Wall1");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("Door");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("Wall2");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("Wall3");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("Wall4");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+	}
+
+//	glEnable(GL_FOG);
+	glEnable(GL_COLOR_MATERIAL);
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_LIGHTING);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_POINT_SMOOTH);
+
+	// Draw ground
+ glBegin(GL_QUADS);
+	 glColor3f(0.1f,0.1f,0.1f);
+//	glColor3f(1.0, 0.7, 0.75);
+     glVertex3f(-40,-40,0);
+     glVertex3f(40,-40,0);
+     glVertex3f(40,40,0);
+     glVertex3f(-40,40,0);
+ glEnd();
+
+
 	((GRIPFrame*)GetParent())->FireEventRender();
+	glDisable(GL_TEXTURE_3D);
+	glDisable(GL_FRAGMENT_PROGRAM_ARB);
 
 	// fire during-render hooks
 	glPushMatrix();
@@ -160,6 +233,26 @@ int Viewer::DrawGLScene()
         // draw models
 	if( mWorld != NULL ) { 
 		drawWorld();
+	}
+	if(!badCamera2 && (mWorld != NULL)) {
+		dart::dynamics::Skeleton* skel = mWorld->getSkeleton("ObstacleA");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("ObstacleB");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("ObstacleC");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("ObstacleD");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("ObstacleE");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+	}
+	if((badCamera || badCamera2) && (mWorld != NULL)) {
+		dart::dynamics::Skeleton* skel = mWorld->getSkeleton("ObstacleF");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("ObstacleG");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
+		skel = mWorld->getSkeleton("ObstacleH");
+		if(skel != NULL) renderer.draw(skel, check_for_collisions, useCollMesh);
 	}
 
 
@@ -188,7 +281,7 @@ void Viewer::resized(wxSizeEvent& evt){
     }
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,15.0f);//100.0f);
+	gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,35.0f);//100.0f);
 	DrawGLScene();
 }
 
@@ -316,14 +409,14 @@ void Viewer::InitGL(){
 
 	float FogCol[3]={0.0f,0.0f,0.0f};
 	glFogfv(GL_FOG_COLOR,FogCol);
-	glFogf(GL_FOG_START, 10.f);
+	glFogf(GL_FOG_START, 14.f);
 	glFogf(GL_FOG_END, 15.f);
 	glFogi(GL_FOG_MODE, GL_LINEAR);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glPolygonMode (GL_FRONT, GL_FILL);
-	gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,15.0f);
+	gluPerspective(45.0f,(GLdouble)w/(GLdouble)h,0.1f,35.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	setClearColor();
@@ -336,7 +429,7 @@ void Viewer::InitGL(){
 void Viewer::setClearColor(){
 	glClearColor((float)backColor[0],(float)backColor[1],(float)backColor[2],1.0f);
 	float FogCol[3]={(float)backColor[0],(float)backColor[1],(float)backColor[2]};
-	glFogfv(GL_FOG_COLOR,FogCol);
+//	glFogfv(GL_FOG_COLOR,FogCol);
 }
 
 /**
@@ -386,13 +479,15 @@ void Viewer::addGrid(){
     glEnable(GL_POINT_SMOOTH);
 
 	//glColor3f(.2f,.2f,0.0f);
-	glColor3d(gridColor[0],gridColor[1],gridColor[2]);
+	// glColor3d(gridColor[0],gridColor[1],gridColor[2]);
+	glColor3d(0, 0, 0);
 
-    glEvalMesh2(GL_LINE,
-    0, 100,   /* Starting at 0 mesh 100 steps (rows). */
-    0, 100);  /* Starting at 0 mesh 100 steps (columns). */
+//    glEvalMesh2(GL_LINE,
+//    0, 100,   /* Starting at 0 mesh 100 steps (rows). */
+//    0, 100);  /* Starting at 0 mesh 100 steps (columns). */
 
 	glColor3f(1.0f,1.0f,1.0f);
+
 	glEnable(GL_LIGHTING);
 	glDisable(GL_FOG);
 	glDisable(GL_COLOR_MATERIAL);
