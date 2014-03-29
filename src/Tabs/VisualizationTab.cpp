@@ -203,7 +203,6 @@ void VisualizationTab::GRIPEventSimulationStart() {
  * @brief
  */
 void VisualizationTab::GRIPEventRender() {
-	cout << "hi" << endl;
     glDisable(GL_FOG);
     glEnable(GL_COLOR_MATERIAL);
     glDisable(GL_TEXTURE_2D);
@@ -276,7 +275,6 @@ void VisualizationTab::GRIPEventRender() {
         vector<float> lens(nContacts);
         vector<bool> selected(nContacts);
         float maxl = 0;
-				cout << "nContacts: " <<nContacts << endl;
         for (int k = 0; k < nContacts; k++) {
             dart::collision::Contact contact = mWorld->getConstraintHandler()->getCollisionDetector()->getContact(k);
             vs[k] = contact.point;

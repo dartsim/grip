@@ -430,7 +430,7 @@ void GRIPFrame::DoLoad(string filename, bool savelastload)
     dart::dynamics::BodyNode* node = new dart::dynamics::BodyNode("ground");
     node->setMass(1.0);
     
-    dart::dynamics::Shape* shape = new dart::dynamics::BoxShape(Eigen::Vector3d(10.0, 10.0, 0.0001));
+    dart::dynamics::Shape* shape = new dart::dynamics::BoxShape(Eigen::Vector3d(20.0, 20.0, 0.0001));
     shape->setColor(Eigen::Vector3d(0.5, 0.5, 1.0));
     node->addCollisionShape(shape);
     
@@ -778,10 +778,14 @@ void GRIPFrame::OnTimeScroll(wxScrollEvent& event) {
  * @brief 
  * @date 2011-10-13
  */
+#include <fstream>
 void GRIPFrame::AddWorld( dart::simulation::World* _world) {
     GRIPTimeSlice tsnew;
     tsnew.time = _world->getTime();
     tsnew.state = _world->getState();
+//		static int counter = 0;
+//		fstream file; if(counter == 0) { file.open("state", fstream::out); }
+//		file << "- " << tsnew.state.transpose() << " ";
 		if(_world && _world->getConstraintHandler()) {
         int nContacts = _world->getConstraintHandler()->getCollisionDetector()->getNumContacts();
 				tsnew.vs = vector<Eigen::Vector3d> (nContacts);
@@ -789,9 +793,12 @@ void GRIPFrame::AddWorld( dart::simulation::World* _world) {
         for (int k = 0; k < nContacts; k++) {
             dart::collision::Contact contact = _world->getConstraintHandler()->getCollisionDetector()->getContact(k);
             tsnew.vs[k] = contact.point;
+//						file << contact.point.transpose() << " ";
             tsnew.fs[k] = contact.force;
+//						file << contact.force.transpose();
         }
 		}
+//		file << "\n" << endl; counter++;
 
     timeVector.push_back(tsnew);
     tMax += tIncrement;
