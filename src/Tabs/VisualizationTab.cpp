@@ -212,6 +212,69 @@ void VisualizationTab::GRIPEventRender() {
     glEnable(GL_BLEND);
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POINT_SMOOTH);
+
+
+
+
+		// Draw an arrow from the end-effector to the point contact
+		if(mWorld == NULL) return;
+		dynamics::SkeletonDynamics* pointSkel = mWorld->getSkeleton("PointInput1");
+		dynamics::SkeletonDynamics* krang = mWorld->getSkeleton("Krang");
+		if(pointSkel != NULL && krang != NULL) {
+
+			Eigen::Vector3d hand = krang->getNode("lGripper")->getWorldTransform().topRightCorner<3,1>();
+			Eigen::Vector3d point = pointSkel->getNode("link_0")->getWorldTransform().topRightCorner<3,1>();
+			Eigen::Vector3d p0 = hand, p1 = hand, p2 = hand, p3 = point;
+			p1(0) = point(0);
+			p2(0) = point(0); p2(1) = point(1);
+				
+		
+			glColor4d(1.0, 0.0, 0.0, 1.0);
+			yui::drawArrow3D(p0, (p1-p0).normalized(), (p1-p0).norm(), .01, .01);
+			glColor4d(0.0, 1.0, 0.0, 1.0);
+			yui::drawArrow3D(p1, (p2-p1).normalized(), (p2-p1).norm(), .01, .01);
+			glColor4d(0.0, 0.0, 1.0, 1.0);
+			yui::drawArrow3D(p2, (p3-p2).normalized(), (p3-p2).norm(), .01, .01);
+
+		}
+
+		// Draw the balancing plane on which com should be
+		if(false && krang != NULL) {
+
+			Eigen::Vector3d w1 = krang->getNode("LWheel")->getWorldTransform().topRightCorner<3,1>();
+			Eigen::Vector3d w2 = krang->getNode("RWheel")->getWorldTransform().topRightCorner<3,1>();
+			Eigen::Vector3d dir = (w2 - w1).normalized();
+			glColor4d(1.0, 0.0, 0.0, 1.0);
+			for(double offset = -0.2; offset <= 0.5; offset += 0.05) {
+				Eigen::Vector3d p0 = w1; p0(2) += offset;
+				Eigen::Vector3d p1 = w2; p1(2) += offset;
+				p0 -= 0.3 * dir;
+				p1 += 0.3 * dir;
+				yui::drawArrow3D(p0, (p1-p0).normalized(), (p1-p0).norm(), .005, .0001);
+			}
+			for(double offset = 0; offset < (w2 - w1).norm() + 0.6; offset += 0.05) {
+				Eigen::Vector3d p0 = w1 - 0.3 * dir, p1;
+				p0 += offset * dir; 
+				p1 = p0;	
+				p0(2) -= 0.2;
+				p1(2) += 0.5;	
+				yui::drawArrow3D(p0, (p1-p0).normalized(), (p1-p0).norm(), .005, .0001);
+			}
+
+			// Draw a line from com to the plane
+			Eigen::Vector3d com = krang->getWorldCOM();
+			w1(2) = com(2);
+			w2(2) = com(2);
+			Eigen::Vector3d temp = com - w1;
+			double proj = temp.dot(dir);
+			Eigen::Vector3d closest = w1 + proj * dir;
+			glColor4d(0.0, 1.0, 0.0, 1.0);
+			yui::drawArrow3D(com, -(com-closest).normalized(), (com-closest).norm(), .010, .025);
+
+		}
+
+
+
     //draw actual center of mass
     if(mWorld!=NULL&& checkShowCOMActual->IsChecked()){
 
@@ -222,16 +285,16 @@ void VisualizationTab::GRIPEventRender() {
 
         // Draw com of each node
         dynamics::SkeletonDynamics* krang = mWorld->getSkeleton("Krang");
-        for(int x =0 ; x < krang->getNumNodes(); x++){
-            kinematics::BodyNode* node = krang->getNode(x);
-            glPushMatrix();
-            GLUquadricObj * quadric1 = gluNewQuadric();
-            Eigen::Vector3d cm1Pos = node->getWorldCOM();
-            glTranslatef(cm1Pos(0),cm1Pos(1),cm1Pos(2));
-            gluSphere(quadric1,0.02,20,20);
-            gluDeleteQuadric(quadric1);
-            glPopMatrix();
-        }
+        //for(int x =0 ; x < krang->getNumNodes(); x++){
+        //    kinematics::BodyNode* node = krang->getNode(x);
+        //    glPushMatrix();
+        //    GLUquadricObj * quadric1 = gluNewQuadric();
+        //    Eigen::Vector3d cm1Pos = node->getWorldCOM();
+        //    glTranslatef(cm1Pos(0),cm1Pos(1),cm1Pos(2));
+        //    gluSphere(quadric1,0.02,20,20);
+        //    gluDeleteQuadric(quadric1);
+        //    glPopMatrix();
+        //}
 
         // Draw com of the entire robot
         glColor3f(0.0f,1.0f,0.0f);
@@ -239,7 +302,7 @@ void VisualizationTab::GRIPEventRender() {
         GLUquadricObj * quadric1 = gluNewQuadric();
         Eigen::Vector3d cmPos = krang->getWorldCOM();
         glTranslatef(cmPos(0),cmPos(1),cmPos(2));
-        gluSphere(quadric1,0.02,20,20);
+        gluSphere(quadric1,0.04,20,20);
         gluDeleteQuadric(quadric1);
         glPopMatrix();
 

@@ -57,7 +57,7 @@ public:
 	virtual bool OnInit();
 	virtual void AddTabs() {}
 	virtual void processArgs ();
-	virtual void setConfiguration (const char* filepath);
+	virtual void setConfiguration (const char* filepath, int bla = 0);
 };
 
 #endif /* GRIPAPP_H_ */

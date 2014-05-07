@@ -846,7 +846,7 @@ void GRIPFrame::OnTimeEnter(wxCommandEvent& WXUNUSED(event)){
  * @date 2011-10-13
  */
 void GRIPFrame::OnWhite(wxCommandEvent& WXUNUSED(event)){
-    viewer->backColor = Vector3d(1,1,1);
+    viewer->backColor = Vector3d(0.95,0.95,0.95);
     viewer->gridColor = Vector3d(.8,.8,1);
     viewer->setClearColor();
     viewer->DrawGLScene();
@@ -928,7 +928,7 @@ void GRIPFrame::OnViewChange(wxCommandEvent& event) {
 	if((event.GetId() == Tool_topView) || (event.GetId() == MenuTopView))
 		viewer->camRotT = AngleAxis<double>(DEG2RAD(-90.0), Vector3d(0.0, 1.0, 0.0));
 	else if((event.GetId() == Tool_rightSideView) || (event.GetId() == MenuRightSideView))
-		viewer->camRotT = AngleAxis<double>(DEG2RAD(90.0), Vector3d(0.0, 0.0, 1.0));
+		viewer->camRotT = AngleAxis<double>(DEG2RAD(-90.0), Vector3d(0.0, 0.0, 1.0));
 	else if((event.GetId() == Tool_frontView) || (event.GetId() == MenuFrontView))
 		viewer->camRotT = AngleAxis<double>(DEG2RAD(0.0), Vector3d(0.0, 1.0, 0.0));
 	viewer->UpdateCamera();

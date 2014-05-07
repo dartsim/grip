@@ -58,7 +58,7 @@ using namespace std;
  * the second is angles.
  * @date 2014-02-10
  */
-void GRIPApp::setConfiguration (const char* filepath) {
+void GRIPApp::setConfiguration (const char* filepath, int bla) {
 
   // Open the file
   fstream file (filepath, fstream::in);
@@ -67,24 +67,38 @@ void GRIPApp::setConfiguration (const char* filepath) {
 		assert(false);
 	}
 
-  // Read the first line
-  std::string line;
-	assert(getline(file, line) && "Two lines: first indices, then angles.");
-	int index;
-	vector <int> dofs;
-	stringstream stream (line, stringstream::in);
-	while(stream >> index) dofs.push_back(index);
+	// Process three lines at a time: skeleton name, indices, values 
+	while(true) {
 
-	// Read the second line
-	Eigen::VectorXd q (dofs.size());
-	double angle;
-	size_t i = 0;
-	assert(getline(file, line) && "Two lines: first indices, then angles.");
-	stringstream stream2 (line, stringstream::in);
-	while(stream2 >> angle) q(i++) = angle;
+		// Read the name of the skeleton
+		std::string line;
+		if(!getline(file, line)) break;
+		dynamics::SkeletonDynamics* skel = mWorld->getSkeleton(line.c_str());
+		if(skel == NULL) {
+			cout << "No skeleton with name '" << line.c_str() << "'\n"; 
+			break;
+		}
+		
+		// Read the indices
+		assert(getline(file, line) && "Three lines: name, indices, angles.");
+		int index;
+		vector <int> dofs;
+		stringstream stream (line, stringstream::in);
+		while(stream >> index) dofs.push_back(index);
+
+		// Read the second line
+		Eigen::VectorXd q (dofs.size());
+		double angle;
+		size_t i = 0;
+		assert(getline(file, line) && "Three lines: name, indices, angles.");
+		stringstream stream2 (line, stringstream::in);
+		while(stream2 >> angle) q(i++) = angle;
 	
-	// Set the robot configuration
-	mWorld->getSkeleton("Krang")->setConfig(dofs, q);
+		// Set the robot configuration
+		cout << "Setting '" << skel->getName().c_str() << "' configuration to: " 
+			<< q.transpose() << endl;
+		skel->setConfig(dofs, q);
+	}
 }
 
 /**
