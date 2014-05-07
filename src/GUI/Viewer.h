@@ -68,7 +68,7 @@ public:
 		backColor(0.0, 0.0, 0.0), gridColor(0.5, 0.5, 0.0),
 		camRotT(AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0))),
 		worldV(0.0, 0.0, 0.0),
-		camRadius(10.0),
+		camRadius(4.0),
 		useCollMesh(false)
 	{
 		handleEvents = true;

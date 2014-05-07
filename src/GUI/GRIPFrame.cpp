@@ -911,9 +911,11 @@ void GRIPFrame::OnHD(wxCommandEvent& WXUNUSED(event)){
  * @date 2011-10-13
  */
 void GRIPFrame::OnCameraReset(wxCommandEvent& WXUNUSED(event)) {
-  viewer->camRotT = AngleAxis<double>(DEG2RAD(-30.0), Vector3d(0.0, 1.0, 0.0));
-  viewer->worldV = Vector3d(0.0, 0.0, 0.0);
-  viewer->camRadius = 10.0;
+	viewer->camRadius = 0.88;
+	Eigen::Matrix3d bla; 
+	bla << 6.0491e-17,           1,-9.48635e-18, -0.987926, 6.12303e-17,    0.154929, 0.154929,           0,    0.987926;
+	viewer->camRotT = bla;
+	viewer->worldV = Vector3d(1.671,-0.0288168, -0.828754);
   viewer->UpdateCamera();
   viewer->DrawGLScene();
 }
