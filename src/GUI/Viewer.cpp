@@ -55,24 +55,22 @@ using namespace std;
 void Viewer::drawWorld() {
 	// Draw skeletons
 //	cout << "==========================" << endl;
-	renderer.draw(mWorld->getSkeleton("PointInput2"), check_for_collisions, useCollMesh);
-	renderer.draw(mWorld->getSkeleton("PointLeverFulcrum"), check_for_collisions, useCollMesh);
-	renderer.draw(mWorld->getSkeleton("Intersect1"), check_for_collisions, useCollMesh);
-	renderer.draw(mWorld->getSkeleton("Load"), check_for_collisions, useCollMesh);
-	renderer.draw(mWorld->getSkeleton("Fulcrum"), check_for_collisions, useCollMesh);
-	renderer.draw(mWorld->getSkeleton("Wall3"), check_for_collisions, useCollMesh);
-	renderer.draw(mWorld->getSkeleton("Wall3b"), check_for_collisions, useCollMesh);
-	renderer.draw(mWorld->getSkeleton("PointLeverLoad"), check_for_collisions, useCollMesh);
-	renderer.draw(mWorld->getSkeleton("Krang"), check_for_collisions, useCollMesh);
-	renderer.draw(mWorld->getSkeleton("ground"), check_for_collisions, useCollMesh);
-	renderer.draw(mWorld->getSkeleton("Lever"), check_for_collisions, useCollMesh);
+//	renderer.draw(mWorld->getSkeleton("PointInput2"), check_for_collisions, useCollMesh);
+//	renderer.draw(mWorld->getSkeleton("PointLeverFulcrum"), check_for_collisions, useCollMesh);
+//	renderer.draw(mWorld->getSkeleton("Intersect1"), check_for_collisions, useCollMesh);
+//	renderer.draw(mWorld->getSkeleton("Load"), check_for_collisions, useCollMesh);
+//	renderer.draw(mWorld->getSkeleton("Fulcrum"), check_for_collisions, useCollMesh);
+//	renderer.draw(mWorld->getSkeleton("Wall3"), check_for_collisions, useCollMesh);
+//	renderer.draw(mWorld->getSkeleton("Wall3b"), check_for_collisions, useCollMesh);
+//	renderer.draw(mWorld->getSkeleton("PointLeverLoad"), check_for_collisions, useCollMesh);
+//	renderer.draw(mWorld->getSkeleton("Krang"), check_for_collisions, useCollMesh);
+//	renderer.draw(mWorld->getSkeleton("ground"), check_for_collisions, useCollMesh);
+//	renderer.draw(mWorld->getSkeleton("Lever"), check_for_collisions, useCollMesh);
 
-/*
 	for(int i=0; i < mWorld->getNumSkeletons(); i++) {
 		//mWorld->getSkeleton(i)->draw(&renderer);
 		renderer.draw(mWorld->getSkeleton(i), check_for_collisions, useCollMesh);
 	}
-*/
 }
 
 /**
@@ -288,9 +286,6 @@ void Viewer::OnMouse(wxMouseEvent& evt){
 		UpdateCamera();
 		DrawGLScene();
 	}
-	cout << "camRadius: " << camRadius << endl;
-	cout << "camRotT: \n" << camRotT << endl;
-	cout << "worldV: " << worldV.transpose() << endl;
 }
 
 /**
