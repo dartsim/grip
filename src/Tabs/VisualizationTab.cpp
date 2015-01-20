@@ -37,7 +37,7 @@
  */
 
 #include "VisualizationTab.h"
-#include <dart/constraint/ConstraintDynamics.h>
+// #include <dart/constraint/ConstraintDynamics.h>
 
 // **********************
 // STL
@@ -60,7 +60,7 @@ using namespace std;
 #include <dart/dynamics/Skeleton.h>
 #include <dart/dynamics/BodyNode.h>
 #include <dart/dynamics/BoxShape.h>
-#include <dart/dynamics/GenCoord.h>
+// #include <dart/dynamics/GenCoord.h>
 #include <dart/dynamics/Joint.h>
 #include <dart/renderer/LoadOpengl.h>
 #include <dart/dynamics/RevoluteJoint.h>
@@ -250,6 +250,7 @@ void VisualizationTab::GRIPEventRender() {
     }
 
     // draw contact points
+/*
     if (checkShowContacts->IsChecked() && mWorld && mWorld->getConstraintHandler()) {
         // some preprocessing. calculate vector lengths and find max
         // length, scale down the force measurements, and figure out
@@ -384,6 +385,7 @@ void VisualizationTab::GRIPEventRender() {
             }
         }
     }
+*/
 }
 
 /**

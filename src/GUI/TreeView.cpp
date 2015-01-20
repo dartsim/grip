@@ -50,7 +50,7 @@
 #include <dart/dynamics/RevoluteJoint.h>
 #include <dart/dynamics/FreeJoint.h>
 #include <dart/dynamics/WeldJoint.h>
-#include <dart/dynamics/GenCoord.h>
+// #include <dart/dynamics/GenCoord.h>
 
 //TOOLBAR PICTURES
 #include "icons/robot.xpm"

@@ -36,6 +36,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#define private public
+#define protected public
+
 #include <iostream>
 #include <wx/wx.h>
 
@@ -52,7 +55,7 @@
 #include <dart/dynamics/FreeJoint.h>
 #include <dart/dynamics/RevoluteJoint.h>
 #include <dart/dynamics/PrismaticJoint.h>
-#include <dart/dynamics/GenCoord.h>
+// #include <dart/dynamics/GenCoord.h>
 
 using namespace std;
 using namespace Eigen;
@@ -154,18 +157,31 @@ void InspectorTab::OnSlider(wxCommandEvent &evt) {
       //-- Change joint value
     case J_SLIDER:
       if(dynamic_cast<dart::dynamics::RevoluteJoint*>(pBodyNode->getParentJoint())) {
+				int index = pBodyNode->getParentJoint()->getIndexInSkeleton(0); 
+        pBodyNode->getSkeleton()->setPosition(index, pos / 180.0 * M_PI);
+				for (int i = 0; i < pBodyNode->getSkeleton()->getNumBodyNodes(); ++i) 
+					pBodyNode->getSkeleton()->getBodyNode(i)->updateTransform();
+/*
         std::vector<int> index(1);
-        index[0] = pBodyNode->getParentJoint()->getGenCoord(0)->getSkeletonIndex();
+        // index[0] = pBodyNode->getParentJoint()->getGenCoord(0)->getSkeletonIndex();
+        index[0] = 
         Eigen::VectorXd config(1);
         config[0] = DEG2RAD(pos);
-        pBodyNode->getSkeleton()->setConfig(index, config);
+*/
       } 
       else if (dynamic_cast<dart::dynamics::PrismaticJoint*>(pBodyNode->getParentJoint())) {
+				int index = pBodyNode->getParentJoint()->getIndexInSkeleton(0); 
+        pBodyNode->getSkeleton()->setPosition(index, pos);
+/*
+				for (int i = 0; i < pBodyNode->getSkeleton()->getNumBodyNodes(); ++i) 
+					pBodyNode->getSkeleton()->getBodyNode(i)->updateTransform();
         std::vector<int> index(1);
-        index[0] = pBodyNode->getParentJoint()->getGenCoord(0)->getSkeletonIndex();
+        //index[0] = pBodyNode->getParentJoint()->getGenCoord(0)->getSkeletonIndex();
+        index[0] = pBodyNode->getParentJoint()->getIndexInSkeleton();
         Eigen::VectorXd config(1);
         config[0] = pos;
-        pBodyNode->getSkeleton()->setConfig(index, config);
+        pBodyNode->getSkeleton()->setPosition(index, config);
+*/
       }
       break;
     default:
@@ -251,16 +267,16 @@ void InspectorTab::GRIPStateChange() {
       
     /** If joint is hinge */
     if( dynamic_cast<dart::dynamics::RevoluteJoint*>(pBodyNode->getParentJoint()) ) {
-      jSlider->setRange( RAD2DEG( pBodyNode->getParentJoint()->getGenCoord(0)->get_qMin() ),
-                         RAD2DEG( pBodyNode->getParentJoint()->getGenCoord(0)->get_qMax() ) );
-      jSlider->setValue( RAD2DEG( pBodyNode->getParentJoint()->getGenCoord(0)->get_q() ) );
+      jSlider->setRange( RAD2DEG( pBodyNode->getParentJoint()->getPositionLowerLimit(0) ),
+                         RAD2DEG( pBodyNode->getParentJoint()->getPositionUpperLimit(0) ) );
+      jSlider->setValue( RAD2DEG( pBodyNode->getParentJoint()->getPosition(0)) );
       jSlider->Show();
     }
     /** If joint is translational */
     else if( dynamic_cast<dart::dynamics::PrismaticJoint*>(pBodyNode->getParentJoint()) ) {
-      jSlider->setRange( pBodyNode->getParentJoint()->getGenCoord(0)->get_qMin(),
-                         pBodyNode->getParentJoint()->getGenCoord(0)->get_qMax() );
-      jSlider->setValue( pBodyNode->getParentJoint()->getGenCoord(0)->get_q() );
+      jSlider->setRange( RAD2DEG( pBodyNode->getParentJoint()->getPositionLowerLimit(0) ),
+                         RAD2DEG( pBodyNode->getParentJoint()->getPositionUpperLimit(0) ) );
+      jSlider->setValue( RAD2DEG( pBodyNode->getParentJoint()->getPosition(0)) );
       jSlider->Show();
     }
     /** If it is Free Euler and root */
@@ -274,7 +290,7 @@ void InspectorTab::GRIPStateChange() {
     }
     
     //-- Get XYZ and RPY
-    pose = getPoseFromTransform(pBodyNode->getWorldTransform());
+    pose = getPoseFromTransform(pBodyNode->getTransform());
   }
   
   //-- Return type Robot
@@ -315,15 +331,15 @@ Eigen::Matrix<double, 6, 1> InspectorTab::getRootTransform(dart::dynamics::Skele
   dart::dynamics::Joint *joint = robot->getRootBodyNode()->getParentJoint();
   Eigen::Matrix<double, 6, 1> pose;
 
-  if(joint->getJointType() == dart::dynamics::Joint::FREE) {
-    Matrix<double, 6, 1> q = joint->get_q();
-    Eigen::Isometry3d Tf = dart::math::expMap( joint->get_q() );
-    pose.head<3>() = Tf.translation();
-    pose.tail<3>() = dart::math::matrixToEulerXYZ( Tf.linear() );
-  }
-  else {
+//  if(joint->getJointType() == dart::dynamics::Joint::FREE) {
+//    Matrix<double, 6, 1> q = joint->get_q();
+//    Eigen::Isometry3d Tf = dart::math::expMap( joint->get_q() );
+//    pose.head<3>() = Tf.translation();
+//    pose.tail<3>() = dart::math::matrixToEulerXYZ( Tf.linear() );
+//  }
+//  else {
     pose = getPoseFromTransform(joint->getTransformFromParentBodyNode());
-  }
+//  }
 
   return pose;
 }
@@ -342,7 +358,7 @@ void InspectorTab::setRootTransform( dart::dynamics::Skeleton* robot,
     transform.translation() = pose.head<3>();
     transform.linear() = dart::math::eulerXYZToMatrix(pose.tail<3>());
     q = dart::math::logMap(transform);
-    joint->set_q( q );
+    joint->setTransformFromParentBodyNode(transform);
   
   }
   else {

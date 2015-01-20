@@ -70,7 +70,7 @@
 #include <dart/dynamics/Skeleton.h>
 #include <dart/dynamics/BoxShape.h> // for floor
 #include <dart/dynamics/WeldJoint.h> // for floor
-#include <dart/dynamics/GenCoord.h>
+// #include <dart/dynamics/GenCoord.h>
 
 // Parser
 #include <dart/utils/urdf/DartLoader.h>
@@ -774,7 +774,15 @@ void GRIPFrame::OnTimeScroll(wxScrollEvent& event) {
 void GRIPFrame::AddWorld( dart::simulation::World* _world) {
     GRIPTimeSlice tsnew;
     tsnew.time = _world->getTime();
-    tsnew.state = _world->getState();
+		size_t stateSize = 0;
+		size_t numSkels = _world->getNumSkeletons();
+		for(size_t i = 0; i < numSkels; i++) stateSize += _world->getSkeleton(i)->getState().rows();
+		tsnew.state = Eigen::VectorXd(stateSize);
+		for(size_t i = 0, j = 0; i < numSkels; i++) {
+			size_t size = _world->getSkeleton(i)->getState().rows();
+			tsnew.state.block(j,0,size,1) = _world->getSkeleton(i)->getState();
+			j += size;
+		}
     timeVector.push_back(tsnew);
     tMax += tIncrement;
     timeTrack->SetRange(0, tMax * tPrecision);
@@ -1154,10 +1162,10 @@ void setState_Issue122( Eigen::VectorXd _newState ) {
 	// Before setting states, make sure the FreeJoints get their mT_Joints set
     for (int i = 0; i < mWorld->getNumSkeletons(); i++) {
      	int start = 2 * mWorld->getIndex(i);
-        int size = 2 * (mWorld->getSkeleton(i)->getNumGenCoords());
+        int size = 2 * (mWorld->getSkeleton(i)->getNumDofs());
 		Eigen::VectorXd q = _newState.segment( start, size / 2);
 		// Set config calls updateTransform() [NO updateTransform_Issue122], which correctly initializes mT_Joint for FREE JOINT
-		mWorld->getSkeleton(i)->setConfig(q);
+		mWorld->getSkeleton(i)->setState(q);
 		// The usual line. The line above is actually repeating some processing, but there is no other way, unless you want to touch DART itself
         mWorld->getSkeleton(i)->setState(_newState.segment(start, size));
      }
